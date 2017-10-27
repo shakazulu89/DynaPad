@@ -1,0 +1,626 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">iPhoneSimulator</Platform>
+    <ProjectGuid>{A62CAEE3-60B2-4D0B-BAB9-896E8148FC40}</ProjectGuid>
+    <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>DynaPad</RootNamespace>
+    <AssemblyName>DynaPad</AssemblyName>
+    <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
+        <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\iPhoneSimulator\Debug</OutputPath>
+    <DefineConstants>DEBUG;ENABLE_TEST_CLOUD;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <CodesignKey>iPhone Distribution</CodesignKey>
+    <MtouchDebug>true</MtouchDebug>
+    <MtouchFastDev>true</MtouchFastDev>
+    <MtouchLink>None</MtouchLink>
+    <MtouchArch>x86_64</MtouchArch>
+    <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
+    <MtouchTlsProvider>Default</MtouchTlsProvider>
+    <PlatformTarget>x86</PlatformTarget>
+    <DeviceSpecificBuild>false</DeviceSpecificBuild>
+    <MtouchI18n>west</MtouchI18n>
+<MtouchSdkVersion></MtouchSdkVersion>
+<CodesignEntitlements></CodesignEntitlements>
+<CodesignProvision></CodesignProvision>
+        <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
+    <Optimize>true</Optimize>
+    <OutputPath>bin\iPhone\Release</OutputPath>
+    <DefineConstants></DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <CodesignKey>iPhone Distribution</CodesignKey>
+    <MtouchFloat32>true</MtouchFloat32>
+    <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
+    <MtouchLink>None</MtouchLink>
+    <MtouchArch>ARM64</MtouchArch>
+    <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
+    <MtouchTlsProvider>Default</MtouchTlsProvider>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodesignProvision></CodesignProvision>
+    <BuildIpa>false</BuildIpa>
+    <MtouchDebug>false</MtouchDebug>
+        <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+        <MtouchExtraArgs>--registrar:static</MtouchExtraArgs>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
+    <Optimize>true</Optimize>
+    <OutputPath>bin\iPhoneSimulator\Release</OutputPath>
+    <DefineConstants></DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <CodesignKey>iPhone Distribution</CodesignKey>
+    <MtouchLink>None</MtouchLink>
+    <MtouchArch>x86_64</MtouchArch>
+    <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
+    <MtouchTlsProvider>Default</MtouchTlsProvider>
+    <PlatformTarget>x86</PlatformTarget>
+        <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+        <MtouchExtraArgs>--registrar:static</MtouchExtraArgs>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\iPhone\Debug</OutputPath>
+    <DefineConstants>DEBUG;ENABLE_TEST_CLOUD;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <CodesignKey>iPhone Distribution</CodesignKey>
+    <DeviceSpecificBuild>true</DeviceSpecificBuild>
+    <MtouchDebug>true</MtouchDebug>
+    <MtouchFastDev>false</MtouchFastDev>
+    <MtouchFloat32>true</MtouchFloat32>
+    <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
+    <MtouchLink>None</MtouchLink>
+    <MtouchArch>ARM64</MtouchArch>
+    <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
+    <MtouchTlsProvider>Default</MtouchTlsProvider>
+    <PlatformTarget>x86</PlatformTarget>
+    <MtouchSdkVersion></MtouchSdkVersion>
+    <CodesignProvision></CodesignProvision>
+    <MtouchNoSymbolStrip>false</MtouchNoSymbolStrip>
+<IOSDebugOverWiFi>false</IOSDebugOverWiFi>
+        <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AdHoc|AnyCPU' ">
+    <Optimize>true</Optimize>
+    <OutputPath>bin\AdHoc</OutputPath>
+    <DefineConstants></DefineConstants>
+    <WarningLevel>4</WarningLevel>
+    <CodesignKey>iPhone Distribution</CodesignKey>
+    <MtouchArch>ARMv7, ARMv7s, ARM64</MtouchArch>
+    <CodesignProvision></CodesignProvision>
+    <MtouchLink>SdkOnly</MtouchLink>
+    <MtouchSdkVersion></MtouchSdkVersion>
+        <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Xamarin.iOS" />
+    <Reference Include="MonoTouch.Dialog-1" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Json" />
+    <Reference Include="System.Data">
+      <HintPath>..\..\..\..\..\..\Library\Frameworks\Xamarin.iOS.framework\Versions\10.0.0.6\lib\mono\2.1\System.Data.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="Xamarin.Mobile">
+      <HintPath>Components\xamarin.mobile-0.7.7\lib\ios-unified\Xamarin.Mobile.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Plugin.Media.Abstractions">
+      <HintPath>packages\Xam.Plugin.Media.3.0.1\lib\Xamarin.iOS10\Plugin.Media.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Plugin.Media">
+      <HintPath>packages\Xam.Plugin.Media.3.0.1\lib\Xamarin.iOS10\Plugin.Media.dll</HintPath>
+    </Reference>
+    <Reference Include="Plugin.TextToSpeech.Abstractions">
+      <HintPath>packages\Xam.Plugins.TextToSpeech.3.0.1\lib\Xamarin.iOS10\Plugin.TextToSpeech.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Plugin.TextToSpeech">
+      <HintPath>packages\Xam.Plugins.TextToSpeech.3.0.1\lib\Xamarin.iOS10\Plugin.TextToSpeech.dll</HintPath>
+    </Reference>
+    <Reference Include="itextsharp">
+      <HintPath>packages\iTextSharp.5.5.12\lib\itextsharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.Compression.Portable">
+      <HintPath>packages\Syncfusion.Xamarin.Compression.15.3.0.33\lib\portable-win+net45+wp80+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Syncfusion.Compression.Portable.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Syncfusion.GridCommon.Portable">
+      <HintPath>packages\Syncfusion.Xamarin.GridCommon.15.3.0.33\lib\portable-win+net45+wp80+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Syncfusion.GridCommon.Portable.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Syncfusion.SfAutoComplete.iOS">
+      <HintPath>packages\Syncfusion.Xamarin.SfAutoComplete.IOS.15.3.0.33\lib\Xamarin.iOS10\Syncfusion.SfAutoComplete.iOS.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Syncfusion.SfNumericTextBox.iOS">
+      <HintPath>packages\Syncfusion.Xamarin.SfNumericTextBox.IOS.15.3.0.33\lib\Xamarin.iOS10\Syncfusion.SfNumericTextBox.iOS.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Syncfusion.Linq.iOS">
+      <HintPath>packages\Syncfusion.Xamarin.SfDataGrid.IOS.15.3.0.33\lib\Xamarin.iOS10\Syncfusion.Linq.iOS.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.SfImageEditor.iOS">
+      <HintPath>packages\Syncfusion.Xamarin.SfImageEditor.IOS.15.3.0.33\lib\Xamarin.iOS10\Syncfusion.SfImageEditor.iOS.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="HockeySDK">
+      <HintPath>packages\HockeySDK.Xamarin.5.0.0\lib\Xamarin.iOS10\HockeySDK.dll</HintPath>
+    </Reference>
+    <Reference Include="HockeySDK.iOSBindings">
+      <HintPath>packages\HockeySDK.Xamarin.5.0.0\lib\Xamarin.iOS10\HockeySDK.iOSBindings.dll</HintPath>
+    </Reference>
+    <Reference Include="BouncyCastle">
+      <HintPath>packages\MimeKit.1.18.1\lib\Xamarin.iOS10\BouncyCastle.dll</HintPath>
+    </Reference>
+    <Reference Include="MimeKit">
+      <HintPath>packages\MimeKit.1.18.1\lib\Xamarin.iOS10\MimeKit.dll</HintPath>
+    </Reference>
+    <Reference Include="MailKit">
+      <HintPath>packages\MailKit.1.18.1.1\lib\Xamarin.iOS10\MailKit.dll</HintPath>
+    </Reference>
+    <Reference Include="HtmlAgilityPack">
+      <HintPath>packages\HtmlAgilityPack.1.6.2\lib\netstandard2.0\HtmlAgilityPack.dll</HintPath>
+    </Reference>
+    <Reference Include="Plugin.Connectivity.Abstractions">
+      <HintPath>packages\Xam.Plugin.Connectivity.3.0.3\lib\Xamarin.iOS10\Plugin.Connectivity.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Plugin.Connectivity">
+      <HintPath>packages\Xam.Plugin.Connectivity.3.0.3\lib\Xamarin.iOS10\Plugin.Connectivity.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.SfBusyIndicator.iOS">
+      <HintPath>packages\Syncfusion.Xamarin.SfBusyIndicator.IOS.15.3.0.33\lib\Xamarin.iOS10\Syncfusion.SfBusyIndicator.iOS.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Syncfusion.Pdf.Portable">
+      <HintPath>packages\Syncfusion.Xamarin.Pdf.15.3.0.33\lib\portable-win+net45+wp80+wpa81+MonoAndroid10+MonoTouch10+Xamarin.iOS10\Syncfusion.Pdf.Portable.dll</HintPath>
+    </Reference>
+    <Reference Include="Xamarin.Controls.LoginScreen.iOS">
+      <HintPath>packages\Xamarin.LoginScreen.1.5.0\lib\Xamarin.iOS10\Xamarin.Controls.LoginScreen.iOS.dll</HintPath>
+    </Reference>
+    <Reference Include="SlackTextViewController">
+      <HintPath>packages\Xamarin.SlackTextViewController.1.9.5\lib\Xamarin.iOS\SlackTextViewController.dll</HintPath>
+    </Reference>
+    <Reference Include="SignaturePad">
+      <HintPath>packages\Xamarin.Controls.SignaturePad.2.2.0\lib\Xamarin.iOS\SignaturePad.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.SfDataGrid.iOS">
+      <HintPath>..\syncfusiondlls\Syncfusion.SfDataGrid.iOS.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>packages\Newtonsoft.Json.10.0.3\lib\netstandard1.3\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ImageAsset Include="Assets.xcassets\AppIcons.appiconset\Contents.json" />
+    <ImageAsset Include="Assets.xcassets\Contents.json" />
+    <ImageAsset Include="Assets.xcassets\AppIcons.appiconset\Icon-App-29x29%401x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcons.appiconset\Icon-App-29x29%402x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcons.appiconset\Icon-App-29x29%403x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcons.appiconset\Icon-App-40x40%402x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcons.appiconset\Icon-App-40x40%403x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcons.appiconset\Icon-App-40x40%401x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcons.appiconset\Icon-Small-50x50%401x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcons.appiconset\Icon-Small-50x50%402x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcons.appiconset\Icon-App-72x72%401x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcons.appiconset\Icon-App-72x72%402x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcons.appiconset\Icon-App-76x76%401x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcons.appiconset\Icon-App-76x76%402x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcons.appiconset\Icon-App-83.5x83.5%402x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcons.appiconset\Icon-App-57x57%401x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcons.appiconset\Icon-App-57x57%402x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcons.appiconset\Icon-App-60x60%402x.png" />
+    <ImageAsset Include="Assets.xcassets\AppIcons.appiconset\Icon-App-60x60%403x.png" />
+    <ImageAsset Include="Media.xcassets\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Lock.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Lock.imageset\Password-20.png" />
+    <ImageAsset Include="Media.xcassets\Dictation.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Play.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Pause.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Stop.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Record.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Save.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Print.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\CircledPlay.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Back.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Back.imageset\Back-20.png" />
+    <ImageAsset Include="Media.xcassets\Restore.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Restore.imageset\Reuse-20.png" />
+    <ImageAsset Include="Media.xcassets\Restore.imageset\Recycling symbol-20.png" />
+    <ImageAsset Include="Media.xcassets\Close.imageset\Close Window-20.png" />
+    <ImageAsset Include="Media.xcassets\Close.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\QRecord.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Delete.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\LockedBack.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\LockedBack.imageset\LockedBack-20.png" />
+    <ImageAsset Include="Media.xcassets\Print.imageset\Icon-40.png" />
+    <ImageAsset Include="Media.xcassets\Print.imageset\Icon-40%402x.png" />
+    <ImageAsset Include="Media.xcassets\Print.imageset\Icon-40%403x.png" />
+    <ImageAsset Include="Media.xcassets\LockedBack.imageset\Icon-40.png" />
+    <ImageAsset Include="Media.xcassets\Lock.imageset\Password-32.png" />
+    <ImageAsset Include="Media.xcassets\LockedBack.imageset\BackLocked-32.png" />
+    <ImageAsset Include="Media.xcassets\Print.imageset\Print-32.png" />
+    <ImageAsset Include="Media.xcassets\RecordRed.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\CircledPause.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Restore.imageset\Recycling symbol-40.png" />
+    <ImageAsset Include="Media.xcassets\Back.imageset\back32.png" />
+    <ImageAsset Include="Media.xcassets\Back.imageset\back40.png" />
+    <ImageAsset Include="Media.xcassets\CircledPlay.imageset\circleplay32.png" />
+    <ImageAsset Include="Media.xcassets\CircledPlay.imageset\Circled Play-32.png" />
+    <ImageAsset Include="Media.xcassets\QRecord.imageset\voice32.png" />
+    <ImageAsset Include="Media.xcassets\QRecord.imageset\Voice Recognition Scan-32.png" />
+    <ImageAsset Include="Media.xcassets\Pause.imageset\pause32.png" />
+    <ImageAsset Include="Media.xcassets\Pause.imageset\Pause-32.png" />
+    <ImageAsset Include="Media.xcassets\Play.imageset\play32.png" />
+    <ImageAsset Include="Media.xcassets\Play.imageset\Play-32.png" />
+    <ImageAsset Include="Media.xcassets\Save.imageset\save32.png" />
+    <ImageAsset Include="Media.xcassets\Save.imageset\Save-32.png" />
+    <ImageAsset Include="Media.xcassets\Stop.imageset\stop32.png" />
+    <ImageAsset Include="Media.xcassets\Stop.imageset\Stop-32.png" />
+    <ImageAsset Include="Media.xcassets\CircledPause.imageset\circlepause32.png" />
+    <ImageAsset Include="Media.xcassets\CircledPause.imageset\Circled Pause-32.png" />
+    <ImageAsset Include="Media.xcassets\Record.imageset\Record-64.png" />
+    <ImageAsset Include="Media.xcassets\Record.imageset\recordw32.png" />
+    <ImageAsset Include="Media.xcassets\Record.imageset\recordw40.png" />
+    <ImageAsset Include="Media.xcassets\Close.imageset\close29.png" />
+    <ImageAsset Include="Media.xcassets\Close.imageset\close32.png" />
+    <ImageAsset Include="Media.xcassets\Dictation.imageset\dictation32.png" />
+    <ImageAsset Include="Media.xcassets\Dictation.imageset\dictation40.png" />
+    <ImageAsset Include="Media.xcassets\RecordRed.imageset\recordred50.png" />
+    <ImageAsset Include="Media.xcassets\RecordRed.imageset\Record-48.png" />
+    <ImageAsset Include="Media.xcassets\Delete.imageset\delete32.png" />
+    <ImageAsset Include="Media.xcassets\Delete.imageset\Delete-32.png" />
+    <ImageAsset Include="Media.xcassets\PlayGreen.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\PlayGreen.imageset\playgreen48.png" />
+    <ImageAsset Include="Media.xcassets\PlayGreen.imageset\playgreen32.png" />
+    <ImageAsset Include="Media.xcassets\PlayGreen.imageset\playgreen40.png" />
+    <ImageAsset Include="Media.xcassets\CircledStop.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\Stop-20.png" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\stopblack32.png" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\Stop Filled-32.png" />
+    <ImageAsset Include="Media.xcassets\CircledStop.imageset\circlestopfill48.png" />
+    <ImageAsset Include="Media.xcassets\CircledStop.imageset\circlestopfill32.png" />
+    <ImageAsset Include="Media.xcassets\CircledStop.imageset\circlestopfill40.png" />
+    <ImageAsset Include="Media.xcassets\CircledPlayFill.imageset\circleplay29.png" />
+    <ImageAsset Include="Media.xcassets\CircledPlayFill.imageset\circleplayblack32.png" />
+    <ImageAsset Include="Media.xcassets\CircledPlayFill.imageset\circleplayblack40.png" />
+    <ImageAsset Include="Media.xcassets\CircledPlayFill.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\CircledPlayGreen.imageset\circleplaygreen32.png" />
+    <ImageAsset Include="Media.xcassets\CircledPlayGreen.imageset\circleplaygreen40.png" />
+    <ImageAsset Include="Media.xcassets\CircledPlayGreen.imageset\circleplaygreen48.png" />
+    <ImageAsset Include="Media.xcassets\CircledPlayGreen.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\CanvasClose.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\CanvasClose.imageset\Close-iPad.png" />
+    <ImageAsset Include="Media.xcassets\CanvasClose.imageset\Close-iPad%402x.png" />
+    <ImageAsset Include="Media.xcassets\Calligraphy.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Ink.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Debug.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Calligraphy.imageset\Calligraphy-iPad.png" />
+    <ImageAsset Include="Media.xcassets\Calligraphy.imageset\Calligraphy-iPad%402x.png" />
+    <ImageAsset Include="Media.xcassets\Calligraphy.imageset\Calligraphy-iPhone.png" />
+    <ImageAsset Include="Media.xcassets\Calligraphy.imageset\Calligraphy-iPhone%402x.png" />
+    <ImageAsset Include="Media.xcassets\Calligraphy.imageset\Calligraphy-iPhone%403x.png" />
+    <ImageAsset Include="Media.xcassets\Ink.imageset\Ink-iPhone.png" />
+    <ImageAsset Include="Media.xcassets\Ink.imageset\Ink-iPhone%402x.png" />
+    <ImageAsset Include="Media.xcassets\Ink.imageset\Ink-iPhone%403x.png" />
+    <ImageAsset Include="Media.xcassets\Ink.imageset\Ink-iPad.png" />
+    <ImageAsset Include="Media.xcassets\Ink.imageset\Ink-iPad%402x.png" />
+    <ImageAsset Include="Media.xcassets\Debug.imageset\Debug-iPhone.png" />
+    <ImageAsset Include="Media.xcassets\Debug.imageset\Debug-iPhone%402x.png" />
+    <ImageAsset Include="Media.xcassets\Debug.imageset\Debug-iPhone%403x.png" />
+    <ImageAsset Include="Media.xcassets\Debug.imageset\Debug-iPad.png" />
+    <ImageAsset Include="Media.xcassets\Debug.imageset\Debug-iPad%402x.png" />
+    <ImageAsset Include="Media.xcassets\Writing.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Writing.imageset\write32.png" />
+    <ImageAsset Include="Media.xcassets\Writing.imageset\write48.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-60%402x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-72.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-72%402x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-76.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-76%402x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-Small-40.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-Small-40%402x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-Small-50.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-Small-50%402x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon-Small.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Icon%402x.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\Writepad-icon-167.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\writepad-120.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\writepad-180.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\writepad-58.png" />
+    <ImageAsset Include="Resources\Images.xcassets\AppIcons.appiconset\writepad-87.png" />
+    <ImageAsset Include="Resources\Images.xcassets\LaunchImage.launchimage\Contents.json" />
+    <ImageAsset Include="Resources\Images.xcassets\LaunchImage.launchimage\Default-568h%402x.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\appiconmaker.co_ios\Icon-100.png" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\appiconmaker.co_ios\Icon-1024.png" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\appiconmaker.co_ios\Icon-114.png" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\appiconmaker.co_ios\Icon-120.png" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\appiconmaker.co_ios\Icon-128.png" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\appiconmaker.co_ios\Icon-144.png" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\appiconmaker.co_ios\Icon-152.png" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\appiconmaker.co_ios\Icon-16.png" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\appiconmaker.co_ios\Icon-167.png" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\appiconmaker.co_ios\Icon-172.png" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\appiconmaker.co_ios\Icon-180.png" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\appiconmaker.co_ios\Icon-196.png" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\appiconmaker.co_ios\Icon-20.png" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\appiconmaker.co_ios\Icon-256.png" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\appiconmaker.co_ios\Icon-29.png" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\appiconmaker.co_ios\Icon-32.png" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\appiconmaker.co_ios\Icon-40.png" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\appiconmaker.co_ios\Icon-48.png" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\appiconmaker.co_ios\Icon-50.png" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\appiconmaker.co_ios\Icon-512.png" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\appiconmaker.co_ios\Icon-55.png" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\appiconmaker.co_ios\Icon-57.png" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\appiconmaker.co_ios\Icon-58.png" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\appiconmaker.co_ios\Icon-60.png" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\appiconmaker.co_ios\Icon-64.png" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\appiconmaker.co_ios\Icon-72.png" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\appiconmaker.co_ios\Icon-76.png" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\appiconmaker.co_ios\Icon-80.png" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\appiconmaker.co_ios\Icon-87.png" />
+    <ImageAsset Include="Media.xcassets\StopBlack.imageset\appiconmaker.co_ios\Icon-88.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\appiconmaker.co_ios\Icon-100.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\appiconmaker.co_ios\Icon-1024.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\appiconmaker.co_ios\Icon-114.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\appiconmaker.co_ios\Icon-120.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\appiconmaker.co_ios\Icon-128.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\appiconmaker.co_ios\Icon-144.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\appiconmaker.co_ios\Icon-152.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\appiconmaker.co_ios\Icon-16.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\appiconmaker.co_ios\Icon-167.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\appiconmaker.co_ios\Icon-172.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\appiconmaker.co_ios\Icon-180.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\appiconmaker.co_ios\Icon-196.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\appiconmaker.co_ios\Icon-20.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\appiconmaker.co_ios\Icon-256.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\appiconmaker.co_ios\Icon-29.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\appiconmaker.co_ios\Icon-32.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\appiconmaker.co_ios\Icon-40.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\appiconmaker.co_ios\Icon-48.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\appiconmaker.co_ios\Icon-50.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\appiconmaker.co_ios\Icon-512.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\appiconmaker.co_ios\Icon-55.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\appiconmaker.co_ios\Icon-57.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\appiconmaker.co_ios\Icon-58.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\appiconmaker.co_ios\Icon-60.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\appiconmaker.co_ios\Icon-64.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\appiconmaker.co_ios\Icon-72.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\appiconmaker.co_ios\Icon-76.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\appiconmaker.co_ios\Icon-80.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\appiconmaker.co_ios\Icon-87.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\appiconmaker.co_ios\Icon-88.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon-120.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon-152.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon-16.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon-167.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon-180.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon-24.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon-32.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon-40.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon-40%402x.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon-40%403x.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon-60.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon-60%402x.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon-60%403x.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon-64.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon-72.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon-72%402x.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon-76.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon-76%402x.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon-Amazon.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon-Small-40.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon-Small-40%402x.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon-Small-40%403x.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon-Small-50.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon-Small-50%402x.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon-Small.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon-Small%402x.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon-Small%403x.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon-hdpi.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon-ldpi.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon-mdpi.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon-xhdpi.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon-xxhdpi.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon-xxxhdpi.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon%402x.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\Icon%403x.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\iTunesArtwork.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\iTunesArtwork%402x.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\cc1d8dbc446535d7fd45\upload.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\Icon-40.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\Icon-40%403x.png" />
+    <ImageAsset Include="Media.xcassets\Email.imageset\Icon-32.png" />
+    <ImageAsset Include="Media.xcassets\Close32.imageset\Contents.json" />
+    <ImageAsset Include="Media.xcassets\Close32.imageset\Icon-32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\" />
+    <Folder Include="pdfs\" />
+    <Folder Include="ApplicationData\" />
+    <Folder Include="ApplicationData\pdfs\" />
+    <Folder Include="Resources\Pause-20.png" />
+    <Folder Include="Media.xcassets\Lock.imageset\" />
+    <Folder Include="Media.xcassets\Dictation.imageset\" />
+    <Folder Include="Media.xcassets\Play.imageset\" />
+    <Folder Include="Media.xcassets\Pause.imageset\" />
+    <Folder Include="Media.xcassets\Stop.imageset\" />
+    <Folder Include="Media.xcassets\Record.imageset\" />
+    <Folder Include="Media.xcassets\Save.imageset\" />
+    <Folder Include="Media.xcassets\New.imageset\" />
+    <Folder Include="Media.xcassets\Print.imageset\" />
+    <Folder Include="Media.xcassets\Plus.imageset\" />
+    <Folder Include="Media.xcassets\CircledPlay.imageset\" />
+    <Folder Include="Media.xcassets\Back.imageset\" />
+    <Folder Include="Media.xcassets\Restore.imageset\" />
+    <Folder Include="Media.xcassets\Close.imageset\" />
+    <Folder Include="Media.xcassets\QRecord.imageset\" />
+    <Folder Include="Media.xcassets\Delete.imageset\" />
+    <Folder Include="Media.xcassets\LockedBack.imageset\" />
+    <Folder Include="Media.xcassets\RecordRed.imageset\" />
+    <Folder Include="Media.xcassets\CircledPause.imageset\" />
+    <Folder Include="Media.xcassets\PlayGreen.imageset\" />
+    <Folder Include="Media.xcassets\CircledStop.imageset\" />
+    <Folder Include="Media.xcassets\StopBlack.imageset\" />
+    <Folder Include="Media.xcassets\CircledPlayFill.imageset\" />
+    <Folder Include="Media.xcassets\CircledPlayGreen.imageset\" />
+    <Folder Include="Media.xcassets\CanvasClose.imageset\" />
+    <Folder Include="Media.xcassets\Calligraphy.imageset\" />
+    <Folder Include="Media.xcassets\Ink.imageset\" />
+    <Folder Include="Media.xcassets\Debug.imageset\" />
+    <Folder Include="Media.xcassets\Writing.imageset\" />
+    <Folder Include="Settings.bundle\" />
+    <Folder Include="Media.xcassets\Email.imageset\" />
+    <Folder Include="Media.xcassets\Close32.imageset\" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterfaceDefinition Include="LaunchScreen.storyboard" />
+    <InterfaceDefinition Include="Main.storyboard" />
+    <InterfaceDefinition Include="FingerPaintViewController.xib" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Info.plist" />
+    <None Include="Entitlements.plist" />
+    <None Include="packages.config" />
+    <None Include="app.config" />
+    <None Include="pdfs\20161019-2123.pdf" />
+    <None Include="Web References\DynaPadService\DynaPadService.wsdl" />
+    <None Include="Web References\DynaPadService\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Main.cs" />
+    <Compile Include="AppDelegate.cs" />
+    <Compile Include="MasterViewController.cs" />
+    <Compile Include="MasterViewController.designer.cs">
+      <DependentUpon>MasterViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DetailViewController.cs" />
+    <Compile Include="DetailViewController.designer.cs">
+      <DependentUpon>DetailViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="JsonHandler.cs" />
+    <Compile Include="DynaElements.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="Controls\RingControl.cs" />
+    <Compile Include="Controls\RingView.cs" />
+    <Compile Include="DrawingEngine\CGContextExtensions.cs" />
+    <Compile Include="DrawingEngine\CGDrawingEngine.cs" />
+    <Compile Include="Helpers\CGMathExtensions.cs" />
+    <Compile Include="Helpers\CountableClosedRange.cs" />
+    <Compile Include="Helpers\Helpers.cs" />
+    <Compile Include="StrokeModel\Stroke.cs" />
+    <Compile Include="StrokeModel\StrokeCollection.cs" />
+    <Compile Include="StrokeModel\StrokeGestureRecognizer.cs" />
+    <Compile Include="StrokeModel\StrokeSample.cs" />
+    <Compile Include="StrokeModel\StrokeSegment.cs" />
+    <Compile Include="CanvasMainViewController.cs" />
+    <Compile Include="TextToSpeech.cs" />
+    <Compile Include="CommonFunctions.cs" />
+    <Compile Include="FingerPaintCanvasView.cs" />
+    <Compile Include="FingerPaintPolyline.cs" />
+    <Compile Include="FingerPaintViewController.cs" />
+    <Compile Include="FingerPaintViewController.designer.cs">
+      <DependentUpon>FingerPaintViewController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PickerDataModel.cs" />
+    <Compile Include="Web References\DynaPadService\Reference.cs">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\Circled Play-20.png" />
+    <BundleResource Include="Resources\Create New-20.png" />
+    <BundleResource Include="Resources\Plus-20.png" />
+    <BundleResource Include="Resources\Record-20.png" />
+    <BundleResource Include="Resources\Save-20.png" />
+    <BundleResource Include="Resources\Stop-20.png" />
+    <BundleResource Include="Resources\Video File-20.png" />
+    <BundleResource Include="Resources\Print-20.png" />
+    <BundleResource Include="Resources\Password-20.png" />
+    <BundleResource Include="Resources\Voice Recognition Scan-20.png" />
+    <BundleResource Include="Resources\Play-20.png" />
+    <BundleResource Include="Resources\Data Recovery-20.png" />
+    <BundleResource Include="Resources\Reuse-20.png" />
+    <BundleResource Include="Resources\Return-20.png" />
+    <BundleResource Include="Resources\Add Record-20.png" />
+    <BundleResource Include="dynapadscreenshot.png" />
+    <BundleResource Include="Settings.bundle\Root.plist" />
+    <BundleResource Include="John_Doe_True_sig_2017-05-09T10_59_08.gif" />
+    <BundleResource Include="telerikautocomplete.png" />
+    <BundleResource Include="dynapad_danestreet_screenshot.jpg" />
+    <BundleResource Include="Dane Street_COLOR.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ITunesArtwork Include="iTunesArtwork" />
+    <ITunesArtwork Include="iTunesArtwork%402x" />
+  </ItemGroup>
+  <ItemGroup>
+    <XamarinComponentReference Include="TextToSpeechPlugin">
+      <Version>1.0.2</Version>
+      <Visible>False</Visible>
+    </XamarinComponentReference>
+    <XamarinComponentReference Include="MediaPlugin">
+      <Version>1.0.1</Version>
+      <Visible>False</Visible>
+    </XamarinComponentReference>
+    <XamarinComponentReference Include="ConnectivityPlugin">
+      <Version>1.0.3</Version>
+      <Visible>False</Visible>
+    </XamarinComponentReference>
+    <XamarinComponentReference Include="mailkit">
+      <Version>1.16.0</Version>
+      <Visible>False</Visible>
+    </XamarinComponentReference>
+    <XamarinComponentReference Include="mimekit">
+      <Version>1.16.0</Version>
+      <Visible>False</Visible>
+    </XamarinComponentReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferences Include="Web References" />
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferenceUrl Include="http://test.dynadox.pro/dynawcfservice/DynaPadService.asmx?wsdl">
+      <UrlBehavior>Dynamic</UrlBehavior>
+      <RelPath>Web References\DynaPadService</RelPath>
+      <UpdateFromURL>http://test.dynadox.pro/dynawcfservice/DynaPadService.asmx?wsdl</UpdateFromURL>
+    </WebReferenceUrl>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="EmptyTextFile.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
+  <Import Project="..\packages\NETStandard.Library.2.0.0\build\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.0\build\NETStandard.Library.targets')" />
+  <Import Project="packages\NETStandard.Library.2.0.1\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('packages\NETStandard.Library.2.0.1\build\netstandard2.0\NETStandard.Library.targets')" />
+</Project>

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13196" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="H1p-Uh-vWS">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13173"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Master-->
+        <scene sceneID="pY4-Hu-kfo">
+            <objects>
+                <navigationController title="Master" id="RMx-3f-FxP" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="Pmd-2v-anx">
+                        <rect key="frame" x="0.0" y="20" width="600" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="331" kind="relationship" relationship="rootViewController" id="426"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="8fS-aE-onr" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-39" y="-633"/>
+        </scene>
+        <!--Detail-->
+        <scene sceneID="yUG-lL-AsK">
+            <objects>
+                <viewController title="Detail" id="JEX-9P-axG" customClass="DetailViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="SYR-Wa-9uf"/>
+                        <viewControllerLayoutGuide type="bottom" id="GAO-Cl-Wes"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="svH-Pt-448">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                    </view>
+                    <toolbarItems/>
+                    <navigationItem key="navigationItem" title="Detail" id="mOI-FS-AaM"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="FJe-Yq-33r" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="709" y="129"/>
+        </scene>
+        <!--Split View Controller-->
+        <scene sceneID="Nki-YV-4Qg">
+            <objects>
+                <splitViewController id="H1p-Uh-vWS" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <connections>
+                        <segue destination="RMx-3f-FxP" kind="relationship" relationship="masterViewController" id="BlO-5A-QYV"/>
+                        <segue destination="vC3-pB-5Vb" kind="relationship" relationship="detailViewController" id="Tll-UG-LXB"/>
+                    </connections>
+                    <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" id="637" key="view" animating="YES" hidesWhenStopped="YES">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    </activityIndicatorView>
+                </splitViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="cZU-Oi-B1e" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-856" y="-330"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="r7l-gg-dq7">
+            <objects>
+                <navigationController id="vC3-pB-5Vb" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" id="DjV-YW-jjY">
+                        <rect key="frame" x="0.0" y="20" width="600" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="JEX-9P-axG" kind="relationship" relationship="rootViewController" id="140"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="SLD-UC-DBI" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-45" y="129"/>
+        </scene>
+        <!--Title-->
+        <scene sceneID="330">
+            <objects>
+                <viewController id="331" customClass="MasterViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="328"/>
+                        <viewControllerLayoutGuide type="bottom" id="329"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="332">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <subviews/>
+                    </view>
+                    <navigationItem key="navigationItem" title="Title" id="380"/>
+                    <connections/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="333" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="692" y="-634"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="Lock" width="20" height="20"/>
+        <image name="Back" width="20" height="20"/>
+        <image name="Restore" width="20" height="20"/>
+        <image name="Close" width="20" height="20"/>
+        <image name="LockedBack" width="20" height="20"/>
+        <image name="Print" width="40" height="40"/>
+        <image name="CircledPlay" width="32" height="32"/>
+        <image name="QRecord" width="32" height="32"/>
+        <image name="Pause" width="32" height="32"/>
+        <image name="Play" width="32" height="32"/>
+        <image name="Save" width="32" height="32"/>
+        <image name="Stop" width="32" height="32"/>
+        <image name="CircledPause" width="32" height="32"/>
+        <image name="Record" width="64" height="64"/>
+        <image name="Dictation" width="32" height="32"/>
+        <image name="RecordRed" width="50" height="50"/>
+        <image name="Delete" width="32" height="32"/>
+        <image name="PlayGreen" width="48" height="48"/>
+        <image name="StopBlack" width="20" height="20"/>
+        <image name="CircledStop" width="48" height="48"/>
+        <image name="CircledPlayFill" width="29" height="29"/>
+        <image name="CircledPlayGreen" width="32" height="32"/>
+        <image name="CanvasClose" width="26" height="26"/>
+        <image name="Calligraphy" width="46" height="46"/>
+        <image name="Ink" width="42" height="42"/>
+        <image name="Debug" width="42" height="42"/>
+        <image name="Writing" width="32" height="32"/>
+        <image name="Email" width="40" height="40"/>
+        <image name="Close32" width="32" height="32"/>
+        <image name="Circled Play-20.png" width="20" height="20"/>
+        <image name="Create New-20.png" width="20" height="20"/>
+        <image name="Plus-20.png" width="20" height="20"/>
+        <image name="Record-20.png" width="20" height="20"/>
+        <image name="Save-20.png" width="20" height="20"/>
+        <image name="Stop-20.png" width="20" height="20"/>
+        <image name="Video File-20.png" width="20" height="20"/>
+        <image name="Print-20.png" width="20" height="20"/>
+        <image name="Password-20.png" width="20" height="20"/>
+        <image name="Voice Recognition Scan-20.png" width="20" height="20"/>
+        <image name="Play-20.png" width="20" height="20"/>
+        <image name="Data Recovery-20.png" width="20" height="20"/>
+        <image name="Reuse-20.png" width="20" height="20"/>
+        <image name="Return-20.png" width="20" height="20"/>
+        <image name="Add Record-20.png" width="20" height="20"/>
+        <image name="dynapadscreenshot.png" width="2048" height="1536"/>
+        <image name="John_Doe_True_sig_2017-05-09T10_59_08.gif" width="600" height="400"/>
+        <image name="telerikautocomplete.png" width="700" height="187"/>
+        <image name="dynapad_danestreet_screenshot.jpg" width="2048" height="1536"/>
+        <image name="Dane Street_COLOR.png" width="1937" height="833"/>
+    </resources>
+</document>
