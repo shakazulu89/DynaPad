@@ -69,7 +69,7 @@ namespace DynaPad
                     //string[] restorefiles = Directory.GetFiles(directoryname);
                     foreach (var file in Directory.GetFiles(directoryname))
                     {
-                        if ((File.GetCreationTime(file) - DateTime.Today).TotalDays > 2)
+                        if ((File.GetCreationTime(file) - DateTime.Today).TotalDays > 7)
                         {
                             File.Delete(file);
                         }

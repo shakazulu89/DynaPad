@@ -180,7 +180,7 @@ namespace DynaPad
 			{
                 //var bounds = base.TableView.Frame;
                 loadingOverlay = new LoadingOverlay(SplitViewController.View.Bounds);// { loadingLabelText = "Submitting Form..."};
-                loadingOverlay.SetText("Submitting form may take a few minutes. Please wait patiently...");
+                loadingOverlay.SetText("Submitting a form may take a few minutes. Please wait patiently...");
 				//mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
 				//mvc.Add(loadingOverlay);
                 SplitViewController.Add(loadingOverlay);
@@ -201,7 +201,14 @@ namespace DynaPad
 
 				if (SelectedAppointment.ApptLocationId == DynaClassLibrary.DynaClasses.LoginContainer.User.SelectedLocation.LocationId)
 				{
-					isValid |= password == DynaClassLibrary.DynaClasses.LoginContainer.User.DynaPassword;
+                    if (isDoctorForm)
+                    {
+                        isValid = true;
+                    }
+                    else
+                    {
+                        isValid |= password == DynaClassLibrary.DynaClasses.LoginContainer.User.DynaPassword;
+                    }
 				}
 
 				if (CrossConnectivity.Current.IsConnected)
@@ -209,13 +216,14 @@ namespace DynaPad
 					if (isValid && isSigned)
 					{
 						var finalJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
-                        var dds = new DynaPadService.DynaPadService(){ Timeout = 180000};
-                        var timeout = dds.Timeout;
+
+                        var dds = new DynaPadService.DynaPadService() { Timeout = 60000 };
 
 						dds.SubmitFormAnswers(CommonFunctions.GetUserConfig(), finalJson, true, isDoctorForm);
 
 						var filename = SelectedAppointment.ApptPatientName.Replace(" ", "_") + "_" + isDoctorForm + "_sig_" + DateTime.Now.ToString("s").Replace(":", "_") + ".gif";
 						var file = sig.GetImage(new CGSize(600, 400), true, true).AsPNG().ToArray();
+
 						var fileid = dds.SaveFile(CommonFunctions.GetUserConfig(), SelectedAppointment.ApptId, SelectedAppointment.ApptPatientId, SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId, filename, "Signature", "DynaPad", "", "", file, isDoctorForm, true);
 
                         if (fileid.StartsWith("error", StringComparison.CurrentCulture))
@@ -906,6 +914,11 @@ namespace DynaPad
                         return;
                     }
 
+                    if (rowData.IsShortcut)
+                    {
+                        DismissViewController(true, null);
+                    }
+
                     //"https://test.dynadox.pro/data/test.dynadox.pro/claimantfiles/37/361.pdf"
                     //var wkurl = new NSUrl("https://test.dynadox.pro/data/test.dynadox.pro/claimantfiles/darwinmeds.pdf");
                     //var wkurl = new NSUrl(rowData.MRPath.Replace("https", "http"));//"https://test.dynadox.pro/data/test.dynadox.pro/claimantfiles/darwinmeds.pdf"
@@ -913,11 +926,6 @@ namespace DynaPad
 
                     var sfViewController = new SFSafariViewController(wkurl);
                     PresentViewController(sfViewController, true, null);
-
-                    if (rowData.IsShortcut)
-                    {
-                        DismissViewController(true, null);
-                    }
                 }
             }
             catch (Exception ex)
@@ -1038,12 +1046,12 @@ namespace DynaPad
 		{
             try
 			{
-				var bounds = base.TableView.Frame;
-				loadingOverlay = new LoadingOverlay(bounds);
-				mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
-				mvc.Add(loadingOverlay);
+				//var bounds = base.TableView.Frame;
+				//loadingOverlay = new LoadingOverlay(bounds);
+				//mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
+				//mvc.Add(loadingOverlay);
 
-                var dds = new DynaPadService.DynaPadService() { Timeout = 180000};
+                var dds = new DynaPadService.DynaPadService() { Timeout = 60000 };
                 var origJson = dds.GetFiles(CommonFunctions.GetUserConfig(), SelectedAppointment.ApptId, SelectedAppointment.ApptPatientId, SelectedAppointment.ApptPatientName, SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId);
                 JsonHandler.OriginalFormJsonString = origJson;
                 SelectedAppointment.ApptMRFolders = JsonConvert.DeserializeObject<List<MRFolder>>(origJson);
@@ -1056,10 +1064,10 @@ namespace DynaPad
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
 				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
-            finally
-            {
-                loadingOverlay.Hide();
-            }
+            //finally
+            //{
+            //    loadingOverlay.Hide();
+            //}
 		}
 
 
@@ -1270,7 +1278,7 @@ namespace DynaPad
                             {
                                 if (CrossConnectivity.Current.IsConnected)
                                 {
-                                    var dds = new DynaPadService.DynaPadService() { Timeout = 180000};
+                                    var dds = new DynaPadService.DynaPadService() { Timeout = 60000 };
                                     var finalJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
                                     summaryFileName = dds.GenerateSummary(CommonFunctions.GetUserConfig(), finalJson);
                                     //SplitViewController.NavigationController.PopViewController(true);
@@ -1356,17 +1364,31 @@ namespace DynaPad
                             btnSubmit.SetTitle("Submit Form", UIControlState.Normal);
                             btnSubmit.TouchUpInside += (sender, e) =>
                             {
-                                var SubmitPrompt = UIAlertController.Create("Submit Form", "Please hand back the IPad to submit", UIAlertControllerStyle.Alert);
-                                SubmitPrompt.AddTextField((field) =>
+                                UIAlertController SubmitPrompt;
+
+                                if (IsDoctorForm)
                                 {
-                                    field.SecureTextEntry = true;
-                                    field.Placeholder = "Password";
-                                });
-                                SubmitPrompt.Add(messageLabel);
-                                SubmitPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => SubmitForm(SubmitPrompt.TextFields[0].Text, IsDoctorForm, sigPad)));
-                                SubmitPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
-                                        //Present Alert
-                                        PresentViewController(SubmitPrompt, true, null);
+                                    SubmitPrompt = UIAlertController.Create("Submit Form", "Submit the form?", UIAlertControllerStyle.Alert);
+                                    SubmitPrompt.Add(messageLabel);
+                                    SubmitPrompt.AddAction(UIAlertAction.Create("Yes", UIAlertActionStyle.Default, action => SubmitForm(null, IsDoctorForm, sigPad)));
+                                    SubmitPrompt.AddAction(UIAlertAction.Create("No", UIAlertActionStyle.Cancel, null));
+                                    //Present Alert
+                                    PresentViewController(SubmitPrompt, true, null);
+                                }
+                                else
+                                {
+                                    SubmitPrompt = UIAlertController.Create("Submit Form", "Please hand back the IPad to submit", UIAlertControllerStyle.Alert);
+                                    SubmitPrompt.AddTextField((field) =>
+                                    {
+                                        field.SecureTextEntry = true;
+                                        field.Placeholder = "Password";
+                                    });
+                                    SubmitPrompt.Add(messageLabel);
+                                    SubmitPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => SubmitForm(SubmitPrompt.TextFields[0].Text, IsDoctorForm, sigPad)));
+                                    SubmitPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
+                                    //Present Alert
+                                    PresentViewController(SubmitPrompt, true, null);
+                                }
                             };
 
                             rootSection.Add(sigPad);
@@ -1549,7 +1571,7 @@ namespace DynaPad
 						string[][] FormPresetNames = { };
 						//if (CrossConnectivity.Current.IsConnected)
 						//{
-							var dds = new DynaPadService.DynaPadService() { Timeout = 180000};
+                        var dds = new DynaPadService.DynaPadService() { Timeout = 60000 };
 							FormPresetNames = dds.GetAnswerPresets(CommonFunctions.GetUserConfig(), SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, true, SelectedAppointment.ApptLocationId);
 						//}
 						//else
@@ -1613,10 +1635,10 @@ namespace DynaPad
 
 						headSection.Add(presetsRoot);
 					}
-					else
-					{
-						NavigationItem.SetRightBarButtonItem(null, false);
-					}
+					//else
+					//{
+					//	NavigationItem.SetRightBarButtonItem(null, false);
+					//}
 
 					QuestionsView = new DynaMultiRootElement(SelectedAppointment.SelectedQForm.FormName + " - " + SelectedAppointment.ApptPatientName);
 					QuestionsView.Add(headSection);
@@ -2973,7 +2995,7 @@ namespace DynaPad
 					nsec.FooterView.Hidden = true;
 
 
-					var dds = new DynaPadService.DynaPadService() { Timeout = 180000};
+                    var dds = new DynaPadService.DynaPadService() { Timeout = 60000 };
 					var origJson = dds.GetFiles(CommonFunctions.GetUserConfig(), SelectedAppointment.ApptId, SelectedAppointment.ApptPatientId, SelectedAppointment.ApptPatientName, SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId);
 					JsonHandler.OriginalFormJsonString = origJson;
 					SelectedAppointment.ApptMRFolders = JsonConvert.DeserializeObject<List<MRFolder>>(origJson);
@@ -3867,7 +3889,7 @@ namespace DynaPad
 				{
 					if (isValid)
 					{
-						var dds = new DynaPadService.DynaPadService() { Timeout = 180000};
+                        var dds = new DynaPadService.DynaPadService() { Timeout = 60000 };
 						var deletedDictation = dds.DeleteDicatation(CommonFunctions.GetUserConfig(), dictation[3], formId, sectionId, SelectedAppointment.SelectedQForm.DoctorId);
 						NavigationController.DismissViewController(true, null);
 					}
@@ -4239,7 +4261,7 @@ namespace DynaPad
 					var dictationData = NSData.FromUrl(audioFilePath); //the path here can be a path to a video on the camera roll
 					var dictationArray = dictationData.ToArray();
 
-					var dds = new DynaPadService.DynaPadService() { Timeout = 180000};
+                    var dds = new DynaPadService.DynaPadService() { Timeout = 60000 };
 					//DynaPadService.DynaPadService dds = new DynaPadService.DynaPadService();
 					var dictationPath = dds.SaveDictation(CommonFunctions.GetUserConfig(), SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, true, SelectedAppointment.SelectedQForm.LocationId, sectionId + "_" + DateTime.Now.ToShortTimeString(), dictationArray);
 					//System.Console.WriteLine("Saving Recording {0}", audioFilePath);
@@ -4334,7 +4356,7 @@ namespace DynaPad
 					var fs = SelectedAppointment.SelectedQForm.FormSections.IndexOf(sectionQuestions);
 
 					var presetJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm.FormSections[fs]);
-					var dds = new DynaPadService.DynaPadService() { Timeout = 180000};
+                    var dds = new DynaPadService.DynaPadService() { Timeout = 60000 };
 					dds.SaveAnswerPreset(CommonFunctions.GetUserConfig(), SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, true, presetName, presetJson, SelectedAppointment.ApptLocationId, presetId);
 
 					if (presetId == null)
@@ -4389,7 +4411,7 @@ namespace DynaPad
 					var fs = SelectedAppointment.SelectedQForm.FormSections.IndexOf(sectionQuestions);
 
 					var presetJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm.FormSections[fs]);
-					var dds = new DynaPadService.DynaPadService() { Timeout = 180000};
+                    var dds = new DynaPadService.DynaPadService() { Timeout = 60000 };
 					dds.DeleteAnswerPreset(CommonFunctions.GetUserConfig(), SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, presetId);
 
 					//var mre = GetPreset(presetId, presetName, presetJson, fs, sectionId, presetGroup, sectionQuestions, presetSection, origS, isDoctorInput, nextbtn);

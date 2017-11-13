@@ -16,6 +16,7 @@ using CoreGraphics;
 using System.Threading.Tasks;
 //using MultiThreading.Controls;
 //using Syncfusion.SfBusyIndicator.iOS;
+using System.Linq;
 
 
 namespace DynaPad
@@ -250,7 +251,7 @@ namespace DynaPad
 					var dfElemet = (DynaFormRootElement)rElement;
 					DynaClassLibrary.DynaClasses.LoginContainer.User.SelectedLocation = DynaClassLibrary.DynaClasses.LoginContainer.User.Locations.Find(l => l.LocationId == dfElemet.MenuValue);
 
-					var dds = new DynaPadService.DynaPadService() { Timeout = 180000};
+                    var dds = new DynaPadService.DynaPadService() { Timeout = 60000};
 					//var locid = string.IsNullOrEmpty(Constants.DocLocID) ? "1" : Constants.DocLocID;
 					var locid = string.IsNullOrEmpty(DynaClassLibrary.DynaClasses.LoginContainer.User.SelectedLocation.LocationId) ? null : DynaClassLibrary.DynaClasses.LoginContainer.User.SelectedLocation.LocationId;
 					if (string.IsNullOrEmpty(locid))
@@ -828,7 +829,18 @@ namespace DynaPad
 			}
 		}
 
+
+
+        [Outlet]
+        public UIPopoverController DetailViewPopover { get; set; }
+
+        [Outlet]
+        public NSObject LastTappedButton { get; set; }
+
+        public UIPopoverController MainPopoverController { get; set; }
+
         UIBarButtonItem restorebtn;
+
 		public UIViewController GetFormService(RootElement rElement)
 		{
             try
@@ -995,44 +1007,124 @@ namespace DynaPad
                 string jsonEnding = IsDoctorForm ? "doctor" : "patient";
                 var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                 var directoryname = Path.Combine(documents, "DynaRestore");
-                var filename = Path.Combine(directoryname, SelectedAppointment.ApptId + "_" + SelectedAppointment.SelectedQForm.FormId + "_" + jsonEnding + ".json");
+                //var filename = Path.Combine(directoryname, SelectedAppointment.ApptId + "_" + SelectedAppointment.SelectedQForm.FormId + "_" + jsonEnding + ".json");
+                var fileidentity = SelectedAppointment.ApptId + "_" + SelectedAppointment.SelectedQForm.FormId + "_" + jsonEnding;
                 //var showrestore = false;
                 //UIBarButtonItem restorebtn = new UIBarButtonItem();
 
-                if (File.Exists(filename))
+                var backups = new DirectoryInfo(directoryname).GetFiles("*" + fileidentity + "*", SearchOption.AllDirectories).OrderByDescending(x => x.LastWriteTime);
+
+                if (backups.Any())
                 {
                     //showrestore = true;
 
-                    var restoreFile = File.ReadAllText(filename);
-                    var sourceJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
-                    var sourceJObject = JsonConvert.DeserializeObject<JObject>(sourceJson);
-                    var targetJObject = JsonConvert.DeserializeObject<JObject>(restoreFile);
+                    //if (!JToken.DeepEquals(sourceJObject, targetJObject))
+                    //{
+                    //    messageLabel = new UILabel();
+                    //    restorebtn = new UIBarButtonItem(UIImage.FromBundle("Restore"), UIBarButtonItemStyle.Bordered, delegate
+                    //    {
+                    //        //Create Alert
+                    //        var RestorePrompt = UIAlertController.Create("Restore Form", "Administrative use only. Please enter password to restore", UIAlertControllerStyle.Alert);
+                    //        RestorePrompt.AddTextField((field) =>
+                    //        {
+                    //            field.SecureTextEntry = true;
+                    //            field.Placeholder = "Password";
+                    //        });
 
-                    if (!JToken.DeepEquals(sourceJObject, targetJObject))
+                    //        RestorePrompt.Add(messageLabel);
+                    //        RestorePrompt.AddAction(UIAlertAction.Create("Restore", UIAlertActionStyle.Default, action => RestoreForm(RestorePrompt.TextFields[0].Text, restoreFile, IsDoctorForm, sourceJObject, targetJObject, sectionFormSections)));
+                    //        RestorePrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
+
+                    //        //Present Alert
+                    //        PresentViewController(RestorePrompt, true, null);
+                    //    });
+                    //}
+
+                    restorebtn = new UIBarButtonItem(UIImage.FromBundle("Restore"), UIBarButtonItemStyle.Bordered, delegate
                     {
-                        messageLabel = new UILabel();
-                        restorebtn = new UIBarButtonItem(UIImage.FromBundle("Restore"), UIBarButtonItemStyle.Bordered, delegate
+                        //var content = new UIViewController();
+
+                        var nlab = new UILabel(new CGRect(5, 5, 350, 50));
+                        nlab.Text = "Restore Form";
+
+                        var ncellHeader = new UITableViewCell(UITableViewCellStyle.Default, null);
+                        ncellHeader.Frame = new CGRect(0, 0, 350, 50);
+
+                        var nheadclosebtn = new UIButton(new CGRect(300, 5, 50, 50));
+                        nheadclosebtn.SetImage(UIImage.FromBundle("Close"), UIControlState.Normal);
+
+                        ncellHeader.ContentView.Add(nlab);
+                        ncellHeader.ContentView.Add(nheadclosebtn);
+
+                        var nsec = new Section(ncellHeader);
+                        nsec.FooterView = new UIView(new CGRect(0, 0, 0, 0));
+                        nsec.FooterView.Hidden = true;
+
+                        foreach (var fi in backups)
                         {
-                            //Create Alert
-                            var RestorePrompt = UIAlertController.Create("Restore Form", "Administrative use only. Please enter password to restore", UIAlertControllerStyle.Alert);
-                            RestorePrompt.AddTextField((field) =>
-                            {
-                                field.SecureTextEntry = true;
-                                field.Placeholder = "Password";
-                            });
+                            var btn = new UIButton(new CGRect(0, 0, 350, 50));
+                            btn.SetTitle(fi.CreationTime.ToString(), UIControlState.Normal);
+                            btn.SetTitleColor(UIColor.Blue, UIControlState.Normal);
+                            btn.TouchUpInside += delegate {
+                                DetailViewController.DismissViewController(true, null);
 
-                            RestorePrompt.Add(messageLabel);
-                            RestorePrompt.AddAction(UIAlertAction.Create("Restore", UIAlertActionStyle.Default, action => RestoreForm(RestorePrompt.TextFields[0].Text, restoreFile, IsDoctorForm, sourceJObject, targetJObject, sectionFormSections)));
-                            RestorePrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
+                                var restoreFile = File.ReadAllText(fi.FullName);
+                                var sourceJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
+                                var sourceJObject = JsonConvert.DeserializeObject<JObject>(sourceJson);
+                                var targetJObject = JsonConvert.DeserializeObject<JObject>(restoreFile);
 
-                            //Present Alert
-                            PresentViewController(RestorePrompt, true, null);
-                        });
-                    }
+                                LastTappedButton = btn;
+
+                                //Create Alert
+                                var RestorePrompt = UIAlertController.Create("Restore Form", "Administrative use only. Please enter password to restore", UIAlertControllerStyle.Alert);
+                                RestorePrompt.AddTextField((field) =>
+                                {
+                                    field.SecureTextEntry = true;
+                                    field.Placeholder = "Password";
+                                });
+
+                                RestorePrompt.Add(messageLabel);
+                                RestorePrompt.AddAction(UIAlertAction.Create("Restore", UIAlertActionStyle.Default, action => RestoreForm(RestorePrompt.TextFields[0].Text, restoreFile, IsDoctorForm, sourceJObject, targetJObject, sectionFormSections)));
+                                RestorePrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
+
+                                //Present Alert
+                                DetailViewController.PresentViewController(RestorePrompt, true, null);
+                            };
+
+                            //content.View.AddSubview(btn);
+                            nsec.Add(btn);
+                        }
+
+                        //DetailViewPopover = new UIPopoverController(content);
+                        //DetailViewPopover.PopoverContentSize = new CGSize(320, 320);
+                        //DetailViewPopover.DidDismiss += delegate { LastTappedButton = null; };
+
+                        //PresentViewController(content, true, null);
+                        //DetailViewPopover.PresentFromRect(DetailViewController.NavigationController.NavigationBar.Frame, DetailViewPopover, UIPopoverArrowDirection.Any, true);
+
+
+
+                          var nroo = new RootElement("Restore");
+                          nroo.Add(nsec);
+
+                          var ndia = new DialogViewController(nroo);
+                        ndia.TableView.ScrollEnabled = false;
+                          ndia.ModalInPopover = true;
+                        ndia.ModalPresentationStyle = UIModalPresentationStyle.FormSheet;
+                          ndia.PreferredContentSize = new CGSize(350, 300);
+
+                          nheadclosebtn.TouchUpInside += delegate
+                          {
+                            DetailViewController.DismissViewController(true, null);
+                          };
+
+                        DetailViewController.PresentViewController(ndia, true, null);
+                    });
+
 
                     DetailViewController.NavigationItem.SetRightBarButtonItem(restorebtn, true);
                 }
-
+                 
                 if (IsDoctorForm)
                 {
                     messageLabel = new UILabel();
@@ -1337,38 +1429,40 @@ namespace DynaPad
 						}
 					}
 
-					string jsonEnding = IsDoctorForm ? "doctor" : "patient";
-					var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-					var directoryname = Path.Combine(documents, "DynaRestore");
-					var filename = Path.Combine(directoryname, SelectedAppointment.ApptId + "_" + SelectedAppointment.SelectedQForm.FormId + "_" + jsonEnding + ".json");
+                    BackUp(IsDoctorForm);
 
-					var sourceJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
+					//string jsonEnding = IsDoctorForm ? "doctor" : "patient";
+					//var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+					//var directoryname = Path.Combine(documents, "DynaRestore");
+					//var filename = Path.Combine(directoryname, SelectedAppointment.ApptId + "_" + SelectedAppointment.SelectedQForm.FormId + "_" + jsonEnding + ".json");
 
-					if (File.Exists(filename))
-					{
-						var restoreFile = File.ReadAllText(filename);
-						var sourceJObject = JsonConvert.DeserializeObject<JObject>(sourceJson);
-						var targetJObject = JsonConvert.DeserializeObject<JObject>(restoreFile);
+					//var sourceJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
 
-						if (!JToken.DeepEquals(sourceJObject, targetJObject))
-						{
-							// Serialize object
-							//string restoreJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
-							//string jsonEnding = IsDoctorForm ? "doctor" : "patient";
-							// Save to file
-							//var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-							//var directoryname = Path.Combine(documents, "DynaRestore");
-							Directory.CreateDirectory(directoryname);
-							//var filename = Path.Combine(directoryname, SelectedAppointment.ApptId + "_" + SelectedAppointment.SelectedQForm.FormId + "_" + jsonEnding + ".json");
-							File.WriteAllText(filename, sourceJson);
-						}
+					//if (File.Exists(filename))
+					//{
+					//	var restoreFile = File.ReadAllText(filename);
+					//	var sourceJObject = JsonConvert.DeserializeObject<JObject>(sourceJson);
+					//	var targetJObject = JsonConvert.DeserializeObject<JObject>(restoreFile);
 
-					}
-					else
-					{
-						Directory.CreateDirectory(directoryname);
-						File.WriteAllText(filename, sourceJson);
-					}
+					//	if (!JToken.DeepEquals(sourceJObject, targetJObject))
+					//	{
+					//		// Serialize object
+					//		//string restoreJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
+					//		//string jsonEnding = IsDoctorForm ? "doctor" : "patient";
+					//		// Save to file
+					//		//var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+					//		//var directoryname = Path.Combine(documents, "DynaRestore");
+					//		Directory.CreateDirectory(directoryname);
+					//		//var filename = Path.Combine(directoryname, SelectedAppointment.ApptId + "_" + SelectedAppointment.SelectedQForm.FormId + "_" + jsonEnding + ".json");
+					//		File.WriteAllText(filename, sourceJson);
+					//	}
+
+					//}
+					//else
+					//{
+					//	Directory.CreateDirectory(directoryname);
+					//	File.WriteAllText(filename, sourceJson);
+					//}
 
 					//DetailViewController.Title = "Welcome to Dynapad";
 					DetailViewController.QuestionsView = null; //.Clear();
@@ -1978,6 +2072,8 @@ namespace DynaPad
 		void LoadSectionView(string sectionId, string sectionName, FormSection OrigSection, bool IsDoctorForm, Section sections = null) 		{
 			try
 			{
+                BackUp(IsDoctorForm);
+
 				ReloadData();
 				var btnNextSection = GetNextBtn(sections, IsDoctorForm);
 
@@ -2259,29 +2355,31 @@ namespace DynaPad
 						LoadSectionView(nextSectionQuestions.SectionId, nextSectionQuestions.SectionName, nextSectionQuestions, IsDoctorForm, sections);
 					}
 
-					string jsonEnding = IsDoctorForm ? "doctor" : "patient";
-					var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-					var directoryname = Path.Combine(documents, "DynaRestore");
-					var filename = Path.Combine(directoryname, SelectedAppointment.ApptId + "_" + SelectedAppointment.SelectedQForm.FormId + "_" + jsonEnding + ".json");
-					var sourceJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
+                    //BackUp(IsDoctorForm);
 
-					if (File.Exists(filename))
-					{
-						var restoreFile = File.ReadAllText(filename);
-						var sourceJObject = JsonConvert.DeserializeObject<JObject>(sourceJson);
-						var targetJObject = JsonConvert.DeserializeObject<JObject>(restoreFile);
+					//string jsonEnding = IsDoctorForm ? "doctor" : "patient";
+					//var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+					//var directoryname = Path.Combine(documents, "DynaRestore");
+					//var filename = Path.Combine(directoryname, SelectedAppointment.ApptId + "_" + SelectedAppointment.SelectedQForm.FormId + "_" + jsonEnding + ".json");
+					//var sourceJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
 
-						if (!JToken.DeepEquals(sourceJObject, targetJObject))
-						{
-							Directory.CreateDirectory(directoryname);
-							File.WriteAllText(filename, sourceJson);
-						}
-					}
-					else
-					{
-						Directory.CreateDirectory(directoryname);
-						File.WriteAllText(filename, sourceJson);
-					}
+					//if (File.Exists(filename))
+					//{
+					//	var restoreFile = File.ReadAllText(filename);
+					//	var sourceJObject = JsonConvert.DeserializeObject<JObject>(sourceJson);
+					//	var targetJObject = JsonConvert.DeserializeObject<JObject>(restoreFile);
+
+					//	if (!JToken.DeepEquals(sourceJObject, targetJObject))
+					//	{
+					//		Directory.CreateDirectory(directoryname);
+					//		File.WriteAllText(filename, sourceJson);
+					//	}
+					//}
+					//else
+					//{
+					//	Directory.CreateDirectory(directoryname);
+					//	File.WriteAllText(filename, sourceJson);
+					//}
 				};
 
 				return btnNextSection;
@@ -2294,6 +2392,42 @@ namespace DynaPad
 				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
+
+
+        void BackUp(bool IsDoctorForm)
+        {
+            string jsonEnding = IsDoctorForm ? "doctor" : "patient";
+            var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            var directoryname = Path.Combine(documents, "DynaRestore");
+            var fileidentity = SelectedAppointment.ApptId + "_" + SelectedAppointment.SelectedQForm.FormId + "_" + jsonEnding;
+            var filename = fileidentity + "_" + DateTime.Now.ToFileTimeUtc() + ".json";
+            var filefullpath = Path.Combine(directoryname, filename);
+            var sourceJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
+
+            var backups = new DirectoryInfo(directoryname).GetFiles("*" + fileidentity + "*", SearchOption.AllDirectories).OrderByDescending(x => x.LastWriteTime);
+
+            if (backups.Any())
+            {
+                var restoreFile = File.ReadAllText(backups.First().FullName);
+                var sourceJObject = JsonConvert.DeserializeObject<JObject>(sourceJson);
+                var targetJObject = JsonConvert.DeserializeObject<JObject>(restoreFile);
+
+                if (!JToken.DeepEquals(sourceJObject, targetJObject))
+                {
+                    foreach (var fi in backups.Skip(4))
+                    {
+                        fi.Delete();
+                    }
+
+                    File.WriteAllText(filefullpath, sourceJson);
+                }
+            }
+            else
+            {
+                Directory.CreateDirectory(directoryname);
+                File.WriteAllText(filefullpath, sourceJson);
+            }
+        }
 
 
 		//async void LoadReportView(string valueId, string sectionName, RootElement rt, string reportName)
