@@ -73,8 +73,14 @@ namespace DynaPad
 		{
 			base.ViewDidLoad();
 
-			Root.Caption = "Welcome to Dynapad";
-			Root.Add(new Section("Login to the app"));
+			//Root.Caption = "Welcome to Dynapad";
+            Root.Add(new Section("Login to the app")
+            {
+                FooterView = new UIView(new CGRect(0, 0, 0, 0))
+                {
+                    Hidden = true
+                }
+            });
 
 			base.TableView.CellLayoutMarginsFollowReadableWidth = false;
 			// Perform any additional setup after loading the view, typically from a nib.
@@ -1255,7 +1261,7 @@ namespace DynaPad
                             }
                             await Task.Delay(10);
 
-                            var summaryElement = new DynaMultiRootElement(SelectedAppointment.ApptFormName);
+                            var summaryElement = new DynaMultiRootElement(SelectedAppointment.ApptFormName + " - " + SelectedAppointment.ApptPatientName);
 
                             var summaryPaddedView = new PaddedUIView<UILabel>();
                             summaryPaddedView.Enabled = true;

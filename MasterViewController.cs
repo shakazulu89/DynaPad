@@ -105,15 +105,13 @@ namespace DynaPad
 						Title = NSBundle.MainBundle.LocalizedString("Menu", "Form Sections");
                         DetailViewController = (DetailViewController)((UINavigationController)SplitViewController.ViewControllers[1]).ViewControllers[0];//.TopViewController;
 						DetailViewController.Root.Clear();
-						DetailViewController.Root.Add(new Section("Logged in")
+                        DetailViewController.Root.Add(new Section("Select a location from the left menu")
 						{
 							FooterView = new UIView(new CGRect(0, 0, 0, 0))
 							{
 								Hidden = true
 							}
 						});
-						//DetailViewController.Root.Add(new Section("Logged in"));
-
 
 						DynaLocations();
 						//DynaStart();
@@ -263,6 +261,7 @@ namespace DynaPad
 					myDynaMenu = JsonConvert.DeserializeObject<Menu>(menujson);
 					DetailViewController.DynaMenu = myDynaMenu;
 
+                    DetailViewController.Root.Clear();
 
 					var rootMainMenu = new DynaFormRootElement(myDynaMenu.MenuCaption); 
 					rootMainMenu.UnevenRows = true;
@@ -572,14 +571,14 @@ namespace DynaPad
 				  DetailViewController.QuestionsView = null; //.Clear();
 				  DetailViewController.NavigationItem.RightBarButtonItem = null;
 					  DetailViewController.Root.Clear();
-					  DetailViewController.Root.Add(new Section("Logged in")
-					  {
-						  FooterView = new UIView(new CGRect(0, 0, 0, 0))
-						  {
-							  Hidden = true
-						  }
-					  });
-					  DetailViewController.Root.Caption = "Welcome to Dynapad";
+					  //DetailViewController.Root.Add(new Section("Logged in")
+					  //{
+						 // FooterView = new UIView(new CGRect(0, 0, 0, 0))
+						 // {
+							//  Hidden = true
+						 // }
+					  //});
+					  DetailViewController.Root.Caption = "";
 					  DetailViewController.ReloadData();
 
 					  NavigationController.PopViewController(true);
@@ -660,13 +659,13 @@ namespace DynaPad
 					  DetailViewController.QuestionsView = null; //.Clear();
 					  DetailViewController.NavigationItem.RightBarButtonItem = null;
 						  DetailViewController.Root.Clear();
-						  DetailViewController.Root.Add(new Section("Logged in")
-						  {
-							  FooterView = new UIView(new CGRect(0, 0, 0, 0))
-							  {
-								  Hidden = true
-							  }
-						  });
+						  //DetailViewController.Root.Add(new Section("Logged in")
+						  //{
+							 // FooterView = new UIView(new CGRect(0, 0, 0, 0))
+							 // {
+								//  Hidden = true
+							 // }
+						  //});
 						  DetailViewController.Root.Caption = SelectedAppointment.ApptFormName + " - " + SelectedAppointment.ApptPatientName;
 						  DetailViewController.ReloadData();
 
@@ -758,14 +757,14 @@ namespace DynaPad
 						  DetailViewController.QuestionsView = null; //.Clear();
 						  DetailViewController.NavigationItem.RightBarButtonItem = null;
 							  DetailViewController.Root.Clear();
-							  DetailViewController.Root.Add(new Section("Logged in")
-							  {
-								  FooterView = new UIView(new CGRect(0, 0, 0, 0))
-								  {
-									  Hidden = true
-								  }
-							  });
-							  DetailViewController.Root.Caption = "Welcome to Dynapad";
+							  //DetailViewController.Root.Add(new Section("Logged in")
+							  //{
+								 // FooterView = new UIView(new CGRect(0, 0, 0, 0))
+								 // {
+									//  Hidden = true
+								 // }
+							  //});
+                              DetailViewController.Root.Caption = "";
 							  DetailViewController.ReloadData();
 
 							  NavigationController.PopViewController(true);
@@ -805,14 +804,14 @@ namespace DynaPad
 				{
 					DetailViewController.NavigationItem.RightBarButtonItem = null;
 					DetailViewController.Root.Clear();
-					DetailViewController.Root.Add(new Section("Logged in")
-					{
-						FooterView = new UIView(new CGRect(0, 0, 0, 0))
-						{
-							Hidden = true
-						}
-					});
-					DetailViewController.Root.Caption = "Welcome to Dynapad";
+					//DetailViewController.Root.Add(new Section("Logged in")
+					//{
+						//FooterView = new UIView(new CGRect(0, 0, 0, 0))
+						//{
+						//	Hidden = true
+						//}
+                    //});
+                    DetailViewController.Root.Caption = "";
 					DetailViewController.ReloadData();
 
 					NavigationController.PopViewController(true);
@@ -1467,15 +1466,17 @@ namespace DynaPad
 					//DetailViewController.Title = "Welcome to Dynapad";
 					DetailViewController.QuestionsView = null; //.Clear();
 					DetailViewController.Root.Clear();
-					DetailViewController.Root.Add(new Section("Logged in") 
-                    {
-                        FooterView = new UIView(new CGRect(0, 0, 0, 0))
-                        {
-                            Hidden = true
-                        }
-                    });
-					DetailViewController.Root.Caption = "Welcome to Dynapad";
-					//DetailViewController.NavigationItem.SetLeftBarButtonItem(null, true);
+					//DetailViewController.Root.Add(new Section("Logged in") 
+                    //{
+                    //    FooterView = new UIView(new CGRect(0, 0, 0, 0))
+                    //    {
+                    //        Hidden = true
+                    //    }
+                    //});
+                    //DetailViewController.Root.Caption = "Welcome to Dynapad";
+                    DetailViewController.Root.Caption = SelectedAppointment.ApptFormName + " - " + SelectedAppointment.ApptPatientName;
+					
+                    //DetailViewController.NavigationItem.SetLeftBarButtonItem(null, true);
 					//DetailViewController.NavigationItem.SetRightBarButtonItems(null, true);
 					DetailViewController.NavigationItem.LeftBarButtonItems = null;
 					DetailViewController.NavigationItem.RightBarButtonItems = null;
@@ -2007,14 +2008,14 @@ namespace DynaPad
 
                         DetailViewController.QuestionsView = null; //.Clear();
     					DetailViewController.Root.Clear();
-                        DetailViewController.Root.Add(new Section("Logged in")
-                        {
-                            FooterView = new UIView(new CGRect(0, 0, 0, 0))
-                            {
-                                Hidden = true
-                            }
-                        });
-                        DetailViewController.Root.Caption = "Welcome to Dynapad";
+                        //DetailViewController.Root.Add(new Section("Logged in")
+                        //{
+                        //    FooterView = new UIView(new CGRect(0, 0, 0, 0))
+                        //    {
+                        //        Hidden = true
+                        //    }
+                        //});
+                        DetailViewController.Root.Caption = "";
                         DetailViewController.NavigationItem.LeftBarButtonItems = null;
                         DetailViewController.NavigationItem.RightBarButtonItems = null;
                         DetailViewController.ReloadData();
@@ -2438,14 +2439,14 @@ namespace DynaPad
 				{
 					DetailViewController.NavigationItem.RightBarButtonItem = null;
 					DetailViewController.Root.Clear();
-					DetailViewController.Root.Add(new Section("Logged in")
-					{
-						FooterView = new UIView(new CGRect(0, 0, 0, 0))
-						{
-							Hidden = true
-						}
-					});
-					DetailViewController.Root.Caption = "Welcome to Dynapad";
+					//DetailViewController.Root.Add(new Section("Logged in")
+					//{
+					//	FooterView = new UIView(new CGRect(0, 0, 0, 0))
+					//	{
+					//		Hidden = true
+					//	}
+                    //});
+                    DetailViewController.Root.Caption = SelectedAppointment.ApptFormName + " - " + SelectedAppointment.ApptPatientName;
 					DetailViewController.ReloadData();
 
 					NavigationController.PopViewController(true);
@@ -2489,14 +2490,14 @@ namespace DynaPad
 				{
 					DetailViewController.NavigationItem.RightBarButtonItem = null;
 					DetailViewController.Root.Clear();
-					DetailViewController.Root.Add(new Section("Logged in")
-					{
-						FooterView = new UIView(new CGRect(0, 0, 0, 0))
-						{
-							Hidden = true
-						}
-					});
-					DetailViewController.Root.Caption = "Welcome to Dynapad";
+					//DetailViewController.Root.Add(new Section("Logged in")
+					//{
+						//FooterView = new UIView(new CGRect(0, 0, 0, 0))
+						//{
+						//	Hidden = true
+						//}
+                    //});
+                    DetailViewController.Root.Caption = "";
 					DetailViewController.ReloadData();
 
 					NavigationController.PopViewController(true);

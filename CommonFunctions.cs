@@ -7,6 +7,7 @@ using UIKit;
 using MailKit.Net.Smtp;
 using MailKit;
 using MimeKit;
+using CoreGraphics;
 
 namespace DynaPad
 {
@@ -116,7 +117,13 @@ namespace DynaPad
 
         public static Section ErrorDetailSection()
         {
-            var ErrorSection = new Section("Error. Please retry. If issue persists, contact support.");
+            var ErrorSection = new Section("Error. Please retry. If issue persists, contact support.")
+            {
+                FooterView = new UIView(new CGRect(0, 0, 0, 0))
+                {
+                    Hidden = true
+                }
+            };
             return ErrorSection;
         }
 
