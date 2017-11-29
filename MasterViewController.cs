@@ -1320,7 +1320,7 @@ namespace DynaPad
 			try
             {
                 loadingOverlay = new LoadingOverlay(SplitViewController.View.Bounds);
-                var loadmes = save ? "Saveing form. Please wait patiently..." : "Exiting form...";
+                var loadmes = save ? "Saving form. Please wait patiently..." : "Exiting form...";
                 loadingOverlay.SetText(loadmes);
                 SplitViewController.Add(loadingOverlay);
 
