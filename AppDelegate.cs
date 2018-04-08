@@ -3,6 +3,7 @@ using System.IO;
 using Foundation;
 using HockeyApp.iOS;
 using UIKit;
+using UserNotifications;
 
 namespace DynaPad
 {
@@ -11,7 +12,8 @@ namespace DynaPad
 	[Register("AppDelegate")]
 	public class AppDelegate : UIApplicationDelegate, IUISplitViewControllerDelegate
 	{
-		// class-level declarations
+        // class-level declarations
+        public Action BackgroundSessionCompletionHandler { get; set; }
 
 		public override UIWindow Window
 		{
@@ -24,6 +26,12 @@ namespace DynaPad
 		//"These show the two sets of APIs\n" +
 		//"available in MonoTouch.Dialogs";
 
+        public override void HandleEventsForBackgroundUrl(UIApplication application, string sessionIdentifier, Action completionHandler)
+        {
+            Console.WriteLine("HandleEventsForBackgroundUrl(in AppDelegate)");
+            BackgroundSessionCompletionHandler = completionHandler;
+        }
+
 		public override bool FinishedLaunching(UIApplication application, NSDictionary launchOptions)
 		{
 			var manager = BITHockeyManager.SharedHockeyManager;
@@ -32,6 +40,11 @@ namespace DynaPad
 			//manager.DisableUpdateManager = true;
 			manager.StartManager();
 			manager.Authenticator.AuthenticateInstallation(); // This line is obsolete in crash only builds
+
+            // Request notification permissions from the user
+            UNUserNotificationCenter.Current.RequestAuthorization(UNAuthorizationOptions.Alert, (approved, err) => {
+                // Handle approval
+            });
 
    //         System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
    //         timer.Start();
@@ -74,6 +87,10 @@ namespace DynaPad
                             File.Delete(file);
                         }
                     }
+                }
+                else
+                {
+                    Directory.CreateDirectory(directoryname);
                 }
             }
             catch(Exception ex)

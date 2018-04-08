@@ -5,7 +5,7 @@ using MonoTouch.Dialog;
 //using DynaClassLibrary;
 using UIKit;
 using MailKit.Net.Smtp;
-using MailKit;
+//using MailKit;
 using MimeKit;
 using CoreGraphics;
 
@@ -68,7 +68,7 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-                CommonFunctions.sendErrorEmail(ex);
+                sendErrorEmail(ex);
                 return null;
 				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
@@ -173,7 +173,7 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-				Console.WriteLine(ex.Message);
+				//Console.WriteLine(ex.Message);
             }
         }
 
@@ -236,7 +236,7 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
-                Console.WriteLine(ex.Message);
+                //Console.WriteLine(ex.Message);
             }
 
 		}

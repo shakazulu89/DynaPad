@@ -30,11 +30,10 @@
     <PlatformTarget>x86</PlatformTarget>
     <DeviceSpecificBuild>false</DeviceSpecificBuild>
     <MtouchI18n>west</MtouchI18n>
-<MtouchSdkVersion></MtouchSdkVersion>
 <CodesignEntitlements></CodesignEntitlements>
 <CodesignProvision></CodesignProvision>
         <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-  </PropertyGroup>
+<RunCodeAnalysis>true</RunCodeAnalysis>  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <Optimize>true</Optimize>
     <OutputPath>bin\iPhone\Release</OutputPath>
@@ -55,7 +54,7 @@
     <MtouchDebug>false</MtouchDebug>
         <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
         <MtouchExtraArgs>--registrar:static</MtouchExtraArgs>
-  </PropertyGroup>
+<RunCodeAnalysis>true</RunCodeAnalysis>  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
     <Optimize>true</Optimize>
     <OutputPath>bin\iPhoneSimulator\Release</OutputPath>
@@ -71,7 +70,7 @@
     <PlatformTarget>x86</PlatformTarget>
         <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
         <MtouchExtraArgs>--registrar:static</MtouchExtraArgs>
-  </PropertyGroup>
+<RunCodeAnalysis>true</RunCodeAnalysis>  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -92,12 +91,11 @@
     <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
     <MtouchTlsProvider>Default</MtouchTlsProvider>
     <PlatformTarget>x86</PlatformTarget>
-    <MtouchSdkVersion></MtouchSdkVersion>
     <CodesignProvision></CodesignProvision>
     <MtouchNoSymbolStrip>false</MtouchNoSymbolStrip>
 <IOSDebugOverWiFi>false</IOSDebugOverWiFi>
         <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-  </PropertyGroup>
+<RunCodeAnalysis>true</RunCodeAnalysis>  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AdHoc|AnyCPU' ">
     <Optimize>true</Optimize>
     <OutputPath>bin\AdHoc</OutputPath>
@@ -107,9 +105,8 @@
     <MtouchArch>ARMv7, ARMv7s, ARM64</MtouchArch>
     <CodesignProvision></CodesignProvision>
     <MtouchLink>SdkOnly</MtouchLink>
-    <MtouchSdkVersion></MtouchSdkVersion>
         <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-  </PropertyGroup>
+<RunCodeAnalysis>true</RunCodeAnalysis>  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
@@ -211,6 +208,9 @@
     </Reference>
     <Reference Include="HtmlAgilityPack">
       <HintPath>packages\HtmlAgilityPack.1.6.4\lib\netstandard2.0\HtmlAgilityPack.dll</HintPath>
+    </Reference>
+    <Reference Include="ToastIOS">
+      <HintPath>..\..\..\Downloads\ToastIOS-1.6\lib\ios-unified\ToastIOS.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -512,7 +512,8 @@
     <None Include="packages.config" />
     <None Include="app.config" />
     <None Include="pdfs\20161019-2123.pdf" />
-    <None Include="Web References\DynaPadService\DynaPadService.wsdl" />
+    <None Include="Web References\DynaPadService\dynapadservice.wsdl" />
+    <None Include="Web References\DynaPadService\dynapadservice.disco" />
     <None Include="Web References\DynaPadService\Reference.map">
       <Generator>MSDiscoCodeGenerator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
@@ -586,39 +587,17 @@
     <ITunesArtwork Include="iTunesArtwork%402x" />
   </ItemGroup>
   <ItemGroup>
-    <XamarinComponentReference Include="TextToSpeechPlugin">
-      <Version>1.0.2</Version>
-      <Visible>False</Visible>
-    </XamarinComponentReference>
-    <XamarinComponentReference Include="MediaPlugin">
-      <Version>1.0.1</Version>
-      <Visible>False</Visible>
-    </XamarinComponentReference>
-    <XamarinComponentReference Include="ConnectivityPlugin">
-      <Version>1.0.3</Version>
-      <Visible>False</Visible>
-    </XamarinComponentReference>
-    <XamarinComponentReference Include="mailkit">
-      <Version>1.16.0</Version>
-      <Visible>False</Visible>
-    </XamarinComponentReference>
-    <XamarinComponentReference Include="mimekit">
-      <Version>1.16.0</Version>
-      <Visible>False</Visible>
-    </XamarinComponentReference>
+    <EmbeddedResource Include="EmptyTextFile.txt" />
   </ItemGroup>
   <ItemGroup>
     <WebReferences Include="Web References" />
   </ItemGroup>
   <ItemGroup>
-    <WebReferenceUrl Include="http://test.dynadox.pro/dynawcfservice/DynaPadService.asmx?wsdl">
+    <WebReferenceUrl Include="http://www.dynadox.pro/dynawcfservice/dynapadservice.asmx">
       <UrlBehavior>Dynamic</UrlBehavior>
       <RelPath>Web References\DynaPadService</RelPath>
-      <UpdateFromURL>http://test.dynadox.pro/dynawcfservice/DynaPadService.asmx?wsdl</UpdateFromURL>
+      <UpdateFromURL>http://www.dynadox.pro/dynawcfservice/dynapadservice.asmx</UpdateFromURL>
     </WebReferenceUrl>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="EmptyTextFile.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <Import Project="..\packages\NETStandard.Library.2.0.0\build\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.0\build\NETStandard.Library.targets')" />

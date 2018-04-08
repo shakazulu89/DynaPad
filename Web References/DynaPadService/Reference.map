@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <DiscoveryClientResultsFile xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <Results>
-    <DiscoveryClientResult referenceType="System.Web.Services.Discovery.ContractReference" url="http://test.dynadox.pro/dynawcfservice/DynaPadService.asmx?wsdl" filename="DynaPadService.wsdl" />
+    <DiscoveryClientResult referenceType="System.Web.Services.Discovery.ContractReference" url="http://www.dynadox.pro/dynawcfservice/dynapadservice.asmx?wsdl" filename="dynapadservice.wsdl" />
+    <DiscoveryClientResult referenceType="System.Web.Services.Discovery.DiscoveryDocumentReference" url="http://www.dynadox.pro/dynawcfservice/dynapadservice.asmx?disco" filename="dynapadservice.disco" />
   </Results>
 </DiscoveryClientResultsFile>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UIKit;
 using System.Threading.Tasks;
+using DynaPad.DynaPadService;
 
 namespace DynaPad
 {
@@ -195,7 +196,8 @@ public class MR
 	public string MRPatientId { get; set; }
 	public string MRPath { get; set; }
 	public string MRFileType { get; set; }
-	public bool IsShortcut { get; set; }
+    public bool IsShortcut { get; set; }
+    public bool IsLocal { get; set; }
 }
 
 
@@ -313,4 +315,22 @@ public class QForm
 	//{
 	//	throw new NotImplementedException();
 	//}
+}
+
+//{ presetFormId, presetDoctorId, presetLocationId, presetSectionId, presetName, presetJson, presetId, domainConfig.DomainRootPathPhysical + presetPath }
+
+public class DynaPreset
+{
+    public string UserId { get; set; }
+    public ConfigurationObjects UserConfig { get; set; }
+    public string FormId { get; set; }
+    public string DoctorId { get; set; }
+    public string LocationId { get; set; }
+    public string SectionId { get; set; }
+    public string PresetName { get; set; }
+    public string PresetJson { get; set; }
+    public string PresetId { get; set; }
+    public string PresetFileUrl { get; set; }
+    public string DateCreated { get; set; }
+    public string DateUpdated { get; set; }
 }

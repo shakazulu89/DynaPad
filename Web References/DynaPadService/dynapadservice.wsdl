@@ -112,7 +112,6 @@
             <s:element minOccurs="0" maxOccurs="1" name="formId" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="sectionId" type="s:string" />
             <s:element minOccurs="0" maxOccurs="1" name="doctorId" type="s:string" />
-            <s:element minOccurs="1" maxOccurs="1" name="isDocInput" type="s:boolean" />
             <s:element minOccurs="0" maxOccurs="1" name="locationId" type="s:string" />
           </s:sequence>
         </s:complexType>
@@ -138,15 +137,14 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="0" maxOccurs="1" name="domainConfig" type="tns:ConfigurationObjects" />
-            <s:element minOccurs="0" maxOccurs="1" name="formId" type="s:string" />
-            <s:element minOccurs="1" maxOccurs="1" name="isDocInput" type="s:boolean" />
+            <s:element minOccurs="0" maxOccurs="1" name="doctorId" type="s:string" />
           </s:sequence>
         </s:complexType>
       </s:element>
       <s:element name="GetAllAnswerPresetsResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="GetAllAnswerPresetsResult" type="tns:ArrayOfArrayOfString" />
+            <s:element minOccurs="0" maxOccurs="1" name="GetAllAnswerPresetsResult" type="s:string" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -260,6 +258,21 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="0" maxOccurs="1" name="GetFormDictationsResult" type="tns:ArrayOfArrayOfString" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetAllAutoBoxData">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="rootPhysical" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="rootVirtual" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetAllAutoBoxDataResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetAllAutoBoxDataResult" type="s:string" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -530,6 +543,12 @@
   <wsdl:message name="GetFormDictationsSoapOut">
     <wsdl:part name="parameters" element="tns:GetFormDictationsResponse" />
   </wsdl:message>
+  <wsdl:message name="GetAllAutoBoxDataSoapIn">
+    <wsdl:part name="parameters" element="tns:GetAllAutoBoxData" />
+  </wsdl:message>
+  <wsdl:message name="GetAllAutoBoxDataSoapOut">
+    <wsdl:part name="parameters" element="tns:GetAllAutoBoxDataResponse" />
+  </wsdl:message>
   <wsdl:message name="GenerateIME4SoapIn">
     <wsdl:part name="parameters" element="tns:GenerateIME4" />
   </wsdl:message>
@@ -656,6 +675,10 @@
     <wsdl:operation name="GetFormDictations">
       <wsdl:input message="tns:GetFormDictationsSoapIn" />
       <wsdl:output message="tns:GetFormDictationsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetAllAutoBoxData">
+      <wsdl:input message="tns:GetAllAutoBoxDataSoapIn" />
+      <wsdl:output message="tns:GetAllAutoBoxDataSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="GenerateIME4">
       <wsdl:input message="tns:GenerateIME4SoapIn" />
@@ -813,6 +836,15 @@
     </wsdl:operation>
     <wsdl:operation name="GetFormDictations">
       <soap:operation soapAction="http://tempuri.org/GetFormDictations" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetAllAutoBoxData">
+      <soap:operation soapAction="http://tempuri.org/GetAllAutoBoxData" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -1048,6 +1080,15 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="GetAllAutoBoxData">
+      <soap12:operation soapAction="http://tempuri.org/GetAllAutoBoxData" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="GenerateIME4">
       <soap12:operation soapAction="http://tempuri.org/GenerateIME4" style="document" />
       <wsdl:input>
@@ -1168,10 +1209,10 @@
   </wsdl:binding>
   <wsdl:service name="DynaPadService">
     <wsdl:port name="DynaPadServiceSoap" binding="tns:DynaPadServiceSoap">
-      <soap:address location="http://test.dynadox.pro/dynawcfservice/DynaPadService.asmx" />
+      <soap:address location="http://www.dynadox.pro/dynawcfservice/dynapadservice.asmx" />
     </wsdl:port>
     <wsdl:port name="DynaPadServiceSoap12" binding="tns:DynaPadServiceSoap12">
-      <soap12:address location="http://test.dynadox.pro/dynawcfservice/DynaPadService.asmx" />
+      <soap12:address location="http://www.dynadox.pro/dynawcfservice/dynapadservice.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>
