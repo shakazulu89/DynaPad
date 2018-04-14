@@ -22,7 +22,7 @@ namespace DynaPad
 			
 			try
 			{
-				var UserConfig = new DynaPadService.ConfigurationObjects()
+				var UserConfig = new DynaPadService.ConfigurationObjects
 				{
 					EmailSupport = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailSupport,
 					EmailPostmaster = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailPostmaster,

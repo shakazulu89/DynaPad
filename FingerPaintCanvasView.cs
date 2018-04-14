@@ -69,7 +69,7 @@ namespace DynaPad
 			foreach (UITouch touch in touches.Cast<UITouch>())
 			{
 				// Create a FingerPaintPolyline, set the initial point, and store it
-				FingerPaintPolyline polyline = new FingerPaintPolyline
+				var polyline = new FingerPaintPolyline
 				{
 					Color = StrokeColor,
 					StrokeWidth = StrokeWidth,
@@ -158,7 +158,7 @@ namespace DynaPad
 		{
 			UIGraphics.BeginImageContextWithOptions(view.Bounds.Size, view.Opaque, 1);
 			view.DrawViewHierarchy(view.Frame, true); //this was key line
-			UIImage img = UIGraphics.GetImageFromCurrentImageContext();
+			var img = UIGraphics.GetImageFromCurrentImageContext();
 			UIGraphics.EndImageContext();
 
 			return img;

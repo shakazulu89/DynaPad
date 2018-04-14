@@ -105,7 +105,7 @@ namespace DynaPad
 
 			scrollView = new UIScrollView(bounds)
 			{
-				AutoresizingMask = flexibleDimensions,
+				AutoresizingMask = flexibleDimensions
 				//BackgroundColor = UIColor.Red
 			};
 
@@ -156,7 +156,7 @@ namespace DynaPad
 				filename = MREditName + "_" + "edit" + "_" + DateTime.Now.ToString("s").Replace(":", "_") + ".jpg";
 				//var img = UIImage.FromFile("dynapadscreenshot.png");
 
-				UIImage img = new UIImage();
+				var img = new UIImage();
 				switch (MREditType)
 				{
 					case "jpg":
@@ -321,7 +321,7 @@ namespace DynaPad
 			var ass2 = cgView.StrokeCollection;
 			var hole = strokeCollection;
 			cgView.StrokeCollection = strokeCollection;
-			UIImage im = AsImage(canvasContainerView);
+			var im = AsImage(canvasContainerView);
 			if (CrossConnectivity.Current.IsConnected)
 			{
 
@@ -347,7 +347,7 @@ namespace DynaPad
 
 				//bw.RunWorkerAsync();
 
-				byte[] editArr = im.AsJPEG(0.5f).ToArray();
+				var editArr = im.AsJPEG(0.5f).ToArray();
 
 				var dps = new DynaPadService.DynaPadService();
 				//byte[] saveArr = MREditType == "jpg" ? editArr : dps.ConvertToType(CommonFunctions.GetUserConfig(), editArr, MREditType);
@@ -364,7 +364,7 @@ namespace DynaPad
 		{
 			UIGraphics.BeginImageContextWithOptions(view.Bounds.Size, view.Opaque, 1);
 			view.DrawViewHierarchy(view.Frame, true); //this was key line
-			UIImage img = UIGraphics.GetImageFromCurrentImageContext();
+			var img = UIGraphics.GetImageFromCurrentImageContext();
 			UIGraphics.EndImageContext();
 
 			return img;

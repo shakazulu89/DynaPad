@@ -47,7 +47,7 @@ using CGRect = global::System.Drawing.RectangleF;
 
 namespace DynaPad
 {
-    
+
     public class CanvasContainerView : UIView
     {
         UIView canvasView;
@@ -246,14 +246,14 @@ namespace DynaPad
                 }
                 else
                 {
-                    var loginDetails = new LoginScreenFaultDetails() { CommonErrorMessage = "Internet connection is required to login" };
+                    var loginDetails = new LoginScreenFaultDetails { CommonErrorMessage = "Internet connection is required to login" };
                     failCallback(loginDetails);
                 }
             }
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                var exceptionLoginDetails = new LoginScreenFaultDetails() { CommonErrorMessage = "Error. An exception occured. If issue persists contact support." };
+                var exceptionLoginDetails = new LoginScreenFaultDetails { CommonErrorMessage = "Error. An exception occured. If issue persists contact support." };
                 failCallback(exceptionLoginDetails);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
             }
@@ -344,7 +344,7 @@ namespace DynaPad
                         // Wait 3 seconds, to simulate some network activity
                         NSTimer.CreateScheduledTimer(1, delegate
                         {
-                            
+
                             //root[0].Add(new StringElement("Added " + (++i)));
                             //this.ViewDidLoad();
                             //this.ReloadData();
@@ -431,7 +431,7 @@ namespace DynaPad
                         // Wait 3 seconds, to simulate some network activity
                         NSTimer.CreateScheduledTimer(1, delegate
                         {
-                            
+
                             //MasterViewController.DynaStart();
                             //MasterViewController.NavigationController.PopToRootViewController(true);
                             //MasterViewController.TableView.SetNeedsDisplay();
@@ -519,6 +519,9 @@ namespace DynaPad
         public bool vsection;
         public bool vquestion;
         public bool mrdownload;
+        public bool fileupload;
+        public bool IsSelectedReport;
+
         //public bool selected = false;
         //public NSIndexPath prevsel;
 
@@ -576,6 +579,16 @@ namespace DynaPad
             if (mrdownload)
             {
                 cell.BackgroundColor = UIColor.FromRGB(232, 247, 238);
+            }
+
+            if (fileupload)
+            {
+                cell.BackgroundColor = UIColor.FromRGB(100, 202, 90);
+            }
+
+            if (IsSelectedReport)
+            {
+                cell.BackgroundColor = UIColor.FromRGB(133, 203, 51);
             }
 
             // The check is needed because the cell might have been recycled.
@@ -794,9 +807,9 @@ namespace DynaPad
 
                     NSMutableAttributedString AttributedText;
 
-                    var reqStringAttributes = new UIStringAttributes() { ForegroundColor = Enabled ? UIColor.Red : UIColor.LightGray };
+                    var reqStringAttributes = new UIStringAttributes { ForegroundColor = Enabled ? UIColor.Red : UIColor.LightGray };
 
-                    var stringAttributes = new UIStringAttributes() { ForegroundColor = Enabled ? UIColor.DarkGray : UIColor.LightGray };
+                    var stringAttributes = new UIStringAttributes { ForegroundColor = Enabled ? UIColor.DarkGray : UIColor.LightGray };
 
                     var textstring = (_nestedView as UILabel).Text;
 
@@ -993,7 +1006,7 @@ namespace DynaPad
             //UITableView viewty = base.GetContainerTableView();
             return base.Summary();
         }
-        private static NSString cellKey = new NSString("Identifier");
+        static NSString cellKey = new NSString("Identifier");
         protected override NSString CellKey
         {
             get
@@ -1060,6 +1073,7 @@ namespace DynaPad
         public string DoctorID { get; set; }
         public string LocationID { get; set; }
         public string ApptID { get; set; }
+        public string ReportID { get; set; }
         public string CaseID { get; set; }
         public List<Report> ApptReports { get; set; }
         public Group thisGroup { get; set; }
@@ -1876,7 +1890,7 @@ namespace DynaPad
                 parentSec.HeaderView.Layer.BorderColor = UIColor.Red.CGColor;
             }
 
-            Layer.BorderWidth = (nfloat)0;
+            Layer.BorderWidth = 0;
 
             if (!IsEnabled)
             {
@@ -2677,7 +2691,7 @@ namespace DynaPad
         /// </summary>
         /// <returns>The Section instance and the index within that Section of this instance.</returns>
         /// <param name="dvc">Dvc.</param>
-        private KeyValuePair<Section, int> GetMySectionAndIndex(DialogViewController dvc)
+        KeyValuePair<Section, int> GetMySectionAndIndex(DialogViewController dvc)
         {
             foreach (var section in dvc.Root)
             {
@@ -2741,7 +2755,7 @@ namespace DynaPad
             public InlineDateElement(DateTime? current_date) : base("")
             {
                 _current_date = current_date;
-                _date_picker = new UIDatePicker() { Mode = UIDatePickerMode.Date };
+                _date_picker = new UIDatePicker { Mode = UIDatePickerMode.Date };
                 _picker_size = (SizeF)_date_picker.SizeThatFits(SizeF.Empty);
                 _cell_size = _picker_size;
                 _cell_size.Height += 30f; // Add a little bit for the clear button
@@ -3153,7 +3167,7 @@ namespace DynaPad
         {
             get
             {
-                if (points == null || points.Count() == 0)
+                if (points == null || !points.Any())
                     return new CGPoint[0];
 
                 IEnumerable<CGPoint> pointsList = points[0];
@@ -3170,7 +3184,7 @@ namespace DynaPad
 
         public bool IsBlank
         {
-            get { return points == null || points.Count() == 0 || !(points.Any(p => p.Any())); }
+            get { return points == null || !points.Any() || !(points.Any(p => p.Any())); }
         }
 
         UIColor strokeColor;
@@ -3400,7 +3414,7 @@ namespace DynaPad
             AddSubview(Caption);
 
             //Display the base line for the user to sign on.
-            SignatureLine = new UIView() { BackgroundColor = UIColor.Gray };
+            SignatureLine = new UIView { BackgroundColor = UIColor.Gray };
 
             AddSubview(SignatureLine);
 
@@ -3417,7 +3431,7 @@ namespace DynaPad
 
             ClearLabel = UIButton.FromType(UIButtonType.Custom);
             ClearLabel.SetTitle("Clear", UIControlState.Normal);
-            ClearLabel.Font = UIFont.BoldSystemFontOfSize(11f);
+            ClearLabel.TitleLabel.Font = UIFont.BoldSystemFontOfSize(11f);
             ClearLabel.BackgroundColor = UIColor.Clear;
             ClearLabel.Hidden = true;
             ClearLabel.SetTitleColor(UIColor.Gray, UIControlState.Normal);
@@ -3613,7 +3627,7 @@ namespace DynaPad
         //lines indicated by a CGPoint.Empty in the array.
         public void LoadPoints(CGPoint[] loadedPoints)
         {
-            if (loadedPoints == null || loadedPoints.Count() == 0)
+            if (loadedPoints == null || !loadedPoints.Any())
                 return;
 
             var startIndex = 0;
@@ -3840,7 +3854,7 @@ namespace DynaPad
             ClearLabel.SizeToFit();
 
             var captionHeight = Caption.SizeThatFits(Caption.Frame.Size).Height;
-            var clearButtonHeight = (int)ClearLabel.Font.LineHeight + 1;
+            var clearButtonHeight = (int)ClearLabel.TitleLabel.Font.LineHeight + 1;
 
             var rect = new CGRect(0, 0, w, h);
             imageView.Frame = rect;

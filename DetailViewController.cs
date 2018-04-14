@@ -30,56 +30,62 @@ using System.Threading;
 //using PdfKit;
 using System.Linq;
 using Syncfusion.SfBusyIndicator.iOS;
-using UserNotifications;
+//using UserNotifications;
 using ToastIOS;
-using System.Runtime.CompilerServices;
+//using System.Runtime.CompilerServices;
+//using System.Data;
+//using iTextSharp.text.pdf;
+using DynaPad.DynaPadService;
+//using iTextSharp.text;
+using FileProvider;
+using Syncfusion.Pdf.Xmp;
 
 namespace DynaPad
 {
-	public partial class DetailViewController : DialogViewController
-	{
-		public Section DetailItem { get; set; }
-		public DynaMultiRootElement QuestionsView { get; set; }
-		public DialogViewController mvc { get; set; }
-		UILabel messageLabel;
-		LoadingOverlay loadingOverlay;
-		AVAudioSession session;
-		AVAudioRecorder recorder;
-		AVAudioPlayer player;
-		Stopwatch stopwatch;
-		NSUrl audioFilePath;
-		NSObject observer;
-		UILabel RecordingStatusLabel = new UILabel();
-		UILabel LengthOfRecordingLabel = new UILabel();
-		UILabel PlayRecordedSoundStatusLabel = new UILabel();
-		UIButton StartRecordingButton = new UIButton();
-		UIButton StopRecordingButton = new UIButton();
-		UIButton PlayRecordedSoundButton = new UIButton();
-		UIButton SaveRecordedSound = new UIButton();
-		UIButton CancelRecording = new UIButton();
-		UITableViewCell cellRecord = new UITableViewCell(UITableViewCellStyle.Default, null);
-		UITableViewCell cellStop = new UITableViewCell(UITableViewCellStyle.Default, null);
-		UITableViewCell cellPlay = new UITableViewCell(UITableViewCellStyle.Default, null);
-		UITableViewCell cellSave = new UITableViewCell(UITableViewCellStyle.Default, null);
-		UIButton PlaySavedDictationButton = new UIButton();
-		UIButton DeleteSavedDictationButton = new UIButton();
-		UITableViewCell cellDict = new UITableViewCell(UITableViewCellStyle.Default, null);
-		UIPopoverController pop;
+    public partial class DetailViewController : DialogViewController
+    {
+        public Section DetailItem { get; set; }
+        public DynaMultiRootElement QuestionsView { get; set; }
+        public DialogViewController mvc { get; set; }
+        UILabel messageLabel;
+        LoadingOverlay loadingOverlay;
+        AVAudioSession session;
+        AVAudioRecorder recorder;
+        AVAudioPlayer player;
+        Stopwatch stopwatch;
+        NSUrl audioFilePath;
+        NSObject observer;
+        UILabel RecordingStatusLabel = new UILabel();
+        UILabel LengthOfRecordingLabel = new UILabel();
+        UILabel PlayRecordedSoundStatusLabel = new UILabel();
+        UIButton StartRecordingButton = new UIButton();
+        UIButton StopRecordingButton = new UIButton();
+        UIButton PlayRecordedSoundButton = new UIButton();
+        UIButton SaveRecordedSound = new UIButton();
+        UIButton CancelRecording = new UIButton();
+        UITableViewCell cellRecord = new UITableViewCell(UITableViewCellStyle.Default, null);
+        UITableViewCell cellStop = new UITableViewCell(UITableViewCellStyle.Default, null);
+        UITableViewCell cellPlay = new UITableViewCell(UITableViewCellStyle.Default, null);
+        UITableViewCell cellSave = new UITableViewCell(UITableViewCellStyle.Default, null);
+        UIButton PlaySavedDictationButton = new UIButton();
+        UIButton DeleteSavedDictationButton = new UIButton();
+        UITableViewCell cellDict = new UITableViewCell(UITableViewCellStyle.Default, null);
+        UIPopoverController pop;
 
-		public Menu DynaMenu { get; set; }
+        public Menu DynaMenu { get; set; }
 
-		protected DetailViewController(IntPtr handle) : base(handle)
-		{
-			// Note: this .ctor should not contain any initialization logic.
-			//this.TableView.CellLayoutMarginsFollowReadableWidth = false;
-		}
+        protected DetailViewController(IntPtr handle) : base(handle)
+        {
+            // Note: this .ctor should not contain any initialization logic.
+            //this.TableView.CellLayoutMarginsFollowReadableWidth = false;
+        }
 
 
-		public override void ViewDidLoad()
-		{
-			base.ViewDidLoad();
+        public override void ViewDidLoad()
+        {
+            base.ViewDidLoad();
 
-			//Root.Caption = "Welcome to Dynapad";
+            //Root.Caption = "Welcome to Dynapad";
             Root.Add(new Section("Login to the app")
             {
                 FooterView = new UIView(new CGRect(0, 0, 0, 0))
@@ -88,102 +94,102 @@ namespace DynaPad
                 }
             });
 
-			base.TableView.CellLayoutMarginsFollowReadableWidth = false;
-			// Perform any additional setup after loading the view, typically from a nib.
-			base.TableView.ScrollsToTop = true;
+            base.TableView.CellLayoutMarginsFollowReadableWidth = false;
+            // Perform any additional setup after loading the view, typically from a nib.
+            base.TableView.ScrollsToTop = true;
 
-			ModalInPopover = true;
+            ModalInPopover = true;
 
-			var tap = new UITapGestureRecognizer();
-			tap.AddTarget(() =>
-			{
-				if (!base.View.IsFirstResponder)
-				{
-					base.View.EndEditing(true);
-				}
-			});
-			base.View.AddGestureRecognizer(tap);
-			tap.CancelsTouchesInView = false;
-
-
-
-			////var drawNavBtn = GetDrawNavBtn("1");
-			//var ass = new UIBarButtonItem("edit", UIBarButtonItemStyle.Plain ,delegate
-			//{
-			//	//var dcanvas = new CanvasMainViewController { MREditing = false };
-			//	//var dcanvas = new FingerPaintViewController(); 
-			//	//var dcanvas = new FingerPaintViewController() { MREditing = true, MREditPath = "https://amato.dynadox.pro/data/amato.dynadox.pro/claimantfiles/18/130.gif", MREditId = "130", MREditName = "John_Doe_True_sig_2017-05-09T10_59_08.gif", apptId = "41", patientId = "18", doctorId = "14", locationId = "12", IsDoctorForm = true };
-			//	//var dcanvas = new FingerPaintViewController() { MREditing = true, MREditPath = "https://amato.dynadox.pro/data/testpng.png", MREditId = "130", MREditName = "testpng.png", apptId = "41", patientId = "18", doctorId = "14", locationId = "12", IsDoctorForm = true };
-			//	var dcanvas = new FingerPaintViewController() { MREditing = true, MREditPath = "https://amato.dynadox.pro/data/testjpg.jpg", MREditId = "130", MREditName = "testjpg.jpg", apptId = "41", patientId = "18", doctorId = "14", locationId = "12", IsDoctorForm = true };
-			//	//PreferredContentSize = new CGSize(View.Bounds.Size);
-			//	//PresentViewController(dcanvas, true, null);
-
-			//	var asss = new Section();
-			//             asss.Add(dcanvas.View);
-			//             var rr = new RootElement("edit");
-			//             rr.Add(asss);
-			//             var ndia = new DialogViewController(rr);
-			//	ndia.ModalInPopover = true;
-			//             ndia.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
-			//	ndia.PreferredContentSize = new CGSize(View.Bounds.Size); 
-			//	PreferredContentSize = new CGSize(View.Bounds.Size);
-			//             PresentViewController(dcanvas, true, null);
-
-			// //            Root.Clear();
-			//	//var asss = new Section();
-			//	//asss.Add(dcanvas.View);
-			// //            var rr = new RootElement("ass");
-			// //            rr.Add(asss);
-			//	//Root = rr;
-			//});
-			//NavigationItem.SetRightBarButtonItem(ass, true);
+            var tap = new UITapGestureRecognizer();
+            tap.AddTarget(() =>
+            {
+                if (!base.View.IsFirstResponder)
+                {
+                    base.View.EndEditing(true);
+                }
+            });
+            base.View.AddGestureRecognizer(tap);
+            tap.CancelsTouchesInView = false;
 
 
 
+            ////var drawNavBtn = GetDrawNavBtn("1");
+            //var ass = new UIBarButtonItem("edit", UIBarButtonItemStyle.Plain ,delegate
+            //{
+            //	//var dcanvas = new CanvasMainViewController { MREditing = false };
+            //	//var dcanvas = new FingerPaintViewController(); 
+            //	//var dcanvas = new FingerPaintViewController() { MREditing = true, MREditPath = "https://amato.dynadox.pro/data/amato.dynadox.pro/claimantfiles/18/130.gif", MREditId = "130", MREditName = "John_Doe_True_sig_2017-05-09T10_59_08.gif", apptId = "41", patientId = "18", doctorId = "14", locationId = "12", IsDoctorForm = true };
+            //	//var dcanvas = new FingerPaintViewController() { MREditing = true, MREditPath = "https://amato.dynadox.pro/data/testpng.png", MREditId = "130", MREditName = "testpng.png", apptId = "41", patientId = "18", doctorId = "14", locationId = "12", IsDoctorForm = true };
+            //	var dcanvas = new FingerPaintViewController() { MREditing = true, MREditPath = "https://amato.dynadox.pro/data/testjpg.jpg", MREditId = "130", MREditName = "testjpg.jpg", apptId = "41", patientId = "18", doctorId = "14", locationId = "12", IsDoctorForm = true };
+            //	//PreferredContentSize = new CGSize(View.Bounds.Size);
+            //	//PresentViewController(dcanvas, true, null);
+
+            //	var asss = new Section();
+            //             asss.Add(dcanvas.View);
+            //             var rr = new RootElement("edit");
+            //             rr.Add(asss);
+            //             var ndia = new DialogViewController(rr);
+            //	ndia.ModalInPopover = true;
+            //             ndia.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
+            //	ndia.PreferredContentSize = new CGSize(View.Bounds.Size); 
+            //	PreferredContentSize = new CGSize(View.Bounds.Size);
+            //             PresentViewController(dcanvas, true, null);
+
+            // //            Root.Clear();
+            //	//var asss = new Section();
+            //	//asss.Add(dcanvas.View);
+            // //            var rr = new RootElement("ass");
+            // //            rr.Add(asss);
+            //	//Root = rr;
+            //});
+            //NavigationItem.SetRightBarButtonItem(ass, true);
 
 
-			//var ass = new UIBarButtonItem("edit", UIBarButtonItemStyle.Plain ,delegate
-			//{
-			//	PreferredContentSize = new CGSize(View.Bounds.Size);
-			//	SfImageEditor imageEditor = new SfImageEditor();
-			//             //imageEditor.Frame = new CGRect(0, 0, 500, 500);
-			//             imageEditor.Frame = View.Frame;
-			//	var downloadPath = Path.Combine(Path.GetTempPath(), "testjpg.jpg");
-			//	var url = "https://amato.dynadox.pro/data/testjpg.jpg";
-			//	var webClient = new WebClient();
-			//	webClient.DownloadFile(url, downloadPath);
-			//             UIImage img = UIImage.LoadFromData(UIImage.FromFile(downloadPath).AsJPEG(), 1);
-			//             imageEditor.Image = img;
-			//             var sec = new Section();
-			//             sec.Add(imageEditor);
-			//             var rr = new RootElement("edit");
-			//             rr.Add(sec);
-			//             var dvc = new DialogViewController(rr);
-			//             var vvv = new UIViewController();
-			//             vvv.View = imageEditor;
-			//             //dvc.ModalPresentationStyle = UIModalPresentationStyle.Popover;
-			//             //dvc.PreferredContentSize = new CGSize(View.Bounds.Size);
-			//             //View.AddSubview(imageEditor);
-			//             PresentViewController(vvv, true, null);
-			//});
-			//NavigationItem.SetRightBarButtonItem(ass, true);
 
-   //         string URL = "http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf";
-			//var pdfViewerControl = new SfPdfViewer();
-			//using (MemoryStream memoryStream = new MemoryStream())
-			//{
-			//	ConvertToStream(URL, memoryStream);
-			//	memoryStream.Seek(0, SeekOrigin.Begin);
-			//	pdfViewerControl.LoadDocument(memoryStream);
-			//}
-			//pdfViewerControl.Frame = new CGRect(0, 0, View.Bounds.Width, View.Bounds.Height);
+
+
+            //var ass = new UIBarButtonItem("edit", UIBarButtonItemStyle.Plain ,delegate
+            //{
+            //	PreferredContentSize = new CGSize(View.Bounds.Size);
+            //	SfImageEditor imageEditor = new SfImageEditor();
+            //             //imageEditor.Frame = new CGRect(0, 0, 500, 500);
+            //             imageEditor.Frame = View.Frame;
+            //	var downloadPath = Path.Combine(Path.GetTempPath(), "testjpg.jpg");
+            //	var url = "https://amato.dynadox.pro/data/testjpg.jpg";
+            //	var webClient = new WebClient();
+            //	webClient.DownloadFile(url, downloadPath);
+            //             UIImage img = UIImage.LoadFromData(UIImage.FromFile(downloadPath).AsJPEG(), 1);
+            //             imageEditor.Image = img;
+            //             var sec = new Section();
+            //             sec.Add(imageEditor);
+            //             var rr = new RootElement("edit");
+            //             rr.Add(sec);
+            //             var dvc = new DialogViewController(rr);
+            //             var vvv = new UIViewController();
+            //             vvv.View = imageEditor;
+            //             //dvc.ModalPresentationStyle = UIModalPresentationStyle.Popover;
+            //             //dvc.PreferredContentSize = new CGSize(View.Bounds.Size);
+            //             //View.AddSubview(imageEditor);
+            //             PresentViewController(vvv, true, null);
+            //});
+            //NavigationItem.SetRightBarButtonItem(ass, true);
+
+            //         string URL = "http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf";
+            //var pdfViewerControl = new SfPdfViewer();
+            //using (MemoryStream memoryStream = new MemoryStream())
+            //{
+            //	ConvertToStream(URL, memoryStream);
+            //	memoryStream.Seek(0, SeekOrigin.Begin);
+            //	pdfViewerControl.LoadDocument(memoryStream);
+            //}
+            //pdfViewerControl.Frame = new CGRect(0, 0, View.Bounds.Width, View.Bounds.Height);
             //base.View.AddSubview(pdfViewerControl);
             ////var s = new Section();
             ////s.Add(pdfViewerControl);
             ////var ff = new RootElement("pdf");
             ////ff.Add(s);
             ////Root.Add(s);
-		}
+        }
 
 
 
@@ -231,6 +237,134 @@ namespace DynaPad
                         //Root = f;
                         //Root.TableView.ScrollEnabled = false;
                         //break;
+                        //case "UploadSubmittedForms":
+                        //case "UploadSubmittedPatientForms":
+                            //loadingOverlay = new LoadingOverlay(boundsh, true);// { loadingLabelText = "Loading MR..." };
+                            //loadingOverlay.SetText("Loading...");
+                            //mvc.Add(loadingOverlay);
+
+                            //await Task.Delay(10);
+
+                            //var UploadsView = new DynaMultiRootElement("Downloads");
+
+                            //var uploadHeadPaddedView = new PaddedUIView<UILabel>
+                            //{
+                            //    Enabled = true,
+                            //    Type = "Section",
+                            //    Frame = new CGRect(0, 0, 0, 40),
+                            //    Padding = 5f
+                            //};
+                            //uploadHeadPaddedView.NestedView.Text = "Uploud Submitted Forms";
+                            //uploadHeadPaddedView.NestedView.TextAlignment = UITextAlignment.Center;
+                            //uploadHeadPaddedView.NestedView.Font = UIFont.BoldSystemFontOfSize(17);
+                            //uploadHeadPaddedView.setStyle();
+
+                            //var uploadHeadSection = new DynaSection("Uploud")
+                            //{
+                            //    HeaderView = uploadHeadPaddedView,
+                            //    FooterView = new UIView(new CGRect(0, 0, 0, 0))
+                            //};
+                            //uploadHeadSection.FooterView.Hidden = true;
+
+                            //UploadsView.Add(uploadHeadSection);
+
+                            //var uploadMainSection = new DynaSection("Uploud")
+                            //{
+                            //    HeaderView = new UIView(new CGRect(0, 0, 0, 0)),
+                            //    FooterView = new UIView(new CGRect(0, 0, 0, 0))
+                            //};
+                            //uploadMainSection.HeaderView.Hidden = true;
+                            //uploadMainSection.FooterView.Hidden = true;
+
+                            //nfloat quWidth = View.Frame.Width;
+
+                            //progressView = new UIProgressView(new CGRect(0, 0, quWidth, 15))
+                            //{
+                            //    Progress = 0,
+                            //    Hidden = true
+                            //};
+
+                            //uploadMainSection.Add(progressView);
+
+                            //var uploadPaddedView = new PaddedUIView<UILabel>
+                            //{
+                            //    Frame = new CGRect(0, 0, quWidth, 50),
+                            //    Padding = 5f,
+                            //    Type = "Question"
+                            //};
+
+                            //var btnUploud = new GlassButton(new RectangleF(0, 0, (float)quWidth, 50))
+                            //{
+                            //    NormalColor = UIColor.FromRGB(224, 238, 240)
+                            //};
+                            //btnUploud.TitleLabel.Font = UIFont.BoldSystemFontOfSize(17);
+                            //btnUploud.SetTitleColor(UIColor.Black, UIControlState.Normal);
+                            //btnUploud.SetTitle("Uploud Forms", UIControlState.Normal);
+
+                            //if (context == "UploadSubmittedForms")
+                            //{
+                            //    uploadPaddedView.NestedView.Text = "Tap the uploud button to uploud all location forms:";
+                            //    uploadPaddedView.setStyle();
+
+                            //    uploadMainSection.Add(uploadPaddedView);
+
+                            //    btnUploud.TouchUpInside += (sender, e) =>
+                            //    {
+                            //        //Create Alert
+                            //        var UploudPrompt = UIAlertController.Create("Uploud Submitted Forms", "Location forms will be uploaded.", UIAlertControllerStyle.Alert);
+                            //        //Add Actions
+                            //        UploudPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => UploudSubmittedForms(valueId, false)));
+                            //        UploudPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
+                            //        //Present Alert
+                            //        PresentViewController(UploudPrompt, true, null);
+                            //    };
+                            //}
+                            //else if (context == "UploadSubmittedPatientForms")
+                            //{
+                            //    uploadPaddedView.NestedView.Text = "Tap the uploud button to uploud patient form:";
+                            //    uploadPaddedView.setStyle();
+
+                            //    uploadMainSection.Add(uploadPaddedView);
+
+                            //    btnUploud.TouchUpInside += (sender, e) =>
+                            //    {
+                            //        //Create Alert
+                            //        var DUploudPatientPrompt = UIAlertController.Create("Uploud Submitted Forms", "Patient form will be uploaded.", UIAlertControllerStyle.Alert);
+                            //        //Add Actions
+                            //        DUploudPatientPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => UploudSubmittedForms(valueId, true)));
+                            //        DUploudPatientPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
+                            //        //Present Alert
+                            //        PresentViewController(DUploudPatientPrompt, true, null);
+                            //    };
+                            //}
+
+                            //UploadsView.Add(uploadMainSection);
+
+                            //var uploadFooterSection = new Section { HeaderView = null, FooterView = null };
+
+                            //uploadFooterSection.Add(btnUploud);
+
+                            //UploadsView.Add(uploadFooterSection);
+
+                            //UploadsView.UnevenRows = true;
+
+                            //Root.TableView.AutosizesSubviews = true;
+                            //Root = UploadsView;
+                            //Root.TableView.ScrollEnabled = true;
+
+                            //break;
+                        case "UploadSubmittedForms":
+                        case "UploadSubmittedPatientForms":
+                            loadingOverlay = new LoadingOverlay(boundsh, true);// { loadingLabelText = "Loading MR..." };
+                            loadingOverlay.SetText("Loading...");
+                            mvc.Add(loadingOverlay);
+
+                            await Task.Delay(10);
+
+                            var uploadElement = GetUploadElement(valueId, context);
+                            Root = uploadElement;
+
+                            break;
                         case "MRDownload":
                         case "MRPatientDownload":
                             loadingOverlay = new LoadingOverlay(boundsh, true);// { loadingLabelText = "Loading MR..." };
@@ -262,37 +396,42 @@ namespace DynaPad
 
                             DownloadsView.Add(downloadHeadSection);
 
-                            var downloadMainSection = new DynaSection("MR") 
+                            var downloadMainSection = new DynaSection("MR")
                             {
                                 HeaderView = new UIView(new CGRect(0, 0, 0, 0)),
                                 FooterView = new UIView(new CGRect(0, 0, 0, 0))
                             };
                             downloadMainSection.HeaderView.Hidden = true;
                             downloadMainSection.FooterView.Hidden = true;
-                    
+
                             nfloat qWidth = View.Frame.Width;
 
                             progressView = new UIProgressView(new CGRect(0, 0, qWidth, 15))
                             {
                                 Progress = 0,
-                                Hidden = true
+                                Hidden = true,
+                                ClipsToBounds = true
                             };
+                            progressView.Layer.MasksToBounds = true;
+                            //Transform = CGAffineTransform.MakeScale(1, 20)
+
                             //imageView = new UIImageView(new CGRect(0, 0, 100, 150));
                             //imageView.Hidden = true;
 
                             downloadMainSection.Add(progressView);
                             //downloadMainSection.Add(imageView);
 
-                            PaddedUIView<UILabel> downloadPaddedView = new PaddedUIView<UILabel>
+                            var downloadPaddedView = new PaddedUIView<UILabel>
                             {
                                 Frame = new CGRect(0, 0, qWidth, 50),
                                 Padding = 5f,
                                 Type = "Question"
                             };
 
-                            var btnDownload = new GlassButton(new RectangleF(0, 0, (float)qWidth, 50))
+                            btnDownload = new GlassButton(new RectangleF(0, 0, (float)qWidth, 50))
                             {
-                                NormalColor = UIColor.FromRGB(224, 238, 240)
+                                NormalColor = UIColor.FromRGB(224, 238, 240),
+                                Enabled = DownloadButtonGlobalEnabled
                             };
                             btnDownload.TitleLabel.Font = UIFont.BoldSystemFontOfSize(17);
                             btnDownload.SetTitleColor(UIColor.Black, UIControlState.Normal);
@@ -318,7 +457,7 @@ namespace DynaPad
                                     //Create Alert
                                     var DownloadMRPrompt = UIAlertController.Create("Download Medical Records", "Chosen medical records will be downloaded in the background", UIAlertControllerStyle.Alert);
                                     //Add Actions
-                                    DownloadMRPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => DownloadMRs(valueId, dde.Date.ToDateTime())));
+                                    DownloadMRPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => DownloadMRs(valueId, dde.Date.ToDateTime(), false)));
                                     DownloadMRPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
                                     //Present Alert
                                     PresentViewController(DownloadMRPrompt, true, null);
@@ -336,7 +475,7 @@ namespace DynaPad
                                     //Create Alert
                                     var DownloadPatientMRPrompt = UIAlertController.Create("Download Medical Records", "Patient medical records will be downloaded in the background", UIAlertControllerStyle.Alert);
                                     //Add Actions
-                                    DownloadPatientMRPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => DownloadPatientMRs()));
+                                    DownloadPatientMRPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => DownloadMRs(valueId, DateTime.Today, true)));
                                     DownloadPatientMRPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
                                     //Present Alert
                                     PresentViewController(DownloadPatientMRPrompt, true, null);
@@ -345,7 +484,7 @@ namespace DynaPad
 
                             DownloadsView.Add(downloadMainSection);
 
-                            var downloadFooterSection = new Section() { HeaderView = null, FooterView = null };
+                            var downloadFooterSection = new Section { HeaderView = null, FooterView = null };
 
                             downloadFooterSection.Add(btnDownload);
 
@@ -419,12 +558,20 @@ namespace DynaPad
                             {
                                 if (CrossConnectivity.Current.IsConnected)
                                 {
-                                    var dds = new DynaPadService.DynaPadService() { Timeout = 60000 };
+                                    //var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
                                     var finalJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
-                                    summaryFileName = dds.GenerateSummary(CommonFunctions.GetUserConfig(), finalJson);
 
-                                    SFSafariViewController sfViewController = new SFSafariViewController(new NSUrl(summaryFileName));
-                                    PresentViewController(sfViewController, true, null);
+                                    //summaryFileName = dds.GenerateSummary(CommonFunctions.GetUserConfig(), finalJson);
+                                    summaryFileName = GenerateSummary(finalJson);
+
+                                    //SFSafariViewController sfViewController = new SFSafariViewController(new NSUrl(summaryFileName));
+                                    //PresentViewController(sfViewController, true, null);
+                                    //var PreviewController = UIDocumentInteractionController.FromUrl(NSUrl.FromFilename(summaryFileName));
+                                    //PreviewController.Delegate = new UIDocumentInteractionControllerDelegateClass(UIApplication.SharedApplication.KeyWindow.RootViewController);
+                                    //BeginInvokeOnMainThread(() =>
+                                    //{
+                                    //PreviewController.PresentPreview(true);
+                                    //});
 
                                     var mas = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[0]).TopViewController;
                                     mas.NavigationController.PopViewController(true);
@@ -454,8 +601,19 @@ namespace DynaPad
                                 }
                                 else
                                 {
-                                    var sucmes = IsDoctorForm ? "Doctor form submitted successfully. A report has been generated." : "Patient form submitted successfully.";
-                                    summarySection.Add(new StringElement(sucmes));
+                                    var sucmes = SelectedAppointment.SelectedQForm.IsDoctorForm ? "Doctor form submitted successfully. Upload appointment files to generate report." : "Patient form submitted successfully.";
+                                    var se = new StringElement(sucmes);
+                                    summarySection.Add(se);
+
+                                    var directoryname = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaFilesAwaitingUpload/");
+                                    var summaryDynaFile = JsonConvert.DeserializeObject<DynaFile>(File.ReadAllText(summaryFileName));
+                                    var webView = new UIWebView(new CGRect(View.Bounds.X + 5, View.Bounds.Y + 60, View.Bounds.Width - 5, View.Bounds.Height - 80))
+                                    {
+                                        ScalesPageToFit = true
+                                    };
+                                    webView.LoadHtmlString(summaryDynaFile.Html, new NSUrl(directoryname, true));
+                                    summarySection.Add(webView);
+
                                     summaryElement.Add(summarySection);
                                 }
 
@@ -485,7 +643,14 @@ namespace DynaPad
                             cancelButton.SetTitle("Cancel", UIControlState.Normal);
                             cancelButton.TouchUpInside += (sender, e) =>
                             {
-                                cts.Cancel();
+                                try
+                                {
+                                    cts?.Cancel();
+                                }
+                                catch (ObjectDisposedException oex)     // in case previous search completed
+                                {
+                                    Console.WriteLine($"\nObjectDisposedException in cancelButton.TouchUpInside with: {oex.Message}");
+                                }
                             };
 
                             loadingOverlay.AddSubview(cancelButton);
@@ -560,7 +725,14 @@ namespace DynaPad
                             cancelButton.SetTitle("Cancel", UIControlState.Normal);
                             cancelButton.TouchUpInside += (sender, e) =>
                             {
-                                cts.Cancel();
+                                try
+                                {
+                                    cts?.Cancel();
+                                }
+                                catch (ObjectDisposedException oex)     // in case previous search completed
+                                {
+                                    Console.WriteLine($"\nObjectDisposedException in cancelButton.TouchUpInside with: {oex.Message}");
+                                }
                             };
 
                             loadingOverlay.AddSubview(cancelButton);
@@ -637,7 +809,14 @@ namespace DynaPad
                             cancelButton.SetTitle("Cancel", UIControlState.Normal);
                             cancelButton.TouchUpInside += (sender, e) =>
                             {
-                                cts.Cancel();
+                                try
+                                {
+                                    cts?.Cancel();
+                                }
+                                catch (ObjectDisposedException oex)     // in case previous search completed
+                                {
+                                    Console.WriteLine($"\nObjectDisposedException in cancelButton.TouchUpInside with: {oex.Message}");
+                                }
                             };
 
                             loadingOverlay.AddSubview(cancelButton);
@@ -720,6 +899,149 @@ namespace DynaPad
             }
         }
 
+
+
+        public async void UploadSubmittedForms(string[] folders)
+        {
+            var boundsh = base.TableView.Frame;
+            mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
+            loadingOverlay = new LoadingOverlay(boundsh, true);
+            loadingOverlay.SetText("Uploading...");
+            centerX = new nfloat(loadingOverlay.Frame.Width / 2);
+            centerY = new nfloat(loadingOverlay.Frame.Height / 2);
+
+            cancelButton = new UIButton(UIButtonType.System)
+            {
+                Frame = new CGRect(centerX - (labelWidth / 2), centerY + 50, labelWidth, labelHeight)
+            };
+            cancelButton.SetTitle("Cancel", UIControlState.Normal);
+            cancelButton.TouchUpInside += (sender, e) =>
+            {
+                cts.Cancel();
+            };
+
+            loadingOverlay.AddSubview(cancelButton);
+
+            mvc.Add(loadingOverlay);
+
+            try
+            {
+                cts?.Cancel();     // cancel previous search
+            }
+            catch (ObjectDisposedException oex)     // in case previous search completed
+            {
+                Console.WriteLine($"\nObjectDisposedException with: {oex.Message}");
+            }
+
+            using (cts = new CancellationTokenSource())
+            {
+                try
+                {
+                    cts.CancelAfter(TimeSpan.FromSeconds(10));
+                    //await Task.Delay(TimeSpan.FromSeconds(1), cts.Token);
+                    await Task.Delay(10, cts.Token);
+
+                    var task = DoUpload(folders, cts.Token);
+                    var result = await task;
+                }
+                catch (TaskCanceledException tex)       // if the operation is cancelled, do nothing
+                {
+                    Console.WriteLine($"\nCanceled with: {tex.Message}");
+
+                    PresentViewController(CommonFunctions.AlertPrompt("Canceled/Timeout", "Operation was canceled or timed out, please try again", true, null, false, null), true, null);
+                }
+            }
+        }
+
+
+
+
+        public async Task<string> DoUpload(string[] folders, CancellationToken cts)
+        {
+            //await Task.Delay(TimeSpan.FromSeconds(2), cts);
+            await Task.Delay(10, cts);
+
+            try
+            {
+                var array = new List<DynaFile>();
+
+                foreach (var folder in folders)
+                {
+                    if (Directory.Exists(folder) && Directory.GetFiles(folder, "*.*", SearchOption.AllDirectories).Length > 0)
+                    {
+                        var files = Directory.GetFiles(folder, "*.*", SearchOption.AllDirectories);
+
+                        foreach (string file in files)
+                        {
+                            var upload = JsonConvert.DeserializeObject<DynaFile>(File.ReadAllText(file));
+
+                            array.Add(upload);
+                        }
+                    }
+                }
+
+                var starttoast = new Toast("Uploading " + array.Count + " files. This may take a while, please be patient.");
+                starttoast.SetDuration(20000);
+                starttoast.SetType(ToastType.Info);
+                starttoast.SetGravity(ToastGravity.Bottom);
+                starttoast.Show();
+
+                var dds = new DynaPadService.DynaPadService { Timeout = 180000 };
+                var result = dds.ProcessDynaFiles(CommonFunctions.GetUserConfig(), JsonConvert.SerializeObject(array));
+
+                if (!result.StartsWith("Error", StringComparison.CurrentCulture))
+                {
+                    foreach (var file in array)
+                    {
+                        var documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaFilesUploaded/" + file.PatientId + "/" + file.ApptId);
+
+                        if (!Directory.Exists(documentsPath))
+                        {
+                            Directory.CreateDirectory(documentsPath);
+                        }
+
+                        file.Status = "Uploaded";
+
+                        File.WriteAllText(documentsPath, JsonConvert.SerializeObject(file)); // writes to local storage
+                        File.Delete(file.FileUrl);
+                    }
+
+                    var finishtoast = new Toast("The requested form(s) have been uploaded");
+                    finishtoast.SetDuration(20000);
+                    finishtoast.SetType(ToastType.Info);
+                    finishtoast.SetGravity(ToastGravity.Bottom);
+                    finishtoast.Show();
+                }
+                else
+                {
+                    var errortoast = new Toast("Uploading error, try again");
+                    errortoast.SetDuration(20000);
+                    errortoast.SetType(ToastType.Info);
+                    errortoast.SetGravity(ToastGravity.Bottom);
+                    errortoast.Show();
+                }
+            }
+            catch (Exception ex)
+            {
+                //loadingOverlay.Hide();
+                CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+            }
+            finally
+            {
+                loadingOverlay.Hide();
+            }
+
+            return "Uploaded";
+        }
+
+
+
+
+
+
+
         const string Identifier = "com.DynaPad.BackgroundSession";
         const string DownloadUrlString = "https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg";
 
@@ -727,80 +1049,162 @@ namespace DynaPad
         public NSUrlSession downloadSession;
 
         public UIProgressView progressView;
+        public GlassButton btnDownload;
+        public bool DownloadButtonGlobalEnabled = true;
         //public UIImageView imageView;
 
         public MR downloadMR;
 
 
         List<NSUrlSessionDownloadTask> taskslist;
-
-        void DownloadMRs(string valueId, DateTime dt)
+        // valueid is locid from master...
+        void DownloadMRs(string valueId, DateTime dt, bool appt)
         {
             if (downloadSession == null)
                 downloadSession = InitBackgroundSession();
-            
+
             if (downloadTask != null)
                 return;
 
             var dds = new DynaPadService.DynaPadService { Timeout = 180000 };
-            var filesJson = dds.GetFiles(CommonFunctions.GetUserConfig(), "555", "8", null, "17", "14");
-            //var deserializedFiles = JsonConvert.DeserializeObject<List<string>>(filesJson);
-            var deserializedFiles = JsonConvert.DeserializeObject<List<MRFolder>>(filesJson);
-
-            taskslist = new List<NSUrlSessionDownloadTask>();
-
-            foreach (MRFolder folder in deserializedFiles)
+            string filesJson;
+            if (appt)
             {
-                foreach (MR file in folder.MrFolderMRs)
-                {
-                    using (var url = NSUrl.FromString(file.MRPath))
-                    using (var request = NSUrlRequest.FromUrl(url))
-                    {
-                        downloadMR = file;
-                        downloadTask = downloadSession.CreateDownloadTask(request);
-                        taskslist.Add(downloadTask);
-                        downloadTask.Resume();
-                    }
-                }
+                filesJson = dds.GetFiles(CommonFunctions.GetUserConfig(), SelectedAppointment.ApptId, SelectedAppointment.ApptPatientId, SelectedAppointment.ApptPatientName, SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId);
+            }
+            else
+            {
+                filesJson = dds.GetFilesByDate(CommonFunctions.GetUserConfig(), valueId, dt.ToShortDateString());
             }
 
-            //imageView.Hidden = true;
-            progressView.Hidden = false;
-        }
-
-        void DownloadPatientMRs()
-        {
-            if (downloadSession == null)
-                downloadSession = InitBackgroundSession();
-            
-            if (downloadTask != null)
-                return;
-
-            var dds = new DynaPadService.DynaPadService { Timeout = 180000 };
-            var filesJson = dds.GetFiles(CommonFunctions.GetUserConfig(), SelectedAppointment.ApptId, SelectedAppointment.ApptPatientId, SelectedAppointment.ApptPatientName, SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId);
-            //var deserializedFiles = JsonConvert.DeserializeObject<List<string>>(filesJson);
-            var deserializedFiles = JsonConvert.DeserializeObject<List<MRFolder>>(filesJson);
-
-            taskslist = new List<NSUrlSessionDownloadTask>();
-
-            foreach (MRFolder folder in deserializedFiles)
+            if (!filesJson.StartsWith("error", StringComparison.CurrentCulture))
             {
-                foreach (MR file in folder.MrFolderMRs)
+                //var deserializedFiles = JsonConvert.DeserializeObject<List<string>>(filesJson);
+                var deserializedFiles = JsonConvert.DeserializeObject<List<MRFolder>>(filesJson);
+
+                taskslist = new List<NSUrlSessionDownloadTask>();
+
+                if (deserializedFiles.Any())
                 {
-                    using (var url = NSUrl.FromString(file.MRPath))
-                    using (var request = NSUrlRequest.FromUrl(url))
+                    btnDownload.Enabled = false;
+                    DownloadButtonGlobalEnabled = false;
+                    //imageView.Hidden = true;
+                    progressView.Hidden = false;
+
+                    foreach (MRFolder folder in deserializedFiles)
                     {
-                        downloadMR = file;
-                        downloadTask = downloadSession.CreateDownloadTask(request);
-                        taskslist.Add(downloadTask);
-                        downloadTask.Resume();
+                        foreach (MR file in folder.MrFolderMRs)
+                        {
+                            using (var url = NSUrl.FromString(file.MRPath))
+                            using (var request = NSUrlRequest.FromUrl(url))
+                            {
+                                downloadMR = file;
+                                downloadTask = downloadSession.CreateDownloadTask(request);
+                                taskslist.Add(downloadTask);
+                                downloadTask.Resume();
+                            }
+                        }
                     }
+
+                    var toast = new Toast("Starting download of " + taskslist.Count + " medical records");
+                    toast.SetDuration(5000);
+                    toast.SetType(ToastType.Info);
+                    toast.SetGravity(ToastGravity.Bottom);
+                    toast.Show();
+                }
+                else
+                {
+                    var toast = new Toast("No medical records were found for the requested date");
+                    toast.SetDuration(5000);
+                    toast.SetType(ToastType.Info);
+                    toast.SetGravity(ToastGravity.Bottom);
+                    toast.Show();
+
+                    btnDownload.Enabled = true;
+                    DownloadButtonGlobalEnabled = true;
+
+                    //imageView.Hidden = true;
+                    progressView.Hidden = false;
                 }
             }
+            else
+            {
+                var toast = new Toast("Error. No medical records were downloaded");
+                toast.SetDuration(5000);
+                toast.SetType(ToastType.Info);
+                toast.SetGravity(ToastGravity.Bottom);
+                toast.Show();
 
-            //imageView.Hidden = true;
-            progressView.Hidden = false;
+                btnDownload.Enabled = true;
+                DownloadButtonGlobalEnabled = true;
+
+                //imageView.Hidden = true;
+                progressView.Hidden = false;
+            }
         }
+
+        //void DownloadPatientMRs()
+        //{
+        //    if (downloadSession == null)
+        //        downloadSession = InitBackgroundSession();
+
+        //    if (downloadTask != null)
+        //        return;
+
+        //    var dds = new DynaPadService.DynaPadService { Timeout = 180000 };
+        //    var filesJson = dds.GetFiles(CommonFunctions.GetUserConfig(), SelectedAppointment.ApptId, SelectedAppointment.ApptPatientId, SelectedAppointment.ApptPatientName, SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId);
+
+        //    if (!filesJson.StartsWith("Error"))
+        //    {
+        //        //var deserializedFiles = JsonConvert.DeserializeObject<List<string>>(filesJson);
+        //        var deserializedFiles = JsonConvert.DeserializeObject<List<MRFolder>>(filesJson);
+
+        //        taskslist = new List<NSUrlSessionDownloadTask>();
+
+        //        if (deserializedFiles.Any())
+        //        {
+        //            //imageView.Hidden = true;
+        //            progressView.Hidden = false;
+        //            btnDownload.Enabled = false;
+
+        //            foreach (MRFolder folder in deserializedFiles)
+        //            {
+        //                foreach (MR file in folder.MrFolderMRs)
+        //                {
+        //                    using (var url = NSUrl.FromString(file.MRPath))
+        //                    using (var request = NSUrlRequest.FromUrl(url))
+        //                    {
+        //                        downloadMR = file;
+        //                        downloadTask = downloadSession.CreateDownloadTask(request);
+        //                        taskslist.Add(downloadTask);
+        //                        downloadTask.Resume();
+        //                    }
+        //                }
+        //            }
+        //        }
+        //        else
+        //        {
+        //            var toast = new Toast("No medical records were found for the requested appointment");
+        //            toast.SetDuration(5000);
+        //            toast.SetType(ToastType.Info);
+        //            toast.SetGravity(ToastGravity.Bottom);
+        //            toast.Show();
+
+        //            progressView.Hidden = false;
+        //        }
+        //    }
+        //    else
+        //    {
+        //        var toast = new Toast("Error. No medical records were downloaded");
+        //        toast.SetDuration(5000);
+        //        toast.SetType(ToastType.Info);
+        //        toast.SetGravity(ToastGravity.Bottom);
+        //        toast.Show();
+
+        //        //imageView.Hidden = true;
+        //        progressView.Hidden = false;
+        //    }
+        //}
 
         public NSUrlSession InitBackgroundSession()
         {
@@ -812,13 +1216,24 @@ namespace DynaPad
             //}
             using (var configuration = NSUrlSessionConfiguration.DefaultSessionConfiguration)
             {
-                return NSUrlSession.FromConfiguration(configuration, new UrlSessionDelegate(this), null);
+                return NSUrlSession.FromConfiguration(configuration, new UrlSessionDelegate(this) as INSUrlSessionDelegate, null);
             }
         }
 
         public UIProgressView ProgressView
         {
             get { return progressView; }
+        }
+
+        public GlassButton BtnDownload
+        {
+            get { return btnDownload; }
+        }
+
+        public bool BtnDownloadEnabled
+        {
+            get { return DownloadButtonGlobalEnabled; }
+            set { DownloadButtonGlobalEnabled = value; }
         }
 
         //public UIImageView ImageView
@@ -847,7 +1262,8 @@ namespace DynaPad
                 {
                     float progress = totalBytesWritten / (float)totalBytesExpectedToWrite;
                     Console.WriteLine(string.Format("DownloadTask: {0}  progress: {1}", downloadTask, progress));
-                    InvokeOnMainThread(() => {
+                    InvokeOnMainThread(() =>
+                    {
                         controller.ProgressView.Progress = progress;
                     });
                 }
@@ -859,16 +1275,18 @@ namespace DynaPad
             {
                 Console.WriteLine("Finished");
                 Console.WriteLine("File downloaded in : {0}", location);
+#pragma warning disable XI0002 // Notifies you from using newer Apple APIs when targeting an older OS version
                 NSFileManager fileManager = NSFileManager.DefaultManager;
+#pragma warning restore XI0002 // Notifies you from using newer Apple APIs when targeting an older OS version
 
                 var URLs = fileManager.GetUrls(NSSearchPathDirectory.DocumentDirectory, NSSearchPathDomain.User);
                 NSUrl documentsDictionry = URLs[0];
 
                 NSUrl originalURL = downloadTask.OriginalRequest.Url;
-                NSUrl destinationURL = documentsDictionry.Append("image1.png", false);
+                var destinationURL = documentsDictionry.Append("image1.png", false);
 
                 fileManager.Remove(destinationURL, out NSError removeCopy);
-                bool success = fileManager.Copy(location, destinationURL, out NSError errorCopy);
+                var success = fileManager.Copy(location, destinationURL, out NSError errorCopy);
 
                 if (success)
                 {
@@ -886,7 +1304,7 @@ namespace DynaPad
                         Directory.CreateDirectory(foldername);
                         Console.WriteLine("Patient directory created : {0}", foldername);
                     }
-                    var fileidentity = Path.Combine(foldername, downloadTask.CurrentRequest.Url.PathComponents[5]);;
+                    var fileidentity = Path.Combine(foldername, downloadTask.CurrentRequest.Url.PathComponents[5]);
                     if (fileManager.FileExists(fileidentity))
                     {
                         var existingFileInfo = new FileInfo(fileidentity);
@@ -907,19 +1325,26 @@ namespace DynaPad
                         fileManager.Move(destinationURL.Path, fileidentity, out NSError errorNewMove);
                         Console.WriteLine("New file MOVED to : {0}", fileidentity);
                     }
-                        
+
                     // we do not need to be on the main/UI thread to load the UIImage
                     //UIImage image = UIImage.FromFile(destinationURL.Path);
-                    InvokeOnMainThread(() => {
+                    InvokeOnMainThread(() =>
+                    {
                         //controller.ImageView.Image = image;
                         //controller.ImageView.Hidden = false;
                         controller.ProgressView.Hidden = true;
+                        controller.BtnDownloadEnabled = true;
                     });
                 }
                 else
                 {
                     Console.WriteLine("Error during the copy: {0}", errorCopy.LocalizedDescription);
                 }
+            }
+
+            public bool IsDivisble(int x, int n)
+            {
+                return (x % n) == 0;
             }
 
             public override void DidCompleteWithError(NSUrlSession session, NSUrlSessionTask task, NSError error)
@@ -931,26 +1356,62 @@ namespace DynaPad
                     Console.WriteLine("Task: {0} completed with error: {1}", task, error.LocalizedDescription);
 
                 float progress = task.BytesReceived / (float)task.BytesExpectedToReceive;
-                InvokeOnMainThread(() => {
+                InvokeOnMainThread(() =>
+                {
                     controller.ProgressView.Progress = progress;
                 });
 
                 var taskindex = controller.taskslist.FindIndex(t => t.TaskIdentifier == task.TaskIdentifier);
-                controller.taskslist.RemoveAt(taskindex);
+                if (taskindex < controller.taskslist.Count)
+                {
+                    controller.taskslist.RemoveAt(taskindex);
+                }
 
                 controller.downloadTask = null;
                 //controller.downloadSession = null;
+
+                if (controller.taskslist.Count >= 10)
+                {
+                    if (IsDivisble(controller.taskslist.Count, 10))
+                    {
+                        InvokeOnMainThread(() =>
+                        {
+                            var toast = new Toast(controller.taskslist.Count + " files left in download queue");
+                            toast.SetDuration(5000);
+                            toast.SetType(ToastType.Info);
+                            toast.SetGravity(ToastGravity.Bottom);
+                            toast.Show();
+                        });
+                    }
+                }
+                else
+                {
+                    //if (IsDivisble(controller.taskslist.Count, 1))
+                    //{
+                        InvokeOnMainThread(() =>
+                        {
+                        var toast = new Toast(controller.taskslist.Count + " files left in download queue");
+                            toast.SetDuration(5000);
+                            toast.SetType(ToastType.Info);
+                            toast.SetGravity(ToastGravity.Bottom);
+                            toast.Show();
+                        });
+                    //}
+                }
 
                 if (controller.taskslist.Count == 0)
                 {
                     InvokeOnMainThread(() =>
                     {
+                        controller.BtnDownload.Enabled = true;
+                        controller.DownloadButtonGlobalEnabled = true;
                         //Toast toast = new Toast("A requested medical record was downloaded");
-                        Toast toast = new Toast("The requested medical records have been downloaded");
+                        var toast = new Toast("The requested medical records have been downloaded");
+                        toast.SetDuration(20000);
                         toast.SetType(ToastType.Info);
                         toast.SetGravity(ToastGravity.Bottom);
                         toast.Show();
-                    //controller.PresentViewController(CommonFunctions.AlertPrompt("Download Completed", "The requested medical records have been downloaded", true, null, false, null), true, null);
+                        //controller.PresentViewController(CommonFunctions.AlertPrompt("Download Completed", "The requested medical records have been downloaded", true, null, false, null), true, null);
                     });
                 }
             }
@@ -976,7 +1437,9 @@ namespace DynaPad
 
                 InvokeOnMainThread(() =>
                 {
-                    Toast toast = new Toast("The requested medical records have been downloaded");
+                    controller.BtnDownload.Enabled = true;
+
+                    var toast = new Toast("The requested medical records have been downloaded");
                     toast.SetType(ToastType.Info);
                     toast.SetGravity(ToastGravity.Bottom);
                     toast.Show();
@@ -1086,7 +1549,7 @@ namespace DynaPad
             {
                 var rootElement = new DynaMultiRootElement(SelectedAppointment.SelectedQForm.FormName + " - " + SelectedAppointment.ApptPatientName);
 
-                var rootPaddedView = new PaddedUIView<UILabel>()
+                var rootPaddedView = new PaddedUIView<UILabel>
                 {
                     Enabled = true,
                     Type = "Section",
@@ -1208,7 +1671,7 @@ namespace DynaPad
                 }
                 catch (ObjectDisposedException oex)     // in case previous search completed
                 {
-                    //Console.WriteLine($"\nObjectDisposedException in Submit with: {oex.Message}");
+                    Console.WriteLine($"\nObjectDisposedException in Submit with: {oex.Message}");
                 }
 
                 using (cts = new CancellationTokenSource())
@@ -1225,7 +1688,7 @@ namespace DynaPad
                     }
                     catch (TaskCanceledException tex)       // if the operation is cancelled, do nothing
                     {
-                        //Console.WriteLine($"\nCanceled with: {tex.Message}");
+                        Console.WriteLine($"\nCanceled with: {tex.Message}");
 
                         //CommonFunctions.sendErrorEmail((Exception)tex);
 
@@ -1314,23 +1777,97 @@ namespace DynaPad
                     {
                         var finalJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
 
-                        var dds = new DynaPadService.DynaPadService() { Timeout = 60000 };
+                        var userid = DynaClassLibrary.DynaClasses.LoginContainer.User.UserId;
+                        var userconfig = CommonFunctions.GetUserConfig();
+                        var apptid = SelectedAppointment.ApptId;
+                        var formid = SelectedAppointment.ApptFormId;
+                        var doctorid = SelectedAppointment.ApptDoctorId;
+                        var locationid = SelectedAppointment.ApptLocationId;
+                        var patientid = SelectedAppointment.ApptPatientId;
+                        var patientname = SelectedAppointment.ApptPatientName;
+                        var isdoctorform = SelectedAppointment.SelectedQForm.IsDoctorForm;
+
+                        //var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
 
                         cancelButtonF.RemoveFromSuperview();
 
-                        dds.SubmitFormAnswers(CommonFunctions.GetUserConfig(), finalJson, true, isDoctorForm);
-
-                        var filename = SelectedAppointment.ApptPatientName.Replace(" ", "_") + "_" + isDoctorForm + "_sig_" + DateTime.Now.ToString("s").Replace(":", "_") + ".gif";
-                        var file = sig.GetImage(new CGSize(600, 400), true, true).AsPNG().ToArray();
-
-                        var fileid = dds.SaveFile(CommonFunctions.GetUserConfig(), SelectedAppointment.ApptId, SelectedAppointment.ApptPatientId, SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId, filename, "Signature", "DynaPad", "", "", file, isDoctorForm, true);
-
-                        if (fileid.StartsWith("error", StringComparison.CurrentCulture))
+                        //dds.SubmitFormAnswers(CommonFunctions.GetUserConfig(), finalJson, true, isDoctorForm);
+                        var formtype = "patient";
+                        if (SelectedAppointment.SelectedQForm.IsDoctorForm)
                         {
-                            CommonFunctions.sendErrorEmail(new Exception("dds.SaveFile error: apptid = " + SelectedAppointment.ApptId));
+                            formtype = "doctor";
+                        }
+                        string formFileName = "Form_" + formtype + "_" + SelectedAppointment.SelectedQForm.PatientName.Replace(" ", "") + "_" + DateTime.Now.ToString("yyyyMMdd");
+
+                        var documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaFilesAwaitingUpload/" + SelectedAppointment.ApptPatientId + "/" + SelectedAppointment.ApptId);
+                        if (!Directory.Exists(documentsPath))
+                        {
+                            Directory.CreateDirectory(documentsPath);
+                        }
+                        var formFinalPath = Path.Combine(documentsPath, formFileName + ".txt");
+                        if (File.Exists(formFinalPath))
+                        {
+                            File.Delete(formFinalPath);
                         }
 
-                        //loadingOverlay.Hide();
+                        var formDynaUpload = new DynaFile
+                        {
+                            FileName = formFileName,
+                            UserId = DynaClassLibrary.DynaClasses.LoginContainer.User.UserId,
+                            UserConfig = userconfig,
+                            ApptId = apptid,
+                            FormId = formid,
+                            IsDoctorForm = isdoctorform,
+                            DoctorId = doctorid,
+                            LocationId = locationid,
+                            PatientId = patientid,
+                            PatientName = patientname,
+                            Type = "Form",
+                            Json = finalJson,
+                            FileUrl = formFinalPath,
+                            Status = "Submitted",
+                            DateCreated = DateTime.Today
+                        };
+
+                        File.WriteAllText(formFinalPath, JsonConvert.SerializeObject(formDynaUpload)); // writes to local storage
+
+                        var sigfilename = "Signature_" + formtype + "_" + SelectedAppointment.ApptPatientName.Replace(" ", "") + "_" + DateTime.Now.ToString("yyyyMMdd") + ".gif";
+                        var sigfile = sig.GetImage(new CGSize(600, 400), true, true).AsPNG().ToArray();
+
+                        var sigFinalPath = Path.Combine(documentsPath, sigfilename);
+                        if (File.Exists(sigFinalPath))
+                        {
+                            File.Delete(sigFinalPath);
+                        }
+
+                        var sigDynaUpload = new DynaFile
+                        {
+                            FileName = sigfilename,
+                            UserId = DynaClassLibrary.DynaClasses.LoginContainer.User.UserId,
+                            UserConfig = userconfig,
+                            ApptId = apptid,
+                            FormId = formid,
+                            IsDoctorForm = isdoctorform,
+                            DoctorId = doctorid,
+                            LocationId = locationid,
+                            PatientId = patientid,
+                            PatientName = patientname,
+                            Type = "Signature",
+                            Bytes = sigfile,
+                            FileUrl = sigFinalPath,
+                            Status = "Submitted",
+                            DateCreated = DateTime.Today
+                        };
+
+                        File.WriteAllText(sigFinalPath, JsonConvert.SerializeObject(sigDynaUpload)); // writes to local storage
+
+                        //var fileid = dds.SaveFile(CommonFunctions.GetUserConfig(), SelectedAppointment.ApptId, SelectedAppointment.ApptPatientId, SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId, filename, "Signature", "DynaPad", "", "", file, isDoctorForm, true);
+                        //if (fileid.StartsWith("error", StringComparison.CurrentCulture))
+                        //{
+                        //    CommonFunctions.sendErrorEmail(new Exception("dds.SaveFile error: apptid = " + SelectedAppointment.ApptId));
+                        //}
+
+                        loadingOverlay.Hide();
 
                         SetDetailItem(new Section("Summary"), "Summary", "", null, false);
                     }
@@ -1439,11 +1976,11 @@ namespace DynaPad
 
                         var fs = SelectedAppointment.SelectedQForm.FormSections.IndexOf(sectionQuestions);
 
-                        string[][] FormPresetNames = { };
+                        //string[][] FormPresetNames = { };
                         //if (CrossConnectivity.Current.IsConnected)
                         //{
-                        var dds = new DynaPadService.DynaPadService() { Timeout = 60000 };
-                        FormPresetNames = dds.GetAnswerPresets(CommonFunctions.GetUserConfig(), SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId);
+                        //var dds = new DynaPadService.DynaPadService() { Timeout = 60000 };
+                        //FormPresetNames = dds.GetAnswerPresets(CommonFunctions.GetUserConfig(), SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId);
                         var SectionPresets = GetPresetData(SelectedAppointment.ApptFormId, SelectedAppointment.ApptDoctorId, sectionId);
                         //}
                         //else
@@ -1478,20 +2015,17 @@ namespace DynaPad
 
                         foreach (var Preset in SectionPresets)
                         {
-                            foreach (string[][] arrPreset in Preset)
-                            {
-                                var mre = GetPreset(arrPreset[0][3], arrPreset[0][1], arrPreset[0][2], fs, sectionId, presetGroup, sectionQuestions, presetSection, origS, IsDoctorForm, nextbtn);
-
-                                presetSection.Add(mre);
-                            }
-                        }
-
-                        foreach (string[] arrPreset in FormPresetNames)
-                        {
-                            var mre = GetPreset(arrPreset[3], arrPreset[1], arrPreset[2], fs, sectionId, presetGroup, sectionQuestions, presetSection, origS, IsDoctorForm, nextbtn);
+                            var mre = GetPreset(Preset.PresetId, Preset.PresetName, Preset.PresetJson, fs, sectionId, presetGroup, sectionQuestions, presetSection, origS, IsDoctorForm, nextbtn);
 
                             presetSection.Add(mre);
                         }
+
+                        //foreach (string[] arrPreset in FormPresetNames)
+                        //{
+                        //    var mre = GetPreset(arrPreset[3], arrPreset[1], arrPreset[2], fs, sectionId, presetGroup, sectionQuestions, presetSection, origS, IsDoctorForm, nextbtn);
+
+                        //    presetSection.Add(mre);
+                        //}
 
                         var btnNewSectionPreset = new GlassButton(new RectangleF(0, 0, (float)View.Frame.Width, 50))
                         {
@@ -2028,7 +2562,7 @@ namespace DynaPad
                                     htidval = question.DefaultValue;
                                 }
 
-                                var seg = new DynaSegmented()
+                                var seg = new DynaSegmented
                                 {
                                     Frame = new CGRect(0, 0, View.Frame.Width, 30),
                                     Required = question.IsRequired,
@@ -2077,14 +2611,13 @@ namespace DynaPad
                                 float increment = 1;
                                 float qanswer = 0;
 
-                                switch (question.QuestionType)
+                                if (question.QuestionType == "Height")
                                 {
-                                    case "Height":
-                                        questionmax = 12;
-                                        break;
-                                    case "Weight":
-                                        questionmax = 350;
-                                        break;
+                                    questionmax = 12;
+                                }
+                                else if (question.QuestionType == "Weight")
+                                {
+                                    questionmax = 350;
                                 }
 
                                 if (!string.IsNullOrEmpty(question.MinValue))
@@ -2137,13 +2670,13 @@ namespace DynaPad
                             case "Grid":
                                 var columns = new List<ItemColumn>
                                 {
-                                    new ItemColumn() { Header = "first", Type = "Text", AnswerText = "dani" },
-                                    new ItemColumn() { Header = "last", Type = "Text", AnswerText = "harel" },
-                                    new ItemColumn() { Header = "ass", Type = "Switch", AnswerText = "true" }
+                                    new ItemColumn { Header = "first", Type = "Text", AnswerText = "dani" },
+                                    new ItemColumn { Header = "last", Type = "Text", AnswerText = "harel" },
+                                    new ItemColumn { Header = "ass", Type = "Switch", AnswerText = "true" }
                                 };// question.QuestionRowItem.ItemColumns;
                                 var rows = new List<QuestionRowItem>
                                 {
-                                    new QuestionRowItem() { ItemColumns = columns }
+                                    new QuestionRowItem { ItemColumns = columns }
                                 };
                                 var viewModel = new ViewModel(columns, rows);//(question.QuestionRowItem.ItemColumns, question.ItemRows);
 
@@ -2191,7 +2724,7 @@ namespace DynaPad
                                     await Task.Delay(100);
                                     var a = sender;
                                     var b = args;
-                                    DynamicModel c = (DynamicModel)grid.GetRecordAtRowIndex(args.RowColumnIndex.RowIndex);
+                                    var c = (DynamicModel)grid.GetRecordAtRowIndex(args.RowColumnIndex.RowIndex);
                                     var d = grid.GetRecordAtRowIndex(args.RowColumnIndex.RowIndex);
                                     //var e = c.Values[grid.Columns[args.RowColumnIndex.ColumnIndex].MappingName];
                                     var n = viewModel.DynamicCollection[args.RowColumnIndex.RowIndex - 1].Values[grid.Columns[args.RowColumnIndex.ColumnIndex].MappingName.Substring(7, grid.Columns[args.RowColumnIndex.ColumnIndex].MappingName.Length - 8)].ToString();
@@ -2259,7 +2792,7 @@ namespace DynaPad
                                                 AllowEditing = true,
                                                 HeaderTextAlignment = UITextAlignment.Left
                                             };
-                                            ObservableCollection<string> coptions = new ObservableCollection<string>();
+                                            var coptions = new ObservableCollection<string>();
                                             foreach (var o in c.Options)
                                             {
                                                 coptions.Add(o);
@@ -2581,6 +3114,9 @@ namespace DynaPad
                                     case "Subtitle":
                                         headerLabel.NestedView.Text = tQuestion.Subtitle.ToUpper();
                                         break;
+                                    default:
+                                        headerLabel.NestedView.Text = tQuestion.QuestionText.ToUpper();
+                                        break;
                                 }
                                 UIButton headerDic = null;
                                 if (sec.HeaderView.Subviews.Length > 1)
@@ -2750,7 +3286,7 @@ namespace DynaPad
                     var fs = SelectedAppointment.SelectedQForm.FormSections.IndexOf(sectionQuestions);
 
                     var presetJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm.FormSections[fs]);
-                    var dds = new DynaPadService.DynaPadService() { Timeout = 60000 };
+                    var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
                     dds.SaveAnswerPreset(CommonFunctions.GetUserConfig(), SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, true, presetName, presetJson, SelectedAppointment.ApptLocationId, presetId);
 
                     if (presetId == null)
@@ -2807,7 +3343,7 @@ namespace DynaPad
                     var fs = SelectedAppointment.SelectedQForm.FormSections.IndexOf(sectionQuestions);
 
                     var presetJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm.FormSections[fs]);
-                    var dds = new DynaPadService.DynaPadService() { Timeout = 60000 };
+                    var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
                     dds.DeleteAnswerPreset(CommonFunctions.GetUserConfig(), SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, presetId);
 
                     //var mre = GetPreset(presetId, presetName, presetJson, fs, sectionId, presetGroup, sectionQuestions, presetSection, origS, isDoctorInput, nextbtn);
@@ -2918,7 +3454,7 @@ namespace DynaPad
         {
             await Task.Delay(100);
             var grid = (DynaGrid)sender;
-            ObservableCollection<DynamicModel> viewModel_dynamicCollection = (ObservableCollection<DynamicModel>)grid.ItemsSource;
+            var viewModel_dynamicCollection = (ObservableCollection<DynamicModel>)grid.ItemsSource;
             var n = viewModel_dynamicCollection[args.RowColumnIndex.RowIndex - 1].Values[grid.Columns[args.RowColumnIndex.ColumnIndex].MappingName.Substring(7, grid.Columns[args.RowColumnIndex.ColumnIndex].MappingName.Length - 8)].ToString();
             var newvalue = grid.GetCellValue(viewModel_dynamicCollection[args.RowColumnIndex.RowIndex - 1], grid.Columns[args.RowColumnIndex.ColumnIndex].MappingName).ToString();
             //Console.Write(newvalue);
@@ -2931,7 +3467,7 @@ namespace DynaPad
         {
             bool result = true;
 
-            WebRequest webRequest = WebRequest.Create(url);
+            var webRequest = WebRequest.Create(url);
             webRequest.Timeout = 1200; // miliseconds
             webRequest.Method = "HEAD";
 
@@ -3035,20 +3571,20 @@ namespace DynaPad
 
         void GetAutoData(string qid)
         {
-            NSMutableArray array = new NSMutableArray();
+            var array = new NSMutableArray();
             //array.Add(getDictionary("John", "24"));
             //array.Add(getDictionary("James", "37"));
 
-            string documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaAutoBoxes");
+            var documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaAutoBoxes");
             string localFilename = qid + ".txt";
-            string localPath = Path.Combine(documentsPath, localFilename);
-            
+            var localPath = Path.Combine(documentsPath, localFilename);
+
             if (File.Exists(localPath))
             {
-                XmlDocument listxml = new XmlDocument();
+                var listxml = new XmlDocument();
                 listxml.Load(localPath);
                 XmlElement root = listxml.DocumentElement;
-                XmlNodeList nodes = root.SelectNodes("/Items/Item");
+                var nodes = root.SelectNodes("/Items/Item");
 
                 foreach (XmlNode node in nodes)
                 {
@@ -3060,35 +3596,20 @@ namespace DynaPad
         }
 
 
-        List<List<string[][]>> GetPresetData(string formid, string doctorid, string sectionid)
+        List<DynaPreset> GetPresetData(string formid, string doctorid, string sectionid)
         {
-            List<List<string[][]>> array = new List<List<string[][]>>();
+            var array = new List<DynaPreset>();
 
-            string documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaPresets/" + formid + "/" + doctorid + "/" + sectionid);
+            var documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaPresets/" + formid + "/" + doctorid + "/" + sectionid);
 
-            var files = Directory.GetFiles(documentsPath);
-
-            //var ass = new string[files.Length][];
-
-            foreach (string file in files)
+            if (Directory.Exists(documentsPath))
             {
-                XmlDocument listxml = new XmlDocument();
-                listxml.Load(file);
-                XmlElement root = listxml.DocumentElement;
-                XmlNodeList nodes = root.SelectNodes("/Items/Item");
+                var files = Directory.GetFiles(documentsPath);
 
-                string[][] sarray = new string[nodes.Count][];
-                List<string[][]> farray = new List<string[][]>();
-
-                for (int i = 0; i < nodes.Count; i++)
+                foreach (string file in files)
                 {
-                    sarray[i][0] = nodes[i].Attributes[0].Value;
-                    sarray[i][1] = nodes[i].Attributes[1].Value;
-
-                    farray.Add(sarray);
+                    array.Add(JsonConvert.DeserializeObject<DynaPreset>(File.ReadAllText(file)));
                 }
-
-                array.Add(farray);
             }
 
             return array;
@@ -3160,7 +3681,7 @@ namespace DynaPad
                     nsec.FooterView.Hidden = true;
 
 
-                    var dds = new DynaPadService.DynaPadService() { Timeout = 60000 };
+                    var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
                     var origJson = dds.GetFiles(CommonFunctions.GetUserConfig(), SelectedAppointment.ApptId, SelectedAppointment.ApptPatientId, SelectedAppointment.ApptPatientName, SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId);
                     JsonHandler.OriginalFormJsonString = origJson;
                     SelectedAppointment.ApptMRFolders = JsonConvert.DeserializeObject<List<MRFolder>>(origJson);
@@ -3216,7 +3737,7 @@ namespace DynaPad
                     {
                         MappingName = "MRName",
                         HeaderText = " File Name",
-                        Width = fgrid.Frame.Width * 0.55,
+                        Width = fgrid.Frame.Width * 0.45,
                         //mrNameColumn.MinimumWidth = fgrid.Frame.Width * 0.40;
                         HeaderTextAlignment = UITextAlignment.Left,
                         TextAlignment = UITextAlignment.Left
@@ -3226,7 +3747,7 @@ namespace DynaPad
                     {
                         MappingName = "MRApptDate",
                         HeaderText = "Appt Date",
-                        Width = fgrid.Frame.Width * 0.10,
+                        Width = fgrid.Frame.Width * 0.15,
                         //mrDateColumn.MinimumWidth = fgrid.Frame.Width * 0.20;
                         HeaderTextAlignment = UITextAlignment.Left,
                         TextAlignment = UITextAlignment.Left
@@ -3256,10 +3777,9 @@ namespace DynaPad
                     {
                         MappingName = "MRFileType",
                         HeaderText = "File Type",
-                        //mrFileTypeColumn.Width = fgrid.Frame.Width * 0.15;
+                        Width = fgrid.Frame.Width * 0.10,
                         HeaderTextAlignment = UITextAlignment.Left,
-                        TextAlignment = UITextAlignment.Left,
-                        IsHidden = true
+                        TextAlignment = UITextAlignment.Left
                     };
 
                     var mrDownloadedColumn = new GridSwitchColumn
@@ -3274,10 +3794,10 @@ namespace DynaPad
 
                     fgrid.Columns.Add(mrFolderColumn);
                     fgrid.Columns.Add(mrNameColumn);
-                    fgrid.Columns.Add(mrDateColumn);
                     fgrid.Columns.Add(mrDoctorColumn);
                     fgrid.Columns.Add(mrLocationColumn);
                     fgrid.Columns.Add(mrFileTypeColumn);
+                    fgrid.Columns.Add(mrDateColumn);
                     fgrid.Columns.Add(mrDownloadedColumn);
 
                     fgrid.GroupColumnDescriptions.Add(new GroupColumnDescription { ColumnName = "MRFolderName" });
@@ -3359,7 +3879,7 @@ namespace DynaPad
                         var directoryname = Path.Combine(cache, "DynaMedicalRecords");
                         var foldername = Path.Combine(directoryname, rowData.MRPatientId);
                         var fileidentity = Path.Combine(foldername, rowData.MRId + "." + rowData.MRFileType);
-                   
+
                         var PreviewController = UIDocumentInteractionController.FromUrl(NSUrl.FromFilename(fileidentity));
                         PreviewController.Delegate = new UIDocumentInteractionControllerDelegateClass(UIApplication.SharedApplication.KeyWindow.RootViewController);
                         BeginInvokeOnMainThread(() =>
@@ -3394,7 +3914,7 @@ namespace DynaPad
 
         public class UIDocumentInteractionControllerDelegateClass : UIDocumentInteractionControllerDelegate
         {
-            UIViewController ownerVC;
+            readonly UIViewController ownerVC;
 
             public UIDocumentInteractionControllerDelegateClass(UIViewController vc)
             {
@@ -3450,6 +3970,9 @@ namespace DynaPad
                     e.Cancel = true;
                     break;
                 case "MRFileType":
+                    e.Cancel = true;
+                    break;
+                default:
                     e.Cancel = true;
                     break;
             }
@@ -3522,7 +4045,7 @@ namespace DynaPad
                 //mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
                 //mvc.Add(loadingOverlay);
 
-                var dds = new DynaPadService.DynaPadService() { Timeout = 60000 };
+                var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
                 var origJson = dds.GetFiles(CommonFunctions.GetUserConfig(), SelectedAppointment.ApptId, SelectedAppointment.ApptPatientId, SelectedAppointment.ApptPatientName, SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId);
                 JsonHandler.OriginalFormJsonString = origJson;
                 SelectedAppointment.ApptMRFolders = JsonConvert.DeserializeObject<List<MRFolder>>(origJson);
@@ -3540,6 +4063,321 @@ namespace DynaPad
             //    loadingOverlay.Hide();
             //}
         }
+
+
+        public DynaMultiRootElement GetUploadElement(string valueId, string context)
+        {
+            try
+            {
+                var uploadElement = new DynaMultiRootElement("Upload Forms");
+
+                var uploadPaddedView = new PaddedUIView<UILabel>
+                {
+                    Enabled = true,
+                    Type = "Section",
+                    Frame = new CGRect(0, 0, 0, 40),
+                    Padding = 5f
+                };
+                uploadPaddedView.NestedView.Text = "Upload Forms - " + DynaClassLibrary.DynaClasses.LoginContainer.User.SelectedLocation.LocationName;
+                uploadPaddedView.NestedView.TextAlignment = UITextAlignment.Center;
+                uploadPaddedView.NestedView.Font = UIFont.BoldSystemFontOfSize(17);
+                uploadPaddedView.setStyle();
+
+                var uploadSection = new DynaSection("Upload")
+                {
+                    HeaderView = new UIView(new CGRect(0, 0, 0, 0)),
+                    FooterView = new UIView(new CGRect(0, 0, 0, 0))
+                };
+                uploadSection.FooterView.Hidden = true;
+
+                string documentsPath;
+
+                if (context == "UploadSubmittedPatientForms")
+                {
+                    documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaFilesAwaitingUpload/" + SelectedAppointment.ApptPatientId + "/" + SelectedAppointment.ApptId);
+                }
+                else
+                {
+                    documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaFilesAwaitingUpload/");
+                }
+
+                var array = new List<DynaFile>();
+                string[] files;
+
+                if (Directory.Exists(documentsPath) && Directory.GetFiles(documentsPath, "*.*", SearchOption.AllDirectories).Length > 0)
+                {
+                    files = Directory.GetFiles(documentsPath, "*.*", SearchOption.AllDirectories);
+
+                    foreach (string file in files)
+                    {
+                        string contents = File.ReadAllText(file);
+                        var userconfig = CommonFunctions.GetUserConfig();
+
+                        var filename = Path.GetFileName(file);
+                        var filetype = filename.Substring(0, filename.IndexOf("_", StringComparison.CurrentCulture));
+
+                        var upload = JsonConvert.DeserializeObject<DynaFile>(File.ReadAllText(file));
+
+                        //var upload = new DynaFile
+                        //{
+                        //    FileName = filename,
+                        //    UserId = DynaClassLibrary.DynaClasses.LoginContainer.User.UserId,
+                        //    UserConfig = userconfig,
+                        //    FormId = SelectedAppointment.ApptFormId,
+                        //    DoctorId = SelectedAppointment.ApptDoctorId,
+                        //    LocationId = SelectedAppointment.ApptLocationId,
+                        //    PatientId = SelectedAppointment.ApptPatientId,
+                        //    Type = filetype,
+                        //    FileUrl = file,
+                        //    DateCreated = File.GetCreationTime(file),
+                        //    DateUploaded = DateTime.Today
+                        //};
+                        //switch (filetype)
+                        //{
+                        //    case "SubmittedForm":
+                        //        upload.Json = File.ReadAllText(file);
+                        //        break;
+                        //    case "SubmittedSignature":
+                        //        upload.Bytes = File.ReadAllBytes(file);
+                        //        break;
+                        //    case "SubmittedSummary":
+                        //        upload.Html = File.ReadAllText(file);
+                        //        break;
+                        //}
+
+                        array.Add(upload);
+                    }
+
+                    //var dds = new DynaPadService.DynaPadService { Timeout = 180000 };
+
+                    //var toast = new Toast("The requested form(s) have been uploaded");
+                    //toast.SetType(ToastType.Info);
+                    //toast.SetGravity(ToastGravity.Bottom);
+                    //toast.Show();
+                }
+
+
+
+                var btnUpload = new GlassButton(new RectangleF(0, 0, (float)View.Frame.Width, 50))
+                {
+                    NormalColor = UIColor.Green,
+                    DisabledColor = UIColor.Gray
+                };
+                btnUpload.TitleLabel.Font = UIFont.BoldSystemFontOfSize(17);
+                btnUpload.SetTitle("Upload All Files", UIControlState.Normal);
+                btnUpload.TouchUpInside += (sender, e) =>
+                {
+                    UIAlertController UploadPrompt;
+
+                    UploadPrompt = UIAlertController.Create("Upload Forms", "Upload forms? This will upload all forms to the server and generate reports, an internet connection is required!", UIAlertControllerStyle.Alert);
+                    UploadPrompt.AddAction(UIAlertAction.Create("Yes", UIAlertActionStyle.Default, action => UploadSubmittedForms(new string[] { documentsPath })));
+                    UploadPrompt.AddAction(UIAlertAction.Create("No", UIAlertActionStyle.Cancel, null));
+                    //Present Alert
+                    PresentViewController(UploadPrompt, true, null);
+                };
+
+                uploadSection.Add(btnUpload);
+
+
+                var uploadgrid = new SfDataGrid
+                {
+                    Frame = new CGRect(0, 0, View.Frame.Width, View.Frame.Height),
+                    ItemsSource = array,
+                    AutoGenerateColumns = false,
+                    ColumnSizer = ColumnSizer.None,
+                    SelectionMode = SelectionMode.Single,
+                    AllowPullToRefresh = true,
+                    AllowSorting = true
+                };
+                uploadgrid.GridDoubleTapped += UploadGrid_GridDoubleTapped;
+                //uploadgrid.PullToRefreshCommand = new GridCommand(ExecuteUploadPullToRefreshCommand, uploadgrid, valueId);
+
+                var uploaApptColumn = new GridTextColumn
+                {
+                    MappingName = "ApptId",
+                    HeaderText = "Appointment",
+                    Width = 0
+                };
+
+                var uploadNameColumn = new GridTextColumn
+                {
+                    MappingName = "FileName",
+                    HeaderText = " File Name (Double tap to view)",
+                    Width = uploadgrid.Frame.Width * 0.55,
+                    HeaderTextAlignment = UITextAlignment.Left,
+                    TextAlignment = UITextAlignment.Left
+                };
+
+                var uploadTypeColumn = new GridTextColumn
+                {
+                    MappingName = "Type",
+                    HeaderText = "Type",
+                    Width = uploadgrid.Frame.Width * 0.125,
+                    HeaderTextAlignment = UITextAlignment.Left,
+                    TextAlignment = UITextAlignment.Left
+                };
+
+                var uploadStatusColumn = new GridTextColumn
+                {
+                    MappingName = "Status",
+                    HeaderText = "Status",
+                    Width = uploadgrid.Frame.Width * 0.125,
+                    HeaderTextAlignment = UITextAlignment.Left,
+                    TextAlignment = UITextAlignment.Left
+                };
+
+                var uploadDateColumn = new GridTextColumn
+                {
+                    MappingName = "DateCreated",
+                    HeaderText = "Date",
+                    Width = uploadgrid.Frame.Width * 0.10,
+                    HeaderTextAlignment = UITextAlignment.Left,
+                    TextAlignment = UITextAlignment.Left
+                };
+
+                var uploadUploadColumn = new GridTextColumn
+                {
+                    UserCellType = typeof(UploadCell),
+                    MappingName = "FileName",
+                    HeaderText = "U/L",
+                    Width = uploadgrid.Frame.Width * 0.10,
+                    HeaderTextAlignment = UITextAlignment.Left,
+                    TextAlignment = UITextAlignment.Left,
+                    AllowEditing = false
+                };
+
+                uploadgrid.Columns.Add(uploaApptColumn);
+                uploadgrid.Columns.Add(uploadNameColumn);
+                uploadgrid.Columns.Add(uploadTypeColumn);
+                uploadgrid.Columns.Add(uploadStatusColumn);
+                uploadgrid.Columns.Add(uploadDateColumn);
+                uploadgrid.Columns.Add(uploadUploadColumn);
+
+                uploadgrid.GroupColumnDescriptions.Add(new GroupColumnDescription
+                {
+                    ColumnName = "ApptId"
+                });
+                uploadgrid.AllowGroupExpandCollapse = true;
+
+                uploadSection.Add(uploadgrid);
+
+                uploadElement.Add(uploadSection);
+
+                return uploadElement;
+            }
+            catch (Exception ex)
+            {
+                CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                return null;
+                //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+            }
+        }
+
+        public class UploadCell : GridCell
+        {
+            UIButton button;
+            //UILabel label;
+
+            public UploadCell()
+            {
+                button = new UIButton();
+                this.AddSubview(button);
+                //label = new UILabel();
+                //this.AddSubview(label);
+                CanRenderUnLoad = false;
+            }
+
+            protected override void UnLoad()
+            {
+                RemoveFromSuperview();
+            }
+
+            public override void LayoutSubviews()
+            {
+                base.LayoutSubviews();
+                //button.Frame = new CGRect(Bounds.Left, Bounds.Top, Bounds.Width, Bounds.Height);
+                this.button.SetTitle("Upload", UIControlState.Normal);
+                this.button.BackgroundColor = UIColor.Gray;
+                //this.label.Frame = new CGRect(Bounds.Left, Bounds.Top, Bounds.Width, Bounds.Height);
+                //this.label.Text = DataColumn.CellValue.ToString();
+                this.button.TouchUpInside += delegate {
+
+                    var ass = DataColumn.CellValue.ToString();
+                };
+            }
+        }
+
+        async void UploadGrid_GridDoubleTapped(object sender, GridDoubleTappedEventsArgs e)
+        {
+            try
+            {
+                var boundsh = base.TableView.Frame;
+                mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
+                loadingOverlay = new LoadingOverlay(boundsh, true);// { loadingLabelText = "Loading MR..." };
+                loadingOverlay.SetText("Loading...");
+                mvc.Add(loadingOverlay);
+
+                await Task.Delay(10);
+
+                if (e.RowData.GetType() == typeof(DynaFile))
+                {
+                    var rowIndex = e.RowColumnindex.RowIndex;
+                    var rowData = (DynaFile)e.RowData;
+                    var columnIndex = e.RowColumnindex.ColumnIndex;
+                    var filepath = rowData.FileUrl;
+                    var filetype = rowData.Type;
+
+                    if (filepath.StartsWith("Error:", StringComparison.CurrentCulture))
+                    {
+                        PresentViewController(CommonFunctions.AlertPrompt("File Error", "File unavailable, contact administration", true, null, false, null), true, null);
+                        return;
+                    }
+
+
+                    var documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaFilesAwaitingUpload/" + SelectedAppointment.ApptPatientId + "/" + SelectedAppointment.ApptId);
+                    var fileidentity = Path.Combine(documentsPath, rowData.FileName);
+
+                    var file = JsonConvert.DeserializeObject<DynaFile>(File.ReadAllText(fileidentity));
+
+                    UIWebView webView = new UIWebView(new CGRect(View.Bounds.X + 5, View.Bounds.Y + 60, View.Bounds.Width - 5, View.Bounds.Height - 80))
+                    {
+                        ScalesPageToFit = true
+                    };
+
+                    switch (filetype)
+                    {
+                        case "Form":
+                            webView.LoadHtmlString(file.Json, new NSUrl(documentsPath, true));
+                            break;
+                        case "Signature":
+                            webView.LoadHtmlString(file.Bytes.ToString(), new NSUrl(documentsPath, true));
+                            break;
+                        case "Summary":
+                            webView.LoadHtmlString(file.Html, new NSUrl(documentsPath, true));
+                            break;
+                    }
+
+                    //BeginInvokeOnMainThread(() =>
+                    //{
+                    //    PreviewController.PresentPreview(true);
+                    //});
+
+                    loadingOverlay.Hide();
+                }
+            }
+            catch (Exception ex)
+            {
+                var errordata = (MR)e.RowData;
+                var errorfile = "<br/><br/><br/>FILE PATH:<br/><br/>" + errordata.MRPath;
+                CommonFunctions.sendErrorEmail(ex, errorfile);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+            }
+        }
+
+
+
+
 
 
         public DynaMultiRootElement GetMRElement(string valueId)
@@ -3608,18 +4446,7 @@ namespace DynaPad
                 {
                     MappingName = "MRName",
                     HeaderText = " File Name (Double tap to view)",
-                    Width = fgrid.Frame.Width * 0.55,
-                    //mrNameColumn.MinimumWidth = fgrid.Frame.Width * 0.40;
-                    HeaderTextAlignment = UITextAlignment.Left,
-                    TextAlignment = UITextAlignment.Left, 
-                };
-
-                var mrDateColumn = new GridTextColumn
-                {
-                    MappingName = "MRApptDate",
-                    HeaderText = "Appt Date",
-                    Width = fgrid.Frame.Width * 0.10,
-                    //mrDateColumn.MinimumWidth = fgrid.Frame.Width * 0.20;
+                    Width = fgrid.Frame.Width * 0.45,
                     HeaderTextAlignment = UITextAlignment.Left,
                     TextAlignment = UITextAlignment.Left
                 };
@@ -3628,7 +4455,7 @@ namespace DynaPad
                 {
                     MappingName = "MRDoctor",
                     HeaderText = "Doctor",
-                    Width = fgrid.Frame.Width * 0.10,
+                    Width = fgrid.Frame.Width * 0.15,
                     //mrDoctorColumn.MinimumWidth = fgrid.Frame.Width * 0.20;
                     HeaderTextAlignment = UITextAlignment.Left,
                     TextAlignment = UITextAlignment.Left
@@ -3648,10 +4475,18 @@ namespace DynaPad
                 {
                     MappingName = "MRFileType",
                     HeaderText = "File Type",
-                    //mrFileTypeColumn.Width = fgrid.Frame.Width * 0.15;
+                    Width = fgrid.Frame.Width * 0.10,
                     HeaderTextAlignment = UITextAlignment.Left,
-                    TextAlignment = UITextAlignment.Left,
-                    IsHidden = true
+                    TextAlignment = UITextAlignment.Left
+                };
+
+                var mrDateColumn = new GridTextColumn
+                {
+                    MappingName = "MRApptDate",
+                    HeaderText = "Appt Date",
+                    Width = fgrid.Frame.Width * 0.10,
+                    HeaderTextAlignment = UITextAlignment.Left,
+                    TextAlignment = UITextAlignment.Left
                 };
 
                 var mrDownloadedColumn = new GridSwitchColumn
@@ -3665,10 +4500,10 @@ namespace DynaPad
                 };
 
                 fgrid.Columns.Add(mrNameColumn);
-                fgrid.Columns.Add(mrDateColumn);
                 fgrid.Columns.Add(mrDoctorColumn);
                 fgrid.Columns.Add(mrLocationColumn);
                 fgrid.Columns.Add(mrFileTypeColumn);
+                fgrid.Columns.Add(mrDateColumn);
                 fgrid.Columns.Add(mrDownloadedColumn);
 
                 mrSection.Add(fgrid);
@@ -3706,6 +4541,349 @@ namespace DynaPad
         //}
         //WKWebView MRWebViews;
         //UIProgressView progressViews;
+
+
+
+
+
+
+        public string GenerateSummary(string answers)
+        {
+            try
+            {
+                SelectedAppointment.AnsweredQForm = JsonConvert.DeserializeObject<QForm>(answers);
+
+                //var claimantPathVirtual = domainConfig.DomainClaimantsPathVirtual + SelectedAppointment.AnsweredQForm.PatientId + "/"; // + "Summaries"
+                //var claimantPathPhysical = domainConfig.DomainClaimantsPathPhysical + SelectedAppointment.AnsweredQForm.PatientId + "/"; // + "Summaries"
+
+                var type = "patient";
+                if (SelectedAppointment.AnsweredQForm.IsDoctorForm)
+                {
+                    type = "doctor";
+                }
+
+                //var filePathVirtual = Path.Combine(claimantPathVirtual, "Summary_" + type + "_" + SelectedAppointment.AnsweredQForm.PatientName + "_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".pdf");
+                //var filePathPhysical = Path.Combine(claimantPathPhysical, "Summary_" + type + "_" + SelectedAppointment.AnsweredQForm.PatientName + "_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".pdf");
+
+                //iTextSharp.text.Document document = new iTextSharp.text.Document();
+                //PdfWriter writer = PdfWriter.GetInstance(document, new FileStream(filePathPhysical, FileMode.Create));
+                //document.Open();
+
+
+
+                string myHtmlFile = "";
+                var myBuilder = new System.Text.StringBuilder();
+
+                myBuilder.Append("<html xmlns='http://www.w3.org/1999/xhtml'>");
+                myBuilder.Append("<head>");
+                myBuilder.Append("<meta charset='utf-8'/>");
+                myBuilder.Append("<title>");
+                myBuilder.Append("Summary");
+                myBuilder.Append("</title>");
+                myBuilder.Append("<style>");
+                myBuilder.Append("@page { margin: 0; padding: 15mm; }");
+                myBuilder.Append("body { margin: 0 }");
+                myBuilder.Append(".sheet {");
+                myBuilder.Append("margin: 0;");
+                myBuilder.Append("overflow: hidden;");
+                myBuilder.Append("position: relative;");
+                myBuilder.Append("box - sizing: border - box;");
+                myBuilder.Append("page -break-after: always;");
+                myBuilder.Append("}");
+                myBuilder.Append("body.A4.sheet { width: 210mm; height: 296mm }");
+                myBuilder.Append(".sheet.padding - 10mm { padding: 10mm }");
+                myBuilder.Append(".sheet.padding - 15mm { padding: 15mm }");
+                myBuilder.Append(".sheet.padding - 20mm { padding: 20mm }");
+                myBuilder.Append(".sheet.padding - 25mm { padding: 25mm }");
+                myBuilder.Append("@media screen {");
+                myBuilder.Append("body {");
+                myBuilder.Append("background: white }");
+                myBuilder.Append(".sheet {");
+                myBuilder.Append("background: white;");
+                myBuilder.Append("box - shadow: 0 .5mm 2mm rgba(0,0,0,.3);");
+                myBuilder.Append("margin: 5mm auto;");
+                myBuilder.Append("}");
+                myBuilder.Append("}");
+                myBuilder.Append("@media print {");
+                myBuilder.Append("body.A4 { width: 210mm }");
+                myBuilder.Append("}");
+                myBuilder.Append("</style>");
+                myBuilder.Append("</head>");
+                myBuilder.Append("<body class=A4>");
+                myBuilder.Append("<table border='1px' cellpadding='5' cellspacing='0' ");
+                myBuilder.Append("style='border: solid 1px Silver; font-size: x-small;'>");
+
+                myBuilder.Append("<section class='sheet padding-10mm'>");
+                myBuilder.Append("<table style='width: 100%; border-collapse: collapse; margin-bottom: 5px;'>");
+                myBuilder.Append("<tr style='border-bottom: 1px solid black;'>");
+                myBuilder.Append("<td colspan='2'><b>Form Information</b></td>");
+                myBuilder.Append("</tr></table>");
+
+                myBuilder.Append("<table style='background-color: lightgray; width: 100%; border-collapse: collapse; margin-bottom: 15px;'>");
+                myBuilder.Append("<tr>");
+                myBuilder.Append("<td style='width: 100px;'>Patient Name:</td>");
+                myBuilder.Append("<td>" + SelectedAppointment.AnsweredQForm.PatientName + "</td>");
+                myBuilder.Append("</tr>");
+                myBuilder.Append("<tr>");
+                myBuilder.Append("<td style='width: 100px;'>Doctor Name:</td>");
+                myBuilder.Append("<td>" + SelectedAppointment.ApptDoctorId + "</td>");
+                myBuilder.Append("</tr>");
+                myBuilder.Append("<tr>");
+                myBuilder.Append("<td style='width: 100px;'>Date Created:</td>");
+                myBuilder.Append("<td>" + DateTime.Today.ToShortDateString() + "</td>");
+                myBuilder.Append("</tr>");
+                myBuilder.Append("<tr>");
+                myBuilder.Append("<td style='width: 100px;'>Location:</td>");
+                myBuilder.Append("<td>" + SelectedAppointment.ApptLocationId + "</td>");
+                myBuilder.Append("</tr>");
+                myBuilder.Append("</table>");
+
+
+
+                //System.Data.DataTable dtFormHeader = new System.Data.DataTable();
+                //dtFormHeader.Columns.Add();
+                //dtFormHeader.Rows.Add("Form Information");
+
+                //AddTableToPdf(dtFormHeader, document, false, true);
+
+
+
+                //string docName = SelectedAppointment.ApptDoctorId;
+                //string location = SelectedAppointment.ApptLocationId;
+                //Header and appt info
+                //System.Data.DataTable dtHeader = new System.Data.DataTable();
+                //dtHeader.Columns.Add();
+                //dtHeader.Columns.Add();
+                //dtHeader.Rows.Add("Patient Name: ", SelectedAppointment.AnsweredQForm.PatientName);
+                //dtHeader.Rows.Add("Doctor Name: ", docName);
+                //dtHeader.Rows.Add("Date Created: ", DateTime.Today.ToShortDateString());
+                //dtHeader.Rows.Add("Location: ", location);
+
+                //AddTableToPdf(dtHeader, document, true, false);
+
+
+                foreach (FormSection section in SelectedAppointment.AnsweredQForm.FormSections)
+                {
+                    myBuilder.Append("<table style='width: 100%; border-collapse: collapse; margin-bottom: 5px;'>");
+                    myBuilder.Append("<tr style='border-bottom: 1px solid black; padding-bottom: 5px;'>");
+                    myBuilder.Append("<td><b>" + section.SectionName + "</b></td>");
+                    myBuilder.Append("</tr></table>");
+
+                    //System.Data.DataTable dtSectionHeader = new System.Data.DataTable();
+                    //dtSectionHeader.Columns.Add();
+                    //dtSectionHeader.Rows.Add(section.SectionName);
+
+                    //AddTableToPdf(dtSectionHeader, document, false, true);
+
+                    //System.Data.DataTable dt = new System.Data.DataTable();
+                    //dt.Columns.Add();
+                    //dt.Columns.Add();
+
+
+                    myBuilder.Append("<table style='width: 100%; border-collapse: collapse; margin-bottom: 15px;'>");
+
+                    int qIndex = 1;
+
+                    foreach (SectionQuestion question in section.SectionQuestions)
+                    {
+                        if (!question.IsEnabled) continue;
+                        if (question.QuestionOptions != null && question.QuestionOptions.Count > 0)
+                        {
+                            bool rowAdded = false;
+                            foreach (QuestionOption option in question.QuestionOptions)
+                            {
+                                if (option.Chosen)
+                                {
+                                    if (!rowAdded)
+                                    {
+                                        myBuilder.Append("<tr>");
+                                        myBuilder.Append("<td style='width: 25px; padding-bottom: 5px;'>" + qIndex + ".</td>");
+                                        myBuilder.Append("<td style='padding-bottom: 5px;'>" + question.QuestionText + "</td>");
+                                        myBuilder.Append("</tr>");
+                                        myBuilder.Append("<tr>");
+                                        myBuilder.Append("<td style='padding-bottom: 5px;'>&nbsp;</td>");
+                                        myBuilder.Append("<td style='padding-bottom: 5px;'> - " + option.OptionText + "</td>");
+                                        myBuilder.Append("</tr>");
+
+
+                                        //dt.Rows.Add(qIndex + ".", question.QuestionText);
+                                        //dt.Rows.Add("", "   - " + option.OptionText);
+
+                                        rowAdded = true;
+
+                                        qIndex++;
+                                    }
+                                    else
+                                    {
+                                        myBuilder.Append("<tr>");
+                                        myBuilder.Append("<td style='padding-bottom: 5px;'>&nbsp;</td>");
+                                        myBuilder.Append("<td style='padding-bottom: 5px;'> - " + option.OptionText + "</td>");
+                                        myBuilder.Append("</tr>");
+
+                                        //dt.Rows.Add("", "   - " + option.OptionText);
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (!string.IsNullOrEmpty(question.AnswerText))
+                            {
+                                myBuilder.Append("<tr>");
+                                myBuilder.Append("<td style='width: 25px; padding-bottom: 5px;'>" + qIndex + ".</td>");
+                                myBuilder.Append("<td style='padding-bottom: 5px;'>" + question.QuestionText + "</td>");
+                                myBuilder.Append("</tr>");
+                                myBuilder.Append("<tr>");
+                                myBuilder.Append("<td style='padding-bottom: 5px;'>&nbsp;</td>");
+                                myBuilder.Append("<td style='padding-bottom: 5px;'> - " + question.AnswerText + "</td>");
+                                myBuilder.Append("</tr>");
+
+
+                                //dt.Rows.Add(qIndex + ".", question.QuestionText);
+                                //dt.Rows.Add("", "   - " + question.AnswerText);
+
+                                qIndex++;
+                            }
+                        }
+                    }
+
+                    myBuilder.Append("</table>");
+
+                    //AddTableToPdf(dt, document, false, false);
+                }
+
+                //document.Close();
+
+
+
+                myBuilder.Append("</body>");
+                myBuilder.Append("</html>");
+
+                myHtmlFile = myBuilder.ToString();
+
+
+
+
+                //disabled grey out (label and input) - like boolean
+                //text alligned right no bueno
+                //bold radio, check
+                // check confirm button
+                //extra section causing extra grey
+                string fileName = "Summary_" + type + "_" + SelectedAppointment.AnsweredQForm.PatientName.Replace(" ", "") + "_" + DateTime.Now.ToString("yyyyMMddHHmmss");
+                //string fileId = SaveFile(domainConfig, SelectedAppointment.AnsweredQForm.ApptId, SelectedAppointment.AnsweredQForm.PatientId,
+                //   SelectedAppointment.AnsweredQForm.DoctorId,
+                //   SelectedAppointment.AnsweredQForm.LocationId,
+                //   fileName + ".pdf", "Summary", "Summaries", filePathPhysical, filePathVirtual, File.ReadAllBytes(filePathPhysical), SelectedAppointment.AnsweredQForm.IsDoctorForm);
+                //string finalPath = Path.Combine(claimantPathPhysical, fileName + ".pdf");
+
+                var documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaFilesAwaitingUpload/" + SelectedAppointment.ApptPatientId + "/" + SelectedAppointment.ApptId);
+                if (!Directory.Exists(documentsPath))
+                {
+                    Directory.CreateDirectory(documentsPath);
+                }
+                var finalPath = Path.Combine(documentsPath, fileName + ".html");
+                if (File.Exists(finalPath))
+                {
+                    File.Delete(finalPath);
+                }
+
+                var summaryDynaUpload = new DynaFile
+                {
+                    FileName = fileName,
+                    UserId = DynaClassLibrary.DynaClasses.LoginContainer.User.UserId,
+                    UserConfig = CommonFunctions.GetUserConfig(),
+                    ApptId = SelectedAppointment.ApptId,
+                    FormId = SelectedAppointment.ApptFormId,
+                    DoctorId = SelectedAppointment.ApptDoctorId,
+                    LocationId = SelectedAppointment.ApptLocationId,
+                    PatientId = SelectedAppointment.ApptPatientId,
+                    PatientName = SelectedAppointment.ApptPatientName,
+                    Type = "Summary",
+                    Html = myHtmlFile,
+                    FileUrl = finalPath,
+                    Status = "Submitted",
+                    DateCreated = DateTime.Today
+                };
+
+                File.WriteAllText(finalPath, JsonConvert.SerializeObject(summaryDynaUpload)); // writes to local storage
+
+                return finalPath;
+            }
+            catch (Exception ex)
+            {
+                CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                return "error: " + ex.Message;
+            }
+        }
+
+
+        //void AddTableToPdf(System.Data.DataTable dt, iTextSharp.text.Document document, bool isHeader, bool isSectionHeader)
+        //{
+        //    PdfPTable table = new PdfPTable(dt.Columns.Count);
+        //    iTextSharp.text.Font font5 = iTextSharp.text.FontFactory.GetFont(iTextSharp.text.FontFactory.HELVETICA, 10);
+        //    //PdfPRow row = null;
+
+        //    float[] widths;
+        //    if (isHeader)
+        //    {
+        //        widths = new float[] { 215f, 995f };
+        //        table.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
+        //        table.DefaultCell.BorderWidth = 0;
+        //        table.DefaultCell.BorderColor = iTextSharp.text.BaseColor.LIGHT_GRAY;
+        //        table.DefaultCell.BackgroundColor = iTextSharp.text.BaseColor.LIGHT_GRAY;
+
+        //    }
+        //    else if (isSectionHeader)
+        //    {
+        //        widths = new float[] { 150f };
+        //        table.DefaultCell.Border = iTextSharp.text.Rectangle.BOTTOM_BORDER;
+        //        table.DefaultCell.Colspan = 2;
+        //        table.SpacingAfter = 3;
+        //        table.SpacingBefore = 5;
+        //    }
+        //    else
+        //    {
+        //        //widths = new float[] { 45f, 895f, 595f };
+        //        widths = new float[] { 45f, 995f };
+        //        table.DefaultCell.Border = iTextSharp.text.Rectangle.NO_BORDER;
+        //    }
+
+        //    table.SetWidths(widths);
+        //    //table.DefaultCell.Border = Rectangle.NO_BORDER;
+        //    //table.LockedWidth = true;
+        //    //table.TotalWidth = 400f;
+        //    //table.WidthPercentage = 100;
+        //    table.HorizontalAlignment = 0;
+        //    //int iCol = 0;
+        //    //string colname = "";
+        //    //PdfPCell cell = new PdfPCell(new Phrase("Products"));
+
+        //    //cell.Colspan = dt.Columns.Count;
+
+        //    //foreach (DataColumn c in dt.Columns)
+        //    //{
+
+        //    //  table.AddCell(new Phrase(c.ColumnName, font5));
+        //    //}
+
+        //    foreach (System.Data.DataRow r in dt.Rows)
+        //    {
+        //        if (dt.Rows.Count > 0)
+        //        {
+        //            for (int i = 0; i < r.ItemArray.Length; i++)
+        //            {
+        //                table.AddCell(new iTextSharp.text.Phrase(r[i].ToString(), font5));
+        //            }
+        //            //table.AddCell(new Phrase(r[0].ToString(), font5));
+        //            //table.AddCell(new Phrase(r[1].ToString(), font5));
+        //        }
+        //    }
+        //    document.Add(table);
+        //}
+
+
+
 
 
 
@@ -4125,7 +5303,7 @@ namespace DynaPad
                     nsec.Add(dcanvas);
                     //CanvasContainerView notesCanvas = CanvasContainerView.FromCanvasSize(new CGSize(800, 800));
                     //nsec.Add(notesCanvas);
-                    var ass = new UIViewController() { dcanvas };
+                    var ass = new UIViewController { dcanvas };
 
                     var nroo = new RootElement("Notes") { nsec };
 
@@ -4318,7 +5496,7 @@ namespace DynaPad
 
                         messageLabel = new UILabel();
 
-                        DeleteSavedDictationButton = new UIButton() { Frame = new CGRect(300, 0, 50, 50) };
+                        DeleteSavedDictationButton = new UIButton { Frame = new CGRect(300, 0, 50, 50) };
                         DeleteSavedDictationButton.SetTitleColor(UIColor.Black, UIControlState.Normal);
                         DeleteSavedDictationButton.SetImage(UIImage.FromBundle("Delete"), UIControlState.Normal);
                         DeleteSavedDictationButton.TouchUpInside += (sende, er) =>
@@ -4462,7 +5640,7 @@ namespace DynaPad
                 {
                     if (isValid)
                     {
-                        var dds = new DynaPadService.DynaPadService() { Timeout = 60000 };
+                        var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
                         var deletedDictation = dds.DeleteDicatation(CommonFunctions.GetUserConfig(), dictation[3], formId, sectionId, SelectedAppointment.SelectedQForm.DoctorId);
                         NavigationController.DismissViewController(true, null);
                     }
@@ -4829,7 +6007,7 @@ namespace DynaPad
                     var dictationData = NSData.FromUrl(audioFilePath); //the path here can be a path to a video on the camera roll
                     var dictationArray = dictationData.ToArray();
 
-                    var dds = new DynaPadService.DynaPadService() { Timeout = 60000 };
+                    var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
                     //DynaPadService.DynaPadService dds = new DynaPadService.DynaPadService();
                     var dictationPath = dds.SaveDictation(CommonFunctions.GetUserConfig(), SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, true, SelectedAppointment.SelectedQForm.LocationId, sectionId + "_" + DateTime.Now.ToShortTimeString(), dictationArray);
                     //System.Console.WriteLine("Saving Recording {0}", audioFilePath);
@@ -5430,5 +6608,5 @@ namespace DynaPad
             base.DidReceiveMemoryWarning();
             // Release any cached data, images, etc that aren't in use.
         }
-	}
+    }
 }

@@ -126,7 +126,9 @@ public class MenuItem
 	public string PatientName { get; set; }
 	public string DoctorId { get; set; }
 	public string LocationId { get; set; }
-	public string ApptId { get; set; }
+    public string ApptId { get; set; }
+    public string ReportId { get; set; }
+    public string Status { get; set; }
 	public string CaseId { get; set; }
 	public List<Menu> Menus { get; set; }
 }
@@ -142,7 +144,9 @@ public class Menu
 	public string PatientName { get; set; }
 	public string DoctorId { get; set; }
 	public string LocationId { get; set; }
-	public string ApptId { get; set; }
+    public string ApptId { get; set; }
+    public string ReportId { get; set; }
+    public string Status { get; set; }
 	public List<MenuItem> MenuItems { get; set; }
 }
 
@@ -154,7 +158,9 @@ public static class SelectedAppointment
 {
 	public static string ApptFormId { get; set; }
 	public static string ApptFormName { get; set; }
-	public static string ApptId { get; set; }
+    public static string ApptId { get; set; }
+    public static string ApptReportId { get; set; }
+    public static string ApptStatus { get; set; }
 	public static string CaseId { get; set; }
 	public static string ApptPatientId { get; set; }
 	public static string ApptPatientName { get; set; }
@@ -177,7 +183,8 @@ public class MRFolder
 	public string MRFolderApptId { get; set; }
 	public string MRFolderDoctorId { get; set; }
 	public string MRFolderDoctorLocationId { get; set; }
-	public string MRFolderPatientId { get; set; }
+    public string MRFolderPatientId { get; set; }
+    public string MRFolderPatientName { get; set; }
 	public string MRFolderPath { get; set; }
 }
 
@@ -193,7 +200,8 @@ public class MR
 	public string MRDoctor { get; set; }
 	public string MRDoctorLocationId { get; set; }
 	public string MRLocation { get; set; }
-	public string MRPatientId { get; set; }
+    public string MRPatientId { get; set; }
+    public string MRPatientName { get; set; }
 	public string MRPath { get; set; }
 	public string MRFileType { get; set; }
     public bool IsShortcut { get; set; }
@@ -333,4 +341,27 @@ public class DynaPreset
     public string PresetFileUrl { get; set; }
     public string DateCreated { get; set; }
     public string DateUpdated { get; set; }
+}
+
+public class DynaFile
+{
+    public string FileName { get; set; }
+    public string UserId { get; set; }
+    public ConfigurationObjects UserConfig { get; set; }
+    public string ApptId { get; set; }
+    public DateTime ApptDate { get; set; }
+    public string FormId { get; set; }
+    public bool IsDoctorForm { get; set; }
+    public string DoctorId { get; set; }
+    public string LocationId { get; set; }
+    public string PatientId { get; set; }
+    public string PatientName { get; set; }
+    public string Type { get; set; }
+    public string Json { get; set; }
+    public string Html { get; set; }
+    public byte[] Bytes { get; set; }
+    public string FileUrl { get; set; }
+    public string Status { get; set; }
+    public DateTime DateCreated { get; set; }
+    public DateTime DateUploaded { get; set; }
 }

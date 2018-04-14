@@ -42,9 +42,7 @@ namespace DynaPad
             }
         }
 
-        public FingerPaintViewController()
-        {
-        }
+        public FingerPaintViewController() {}
 
         //protected void HandleImageDownload()
         //{
@@ -133,7 +131,7 @@ namespace DynaPad
             {
                 filename = MREditName + "_" + "edit" + "_" + DateTime.Now.ToString("s").Replace(":", "_") + ".jpg";
                 //var img = UIImage.FromFile("dynapadscreenshot.png");
-                UIImage img = new UIImage();
+                var img = new UIImage();
 
                 //switch (MREditType)
                 //{
@@ -273,14 +271,14 @@ namespace DynaPad
             rect.Y += 20;
             rect.Height -= 20;
 
-            UIStackView vertStackView = new UIStackView(rect)
+            var vertStackView = new UIStackView(rect)
             {
-                Axis = UILayoutConstraintAxis.Vertical,
+                Axis = UILayoutConstraintAxis.Vertical
             };
             contentView.Add(vertStackView);
 
             // Horizontal UIStackView for tools
-            UIStackView horzStackView = new UIStackView
+            var horzStackView = new UIStackView
             {
                 Axis = UILayoutConstraintAxis.Horizontal,
                 Alignment = UIStackViewAlignment.Center,
@@ -289,14 +287,14 @@ namespace DynaPad
             vertStackView.AddArrangedSubview(horzStackView);
 
             // FingerPaintCanvasView for drawing
-            FingerPaintCanvasView canvasView = new FingerPaintCanvasView();
+            var canvasView = new FingerPaintCanvasView();
             vertStackView.AddArrangedSubview(canvasView);
 
             // Add space at left to horizontal UIStackView
             horzStackView.AddArrangedSubview(new UILabel(new CGRect(0, 0, 10, 10)));
 
             // Construct UIPickerView for choosing color, but don't add it to any view
-            PickerDataModel<UIColor> colorModel = new PickerDataModel<UIColor>
+            var colorModel = new PickerDataModel<UIColor>
             {
                 Items =
                 {
@@ -314,13 +312,13 @@ namespace DynaPad
                 }
             };
 
-            UIPickerView colorPicker = new UIPickerView
+            var colorPicker = new UIPickerView
             {
                 Model = colorModel
             };
 
             // Ditto for UIPickerView for stroke thickness
-            PickerDataModel<float> thicknessModel = new PickerDataModel<float>
+            var thicknessModel = new PickerDataModel<float>
             {
                 Items =
 				{
@@ -333,7 +331,7 @@ namespace DynaPad
                 }
             };
 
-            UIPickerView thicknessPicker = new UIPickerView
+            var thicknessPicker = new UIPickerView
             {
                 Model = thicknessModel
             };
@@ -346,7 +344,7 @@ namespace DynaPad
             };
 
             // Set Font to be used in tools
-            UIFont font = UIFont.SystemFontOfSize(24);
+            var font = UIFont.SystemFontOfSize(24);
 
             // Create a NoCaretField text field for invoking color picker & add to horizontal UIStackView
             //  (technique from Xamarin.Forms iOS PickerRenderer
@@ -393,10 +391,9 @@ namespace DynaPad
             toolbar.SetItems(new[] { spacer, doneButton }, false);
 
             // Create the Clear button 
-            UIButton button = new UIButton(UIButtonType.RoundedRect)
-            {
-                Font = font
-            };
+            var button = new UIButton(UIButtonType.RoundedRect);
+            button.TitleLabel.Font = font;
+
             horzStackView.AddArrangedSubview(button);
 
             button.Layer.BorderColor = UIColor.Black.CGColor;
@@ -411,10 +408,8 @@ namespace DynaPad
             };
 
 
-            UIButton savebutton = new UIButton(UIButtonType.RoundedRect)
-            {
-                Font = font
-            };
+            var savebutton = new UIButton(UIButtonType.RoundedRect);
+            savebutton.TitleLabel.Font = font;
             horzStackView.AddArrangedSubview(savebutton);
 
             savebutton.Layer.BorderColor = UIColor.Black.CGColor;
@@ -426,10 +421,8 @@ namespace DynaPad
             savebutton.TouchUpInside += SaveButtonAction;
 
 
-            UIButton closebutton = new UIButton(UIButtonType.RoundedRect)
-            {
-                Font = font
-            };
+            var closebutton = new UIButton(UIButtonType.RoundedRect);
+            closebutton.TitleLabel.Font = font;
             horzStackView.AddArrangedSubview(closebutton);
 
             closebutton.Layer.BorderColor = UIColor.Black.CGColor;
@@ -469,7 +462,7 @@ namespace DynaPad
                 loadingOverlay = new LoadingOverlay(contentView.Bounds);
                 contentView.Add(loadingOverlay);
 
-                UIImage im = AsImage(contentView);
+                var im = AsImage(contentView);
                 if (CrossConnectivity.Current.IsConnected)
                 {
 
@@ -483,7 +476,7 @@ namespace DynaPad
                     {
                         var b = o as BackgroundWorker;
 
-                        byte[] editArr = im.AsJPEG(0.5f).ToArray();
+                        var editArr = im.AsJPEG(0.5f).ToArray();
                         var saveType = MREditing ? "DynaPad Edit" : "DynaPad Note";
 
                         var dps = new DynaPadService.DynaPadService();
@@ -530,7 +523,7 @@ namespace DynaPad
             {
                 UIGraphics.BeginImageContextWithOptions(view.Bounds.Size, view.Opaque, 1);
                 view.DrawViewHierarchy(view.Frame, true); //this was key line
-                UIImage img = UIGraphics.GetImageFromCurrentImageContext();
+                var img = UIGraphics.GetImageFromCurrentImageContext();
                 UIGraphics.EndImageContext();
 
                 return img;
