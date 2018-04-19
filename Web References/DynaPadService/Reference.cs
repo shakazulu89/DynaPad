@@ -21,14 +21,12 @@ namespace DynaPad.DynaPadService {
     [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Web.Services.WebServiceBindingAttribute(Name="DynaPadServiceSoap", Namespace="http://tempuri.org/")]
+    [System.Web.Services.WebServiceBindingAttribute(Name="DynaPadServiceSoap", Namespace="http://dynadox.pro/service")]
     public partial class DynaPadService : System.Web.Services.Protocols.SoapHttpClientProtocol {
         
-        private System.Threading.SendOrPostCallback HelloWorldOperationCompleted;
+        private System.Threading.SendOrPostCallback HelloDynaOperationCompleted;
         
         private System.Threading.SendOrPostCallback BuildDynaMenuOperationCompleted;
-        
-        private System.Threading.SendOrPostCallback BuildDynaMenuoldOperationCompleted;
         
         private System.Threading.SendOrPostCallback ProcessDynaFilesOperationCompleted;
         
@@ -94,13 +92,10 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        public event HelloWorldCompletedEventHandler HelloWorldCompleted;
+        public event HelloDynaCompletedEventHandler HelloDynaCompleted;
         
         /// CodeRemarks
         public event BuildDynaMenuCompletedEventHandler BuildDynaMenuCompleted;
-        
-        /// CodeRemarks
-        public event BuildDynaMenuoldCompletedEventHandler BuildDynaMenuoldCompleted;
         
         /// CodeRemarks
         public event ProcessDynaFilesCompletedEventHandler ProcessDynaFilesCompleted;
@@ -184,34 +179,34 @@ namespace DynaPad.DynaPadService {
         public event ConvertPNGtoPDFCompletedEventHandler ConvertPNGtoPDFCompleted;
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/HelloWorld", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public string HelloWorld() {
-            object[] results = this.Invoke("HelloWorld", new object[0]);
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/HelloDyna", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public string HelloDyna() {
+            object[] results = this.Invoke("HelloDyna", new object[0]);
             return ((string)(results[0]));
         }
         
         /// CodeRemarks
-        public void HelloWorldAsync() {
-            this.HelloWorldAsync(null);
+        public void HelloDynaAsync() {
+            this.HelloDynaAsync(null);
         }
         
         /// CodeRemarks
-        public void HelloWorldAsync(object userState) {
-            if ((this.HelloWorldOperationCompleted == null)) {
-                this.HelloWorldOperationCompleted = new System.Threading.SendOrPostCallback(this.OnHelloWorldOperationCompleted);
+        public void HelloDynaAsync(object userState) {
+            if ((this.HelloDynaOperationCompleted == null)) {
+                this.HelloDynaOperationCompleted = new System.Threading.SendOrPostCallback(this.OnHelloDynaOperationCompleted);
             }
-            this.InvokeAsync("HelloWorld", new object[0], this.HelloWorldOperationCompleted, userState);
+            this.InvokeAsync("HelloDyna", new object[0], this.HelloDynaOperationCompleted, userState);
         }
         
-        private void OnHelloWorldOperationCompleted(object arg) {
-            if ((this.HelloWorldCompleted != null)) {
+        private void OnHelloDynaOperationCompleted(object arg) {
+            if ((this.HelloDynaCompleted != null)) {
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
-                this.HelloWorldCompleted(this, new HelloWorldCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+                this.HelloDynaCompleted(this, new HelloDynaCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
         }
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/BuildDynaMenu", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/BuildDynaMenu", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public string BuildDynaMenu(ConfigurationObjects domainConfig, string locationId, string locationName) {
             object[] results = this.Invoke("BuildDynaMenu", new object[] {
                         domainConfig,
@@ -244,40 +239,7 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/BuildDynaMenuold", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public string BuildDynaMenuold(ConfigurationObjects domainConfig, string locationId, string locationName) {
-            object[] results = this.Invoke("BuildDynaMenuold", new object[] {
-                        domainConfig,
-                        locationId,
-                        locationName});
-            return ((string)(results[0]));
-        }
-        
-        /// CodeRemarks
-        public void BuildDynaMenuoldAsync(ConfigurationObjects domainConfig, string locationId, string locationName) {
-            this.BuildDynaMenuoldAsync(domainConfig, locationId, locationName, null);
-        }
-        
-        /// CodeRemarks
-        public void BuildDynaMenuoldAsync(ConfigurationObjects domainConfig, string locationId, string locationName, object userState) {
-            if ((this.BuildDynaMenuoldOperationCompleted == null)) {
-                this.BuildDynaMenuoldOperationCompleted = new System.Threading.SendOrPostCallback(this.OnBuildDynaMenuoldOperationCompleted);
-            }
-            this.InvokeAsync("BuildDynaMenuold", new object[] {
-                        domainConfig,
-                        locationId,
-                        locationName}, this.BuildDynaMenuoldOperationCompleted, userState);
-        }
-        
-        private void OnBuildDynaMenuoldOperationCompleted(object arg) {
-            if ((this.BuildDynaMenuoldCompleted != null)) {
-                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
-                this.BuildDynaMenuoldCompleted(this, new BuildDynaMenuoldCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
-            }
-        }
-        
-        /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/ProcessDynaFiles", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/ProcessDynaFiles", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public string ProcessDynaFiles(ConfigurationObjects domainConfig, string stringDynaFiles) {
             object[] results = this.Invoke("ProcessDynaFiles", new object[] {
                         domainConfig,
@@ -308,7 +270,7 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetFilesByDate", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/GetFilesByDate", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public string GetFilesByDate(ConfigurationObjects domainConfig, string locationId, string dateToDownload) {
             object[] results = this.Invoke("GetFilesByDate", new object[] {
                         domainConfig,
@@ -341,7 +303,7 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetFiles", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/GetFiles", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public string GetFiles(ConfigurationObjects domainConfig, string apptId, string patientId, string patientName, string doctorId, string locationId) {
             object[] results = this.Invoke("GetFiles", new object[] {
                         domainConfig,
@@ -380,7 +342,7 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/SaveFile", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/SaveFile", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public string SaveFile(ConfigurationObjects domainConfig, string apptId, string patientId, string doctorId, string locationId, string fileName, string fileType, string folderName, string filePathPhysical, string filePathVirtual, [System.Xml.Serialization.XmlElementAttribute(DataType="base64Binary")] byte[] arrFile, bool isDoctorForm, bool isSignature) {
             object[] results = this.Invoke("SaveFile", new object[] {
                         domainConfig,
@@ -433,7 +395,7 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetAnswerPresets", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/GetAnswerPresets", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         [return: System.Xml.Serialization.XmlArrayItemAttribute("ArrayOfString")]
         [return: System.Xml.Serialization.XmlArrayItemAttribute(NestingLevel=1)]
         public string[][] GetAnswerPresets(ConfigurationObjects domainConfig, string formId, string sectionId, string doctorId, string locationId) {
@@ -472,7 +434,7 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetAllAnswerPresets", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/GetAllAnswerPresets", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public string GetAllAnswerPresets(ConfigurationObjects domainConfig, string doctorId) {
             object[] results = this.Invoke("GetAllAnswerPresets", new object[] {
                         domainConfig,
@@ -503,7 +465,7 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/SaveAnswerPreset", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/SaveAnswerPreset", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public string SaveAnswerPreset(ConfigurationObjects domainConfig, string formId, string sectionId, string doctorId, bool isDocInput, string presetName, string presetJson, string locationId, string existingPresetId) {
             object[] results = this.Invoke("SaveAnswerPreset", new object[] {
                         domainConfig,
@@ -548,7 +510,7 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/UpdateAnswerPresetJson", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/UpdateAnswerPresetJson", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public string UpdateAnswerPresetJson(ConfigurationObjects domainConfig, string formId, string sectionId, string doctorId, string presetJson, string existingPresetId) {
             object[] results = this.Invoke("UpdateAnswerPresetJson", new object[] {
                         domainConfig,
@@ -587,7 +549,7 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/DeleteAnswerPreset", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/DeleteAnswerPreset", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public void DeleteAnswerPreset(ConfigurationObjects domainConfig, string formId, string sectionId, string doctorId, string existingPresetId) {
             this.Invoke("DeleteAnswerPreset", new object[] {
                         domainConfig,
@@ -623,7 +585,7 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/SaveDictation", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/SaveDictation", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public string SaveDictation(ConfigurationObjects domainConfig, string formId, string sectionId, string doctorId, bool isDocInput, string locationId, string dictationTitle, [System.Xml.Serialization.XmlElementAttribute(DataType="base64Binary")] byte[] arrDictation) {
             object[] results = this.Invoke("SaveDictation", new object[] {
                         domainConfig,
@@ -666,7 +628,7 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/DeleteDicatation", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/DeleteDicatation", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public string DeleteDicatation(ConfigurationObjects domainConfig, string dictationId, string formId, string sectionId, string doctorId) {
             object[] results = this.Invoke("DeleteDicatation", new object[] {
                         domainConfig,
@@ -703,7 +665,7 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetFormDictations", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/GetFormDictations", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         [return: System.Xml.Serialization.XmlArrayItemAttribute("ArrayOfString")]
         [return: System.Xml.Serialization.XmlArrayItemAttribute(NestingLevel=1)]
         public string[][] GetFormDictations(ConfigurationObjects domainConfig, string formId, string sectionId, string doctorId, bool isDocInput, string locationId) {
@@ -744,7 +706,7 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetAllAutoBoxData", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/GetAllAutoBoxData", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public string GetAllAutoBoxData(string rootPhysical, string rootVirtual) {
             object[] results = this.Invoke("GetAllAutoBoxData", new object[] {
                         rootPhysical,
@@ -775,7 +737,7 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GenerateIME4", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/GenerateIME4", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public string GenerateIME4(ConfigurationObjects domainConfig, string apptId) {
             object[] results = this.Invoke("GenerateIME4", new object[] {
                         domainConfig,
@@ -806,7 +768,7 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GenerateSummaryFromHtml", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/GenerateSummaryFromHtml", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public string GenerateSummaryFromHtml(ConfigurationObjects domainConfig, string summaryHtml, string patientId, string patientName, string apptId, string locationId, string doctorId, bool isDoctorForm) {
             object[] results = this.Invoke("GenerateSummaryFromHtml", new object[] {
                         domainConfig,
@@ -849,7 +811,7 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GenerateSummary", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/GenerateSummary", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public string GenerateSummary(ConfigurationObjects domainConfig, string answers) {
             object[] results = this.Invoke("GenerateSummary", new object[] {
                         domainConfig,
@@ -880,7 +842,7 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetAllQuestionnaires", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/GetAllQuestionnaires", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public string GetAllQuestionnaires(ConfigurationObjects domainConfig, string userId) {
             object[] results = this.Invoke("GetAllQuestionnaires", new object[] {
                         domainConfig,
@@ -911,7 +873,7 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/SubmitFormAnswers", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/SubmitFormAnswers", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public bool SubmitFormAnswers(ConfigurationObjects domainConfig, string answers, bool update, bool isDoctorInput, bool doGenerateReport) {
             object[] results = this.Invoke("SubmitFormAnswers", new object[] {
                         domainConfig,
@@ -948,7 +910,7 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetFormQuestions", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/GetFormQuestions", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public string GetFormQuestions(ConfigurationObjects domainConfig, string formId, string doctorId, string locationId, string patientId, string patientName, string caseId, string apptId, bool isDocInput) {
             object[] results = this.Invoke("GetFormQuestions", new object[] {
                         domainConfig,
@@ -993,7 +955,7 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetDoctorInput", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/GetDoctorInput", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public string GetDoctorInput(ConfigurationObjects domainConfig, string formId) {
             object[] results = this.Invoke("GetDoctorInput", new object[] {
                         domainConfig,
@@ -1024,7 +986,7 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetDynaReports", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/GetDynaReports", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public string GetDynaReports(ConfigurationObjects domainConfig, string qFormID, string docId, bool showcase) {
             object[] results = this.Invoke("GetDynaReports", new object[] {
                         domainConfig,
@@ -1059,7 +1021,7 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/CreateDynaReport", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/CreateDynaReport", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public string CreateDynaReport(ConfigurationObjects domainConfig, string formId) {
             object[] results = this.Invoke("CreateDynaReport", new object[] {
                         domainConfig,
@@ -1090,7 +1052,7 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GenerateReport", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/GenerateReport", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public string GenerateReport(ConfigurationObjects domainConfig, string apptId, string qFormId, string dateCompleted, string fileName, string reportId) {
             object[] results = this.Invoke("GenerateReport", new object[] {
                         domainConfig,
@@ -1129,7 +1091,7 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/Login", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/Login", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public string Login(string domain, string username, string password) {
             object[] results = this.Invoke("Login", new object[] {
                         domain,
@@ -1162,7 +1124,7 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/PdfToPng", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/PdfToPng", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public void PdfToPng(string inputFile, string outputFileName) {
             this.Invoke("PdfToPng", new object[] {
                         inputFile,
@@ -1192,7 +1154,7 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/ConvertPDFtoPNG", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/ConvertPDFtoPNG", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public void ConvertPDFtoPNG([System.Xml.Serialization.XmlElementAttribute(DataType="base64Binary")] byte[] arrPdf) {
             this.Invoke("ConvertPDFtoPNG", new object[] {
                         arrPdf});
@@ -1220,7 +1182,7 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/ConvertPNGtoPDF", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/ConvertPNGtoPDF", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public void ConvertPNGtoPDF() {
             this.Invoke("ConvertPNGtoPDF", new object[0]);
         }
@@ -1256,7 +1218,7 @@ namespace DynaPad.DynaPadService {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://tempuri.org/")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://dynadox.pro/service")]
     public partial class ConfigurationObjects {
         
         /// <remarks/>
@@ -1313,7 +1275,7 @@ namespace DynaPad.DynaPadService {
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://tempuri.org/")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://dynadox.pro/service")]
     public partial class DomainPath {
         
         /// <remarks/>
@@ -1328,17 +1290,17 @@ namespace DynaPad.DynaPadService {
     
     /// CodeRemarks
     [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
-    public delegate void HelloWorldCompletedEventHandler(object sender, HelloWorldCompletedEventArgs e);
+    public delegate void HelloDynaCompletedEventHandler(object sender, HelloDynaCompletedEventArgs e);
     
     /// CodeRemarks
     [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    public partial class HelloWorldCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+    public partial class HelloDynaCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
         
         private object[] results;
         
-        internal HelloWorldCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+        internal HelloDynaCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
                 base(exception, cancelled, userState) {
             this.results = results;
         }
@@ -1365,32 +1327,6 @@ namespace DynaPad.DynaPadService {
         private object[] results;
         
         internal BuildDynaMenuCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
-                base(exception, cancelled, userState) {
-            this.results = results;
-        }
-        
-        /// CodeRemarks
-        public string Result {
-            get {
-                this.RaiseExceptionIfNecessary();
-                return ((string)(this.results[0]));
-            }
-        }
-    }
-    
-    /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
-    public delegate void BuildDynaMenuoldCompletedEventHandler(object sender, BuildDynaMenuoldCompletedEventArgs e);
-    
-    /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    public partial class BuildDynaMenuoldCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
-        
-        private object[] results;
-        
-        internal BuildDynaMenuoldCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
                 base(exception, cancelled, userState) {
             this.results = results;
         }

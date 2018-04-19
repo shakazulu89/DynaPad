@@ -8,6 +8,7 @@ using MailKit.Net.Smtp;
 //using MailKit;
 using MimeKit;
 using CoreGraphics;
+using System.Diagnostics;
 
 namespace DynaPad
 {

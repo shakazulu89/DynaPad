@@ -980,7 +980,7 @@ namespace DynaPad
                     }
                 }
 
-                var starttoast = new Toast("Uploading " + array.Count + " files. This may take a while, please be patient.");
+                var starttoast = new Toast("Uploading " + array.Count.ToString() + " files. This may take a while, please be patient.");
                 starttoast.SetDuration(20000);
                 starttoast.SetType(ToastType.Info);
                 starttoast.SetGravity(ToastGravity.Bottom);
@@ -994,6 +994,10 @@ namespace DynaPad
                     foreach (var file in array)
                     {
                         var documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaFilesUploaded/" + file.PatientId + "/" + file.ApptId);
+                        var awaitingDocumentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaFilesAwaitingUpload/" + file.PatientId + "/" + file.ApptId);
+
+                        var filePath = documentsPath + "/" + file.FileName + ".txt";
+                        var awaitingFilePath = awaitingDocumentsPath + "/" + file.FileName + ".txt";
 
                         if (!Directory.Exists(documentsPath))
                         {
@@ -1002,8 +1006,11 @@ namespace DynaPad
 
                         file.Status = "Uploaded";
 
-                        File.WriteAllText(documentsPath, JsonConvert.SerializeObject(file)); // writes to local storage
-                        File.Delete(file.FileUrl);
+                        File.WriteAllText(filePath, JsonConvert.SerializeObject(file)); // writes to local storage
+                        if (File.Exists(awaitingFilePath))
+                        {
+                            File.Delete(awaitingFilePath);
+                        }
                     }
 
                     var finishtoast = new Toast("The requested form(s) have been uploaded");
@@ -1011,6 +1018,8 @@ namespace DynaPad
                     finishtoast.SetType(ToastType.Info);
                     finishtoast.SetGravity(ToastGravity.Bottom);
                     finishtoast.Show();
+
+
                 }
                 else
                 {
@@ -1031,6 +1040,7 @@ namespace DynaPad
             finally
             {
                 loadingOverlay.Hide();
+                SetDetailItem(new Section("Upload Submitted Forms"), "UploadSubmittedForms", DynaClassLibrary.DynaClasses.LoginContainer.User.SelectedLocation.LocationId, null, false);
             }
 
             return "Uploaded";
@@ -1831,10 +1841,10 @@ namespace DynaPad
 
                         File.WriteAllText(formFinalPath, JsonConvert.SerializeObject(formDynaUpload)); // writes to local storage
 
-                        var sigfilename = "Signature_" + formtype + "_" + SelectedAppointment.ApptPatientName.Replace(" ", "") + "_" + DateTime.Now.ToString("yyyyMMdd") + ".gif";
+                        var sigfilename = "Signature_" + formtype + "_" + SelectedAppointment.ApptPatientName.Replace(" ", "") + "_" + DateTime.Now.ToString("yyyyMMdd");
                         var sigfile = sig.GetImage(new CGSize(600, 400), true, true).AsPNG().ToArray();
 
-                        var sigFinalPath = Path.Combine(documentsPath, sigfilename);
+                        var sigFinalPath = Path.Combine(documentsPath, sigfilename + ".txt");
                         if (File.Exists(sigFinalPath))
                         {
                             File.Delete(sigFinalPath);
@@ -4330,32 +4340,42 @@ namespace DynaPad
 
                     if (filepath.StartsWith("Error:", StringComparison.CurrentCulture))
                     {
+                        loadingOverlay.Hide();
                         PresentViewController(CommonFunctions.AlertPrompt("File Error", "File unavailable, contact administration", true, null, false, null), true, null);
                         return;
                     }
 
 
-                    var documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaFilesAwaitingUpload/" + SelectedAppointment.ApptPatientId + "/" + SelectedAppointment.ApptId);
-                    var fileidentity = Path.Combine(documentsPath, rowData.FileName);
-
-                    var file = JsonConvert.DeserializeObject<DynaFile>(File.ReadAllText(fileidentity));
-
-                    UIWebView webView = new UIWebView(new CGRect(View.Bounds.X + 5, View.Bounds.Y + 60, View.Bounds.Width - 5, View.Bounds.Height - 80))
+                    var documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaFilesAwaitingUpload/" + rowData.PatientId + "/" + rowData.ApptId);
+                    var fileidentity = Path.Combine(documentsPath, rowData.FileName + ".txt");
+                    var assfiles = Directory.GetFiles(documentsPath);
+                    if (File.Exists(fileidentity))
                     {
-                        ScalesPageToFit = true
-                    };
+                        var file = JsonConvert.DeserializeObject<DynaFile>(File.ReadAllText(fileidentity));
 
-                    switch (filetype)
+                        UIWebView webView = new UIWebView(new CGRect(View.Bounds.X + 5, View.Bounds.Y + 60, View.Bounds.Width - 5, View.Bounds.Height - 80))
+                        {
+                            ScalesPageToFit = true
+                        };
+
+                        switch (filetype)
+                        {
+                            case "Form":
+                                webView.LoadHtmlString(file.Json, new NSUrl(documentsPath, true));
+                                break;
+                            case "Signature":
+                                webView.LoadHtmlString(file.Bytes.ToString(), new NSUrl(documentsPath, true));
+                                break;
+                            case "Summary":
+                                webView.LoadHtmlString(file.Html, new NSUrl(documentsPath, true));
+                                break;
+                        }
+                    }
+                    else
                     {
-                        case "Form":
-                            webView.LoadHtmlString(file.Json, new NSUrl(documentsPath, true));
-                            break;
-                        case "Signature":
-                            webView.LoadHtmlString(file.Bytes.ToString(), new NSUrl(documentsPath, true));
-                            break;
-                        case "Summary":
-                            webView.LoadHtmlString(file.Html, new NSUrl(documentsPath, true));
-                            break;
+                        loadingOverlay.Hide();
+                        PresentViewController(CommonFunctions.AlertPrompt("File Error", "File unavailable, contact administration", true, null, false, null), true, null);
+                        return;
                     }
 
                     //BeginInvokeOnMainThread(() =>
@@ -4769,7 +4789,7 @@ namespace DynaPad
                 //bold radio, check
                 // check confirm button
                 //extra section causing extra grey
-                string fileName = "Summary_" + type + "_" + SelectedAppointment.AnsweredQForm.PatientName.Replace(" ", "") + "_" + DateTime.Now.ToString("yyyyMMddHHmmss");
+                string fileName = "Summary_" + type + "_" + SelectedAppointment.AnsweredQForm.PatientName.Replace(" ", "") + "_" + DateTime.Now.ToString("yyyyMMdd");
                 //string fileId = SaveFile(domainConfig, SelectedAppointment.AnsweredQForm.ApptId, SelectedAppointment.AnsweredQForm.PatientId,
                 //   SelectedAppointment.AnsweredQForm.DoctorId,
                 //   SelectedAppointment.AnsweredQForm.LocationId,
@@ -4781,7 +4801,7 @@ namespace DynaPad
                 {
                     Directory.CreateDirectory(documentsPath);
                 }
-                var finalPath = Path.Combine(documentsPath, fileName + ".html");
+                var finalPath = Path.Combine(documentsPath, fileName + ".txt");
                 if (File.Exists(finalPath))
                 {
                     File.Delete(finalPath);
@@ -4794,6 +4814,7 @@ namespace DynaPad
                     UserConfig = CommonFunctions.GetUserConfig(),
                     ApptId = SelectedAppointment.ApptId,
                     FormId = SelectedAppointment.ApptFormId,
+                    IsDoctorForm = SelectedAppointment.SelectedQForm.IsDoctorForm,
                     DoctorId = SelectedAppointment.ApptDoctorId,
                     LocationId = SelectedAppointment.ApptLocationId,
                     PatientId = SelectedAppointment.ApptPatientId,

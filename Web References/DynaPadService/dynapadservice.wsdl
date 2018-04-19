@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:tns="http://tempuri.org/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" targetNamespace="http://tempuri.org/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:tns="http://dynadox.pro/service" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" targetNamespace="http://dynadox.pro/service" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
-    <s:schema elementFormDefault="qualified" targetNamespace="http://tempuri.org/">
-      <s:element name="HelloWorld">
+    <s:schema elementFormDefault="qualified" targetNamespace="http://dynadox.pro/service">
+      <s:element name="HelloDyna">
         <s:complexType />
       </s:element>
-      <s:element name="HelloWorldResponse">
+      <s:element name="HelloDynaResponse">
         <s:complexType>
           <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="HelloWorldResult" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="HelloDynaResult" type="s:string" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -57,22 +57,6 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="0" maxOccurs="1" name="BuildDynaMenuResult" type="s:string" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:element name="BuildDynaMenuold">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="domainConfig" type="tns:ConfigurationObjects" />
-            <s:element minOccurs="0" maxOccurs="1" name="locationId" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="locationName" type="s:string" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:element name="BuildDynaMenuoldResponse">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="BuildDynaMenuoldResult" type="s:string" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -540,23 +524,17 @@
       </s:element>
     </s:schema>
   </wsdl:types>
-  <wsdl:message name="HelloWorldSoapIn">
-    <wsdl:part name="parameters" element="tns:HelloWorld" />
+  <wsdl:message name="HelloDynaSoapIn">
+    <wsdl:part name="parameters" element="tns:HelloDyna" />
   </wsdl:message>
-  <wsdl:message name="HelloWorldSoapOut">
-    <wsdl:part name="parameters" element="tns:HelloWorldResponse" />
+  <wsdl:message name="HelloDynaSoapOut">
+    <wsdl:part name="parameters" element="tns:HelloDynaResponse" />
   </wsdl:message>
   <wsdl:message name="BuildDynaMenuSoapIn">
     <wsdl:part name="parameters" element="tns:BuildDynaMenu" />
   </wsdl:message>
   <wsdl:message name="BuildDynaMenuSoapOut">
     <wsdl:part name="parameters" element="tns:BuildDynaMenuResponse" />
-  </wsdl:message>
-  <wsdl:message name="BuildDynaMenuoldSoapIn">
-    <wsdl:part name="parameters" element="tns:BuildDynaMenuold" />
-  </wsdl:message>
-  <wsdl:message name="BuildDynaMenuoldSoapOut">
-    <wsdl:part name="parameters" element="tns:BuildDynaMenuoldResponse" />
   </wsdl:message>
   <wsdl:message name="ProcessDynaFilesSoapIn">
     <wsdl:part name="parameters" element="tns:ProcessDynaFiles" />
@@ -721,17 +699,13 @@
     <wsdl:part name="parameters" element="tns:ConvertPNGtoPDFResponse" />
   </wsdl:message>
   <wsdl:portType name="DynaPadServiceSoap">
-    <wsdl:operation name="HelloWorld">
-      <wsdl:input message="tns:HelloWorldSoapIn" />
-      <wsdl:output message="tns:HelloWorldSoapOut" />
+    <wsdl:operation name="HelloDyna">
+      <wsdl:input message="tns:HelloDynaSoapIn" />
+      <wsdl:output message="tns:HelloDynaSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="BuildDynaMenu">
       <wsdl:input message="tns:BuildDynaMenuSoapIn" />
       <wsdl:output message="tns:BuildDynaMenuSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="BuildDynaMenuold">
-      <wsdl:input message="tns:BuildDynaMenuoldSoapIn" />
-      <wsdl:output message="tns:BuildDynaMenuoldSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="ProcessDynaFiles">
       <wsdl:input message="tns:ProcessDynaFilesSoapIn" />
@@ -844,8 +818,8 @@
   </wsdl:portType>
   <wsdl:binding name="DynaPadServiceSoap" type="tns:DynaPadServiceSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
-    <wsdl:operation name="HelloWorld">
-      <soap:operation soapAction="http://tempuri.org/HelloWorld" style="document" />
+    <wsdl:operation name="HelloDyna">
+      <soap:operation soapAction="http://dynadox.pro/service/HelloDyna" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -854,16 +828,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="BuildDynaMenu">
-      <soap:operation soapAction="http://tempuri.org/BuildDynaMenu" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="BuildDynaMenuold">
-      <soap:operation soapAction="http://tempuri.org/BuildDynaMenuold" style="document" />
+      <soap:operation soapAction="http://dynadox.pro/service/BuildDynaMenu" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -872,7 +837,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="ProcessDynaFiles">
-      <soap:operation soapAction="http://tempuri.org/ProcessDynaFiles" style="document" />
+      <soap:operation soapAction="http://dynadox.pro/service/ProcessDynaFiles" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -881,7 +846,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetFilesByDate">
-      <soap:operation soapAction="http://tempuri.org/GetFilesByDate" style="document" />
+      <soap:operation soapAction="http://dynadox.pro/service/GetFilesByDate" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -890,7 +855,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetFiles">
-      <soap:operation soapAction="http://tempuri.org/GetFiles" style="document" />
+      <soap:operation soapAction="http://dynadox.pro/service/GetFiles" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -899,7 +864,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="SaveFile">
-      <soap:operation soapAction="http://tempuri.org/SaveFile" style="document" />
+      <soap:operation soapAction="http://dynadox.pro/service/SaveFile" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -908,7 +873,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetAnswerPresets">
-      <soap:operation soapAction="http://tempuri.org/GetAnswerPresets" style="document" />
+      <soap:operation soapAction="http://dynadox.pro/service/GetAnswerPresets" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -917,7 +882,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetAllAnswerPresets">
-      <soap:operation soapAction="http://tempuri.org/GetAllAnswerPresets" style="document" />
+      <soap:operation soapAction="http://dynadox.pro/service/GetAllAnswerPresets" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -926,7 +891,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="SaveAnswerPreset">
-      <soap:operation soapAction="http://tempuri.org/SaveAnswerPreset" style="document" />
+      <soap:operation soapAction="http://dynadox.pro/service/SaveAnswerPreset" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -935,7 +900,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="UpdateAnswerPresetJson">
-      <soap:operation soapAction="http://tempuri.org/UpdateAnswerPresetJson" style="document" />
+      <soap:operation soapAction="http://dynadox.pro/service/UpdateAnswerPresetJson" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -944,7 +909,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="DeleteAnswerPreset">
-      <soap:operation soapAction="http://tempuri.org/DeleteAnswerPreset" style="document" />
+      <soap:operation soapAction="http://dynadox.pro/service/DeleteAnswerPreset" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -953,7 +918,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="SaveDictation">
-      <soap:operation soapAction="http://tempuri.org/SaveDictation" style="document" />
+      <soap:operation soapAction="http://dynadox.pro/service/SaveDictation" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -962,7 +927,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="DeleteDicatation">
-      <soap:operation soapAction="http://tempuri.org/DeleteDicatation" style="document" />
+      <soap:operation soapAction="http://dynadox.pro/service/DeleteDicatation" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -971,7 +936,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetFormDictations">
-      <soap:operation soapAction="http://tempuri.org/GetFormDictations" style="document" />
+      <soap:operation soapAction="http://dynadox.pro/service/GetFormDictations" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -980,7 +945,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetAllAutoBoxData">
-      <soap:operation soapAction="http://tempuri.org/GetAllAutoBoxData" style="document" />
+      <soap:operation soapAction="http://dynadox.pro/service/GetAllAutoBoxData" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -989,7 +954,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GenerateIME4">
-      <soap:operation soapAction="http://tempuri.org/GenerateIME4" style="document" />
+      <soap:operation soapAction="http://dynadox.pro/service/GenerateIME4" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -998,7 +963,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GenerateSummaryFromHtml">
-      <soap:operation soapAction="http://tempuri.org/GenerateSummaryFromHtml" style="document" />
+      <soap:operation soapAction="http://dynadox.pro/service/GenerateSummaryFromHtml" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -1007,7 +972,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GenerateSummary">
-      <soap:operation soapAction="http://tempuri.org/GenerateSummary" style="document" />
+      <soap:operation soapAction="http://dynadox.pro/service/GenerateSummary" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -1016,7 +981,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetAllQuestionnaires">
-      <soap:operation soapAction="http://tempuri.org/GetAllQuestionnaires" style="document" />
+      <soap:operation soapAction="http://dynadox.pro/service/GetAllQuestionnaires" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -1025,7 +990,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="SubmitFormAnswers">
-      <soap:operation soapAction="http://tempuri.org/SubmitFormAnswers" style="document" />
+      <soap:operation soapAction="http://dynadox.pro/service/SubmitFormAnswers" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -1034,7 +999,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetFormQuestions">
-      <soap:operation soapAction="http://tempuri.org/GetFormQuestions" style="document" />
+      <soap:operation soapAction="http://dynadox.pro/service/GetFormQuestions" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -1043,7 +1008,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetDoctorInput">
-      <soap:operation soapAction="http://tempuri.org/GetDoctorInput" style="document" />
+      <soap:operation soapAction="http://dynadox.pro/service/GetDoctorInput" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -1052,7 +1017,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetDynaReports">
-      <soap:operation soapAction="http://tempuri.org/GetDynaReports" style="document" />
+      <soap:operation soapAction="http://dynadox.pro/service/GetDynaReports" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -1061,7 +1026,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="CreateDynaReport">
-      <soap:operation soapAction="http://tempuri.org/CreateDynaReport" style="document" />
+      <soap:operation soapAction="http://dynadox.pro/service/CreateDynaReport" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -1070,7 +1035,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GenerateReport">
-      <soap:operation soapAction="http://tempuri.org/GenerateReport" style="document" />
+      <soap:operation soapAction="http://dynadox.pro/service/GenerateReport" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -1079,7 +1044,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="Login">
-      <soap:operation soapAction="http://tempuri.org/Login" style="document" />
+      <soap:operation soapAction="http://dynadox.pro/service/Login" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -1088,7 +1053,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="PdfToPng">
-      <soap:operation soapAction="http://tempuri.org/PdfToPng" style="document" />
+      <soap:operation soapAction="http://dynadox.pro/service/PdfToPng" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -1097,7 +1062,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="ConvertPDFtoPNG">
-      <soap:operation soapAction="http://tempuri.org/ConvertPDFtoPNG" style="document" />
+      <soap:operation soapAction="http://dynadox.pro/service/ConvertPDFtoPNG" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -1106,7 +1071,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="ConvertPNGtoPDF">
-      <soap:operation soapAction="http://tempuri.org/ConvertPNGtoPDF" style="document" />
+      <soap:operation soapAction="http://dynadox.pro/service/ConvertPNGtoPDF" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -1117,8 +1082,8 @@
   </wsdl:binding>
   <wsdl:binding name="DynaPadServiceSoap12" type="tns:DynaPadServiceSoap">
     <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
-    <wsdl:operation name="HelloWorld">
-      <soap12:operation soapAction="http://tempuri.org/HelloWorld" style="document" />
+    <wsdl:operation name="HelloDyna">
+      <soap12:operation soapAction="http://dynadox.pro/service/HelloDyna" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1127,16 +1092,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="BuildDynaMenu">
-      <soap12:operation soapAction="http://tempuri.org/BuildDynaMenu" style="document" />
-      <wsdl:input>
-        <soap12:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap12:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="BuildDynaMenuold">
-      <soap12:operation soapAction="http://tempuri.org/BuildDynaMenuold" style="document" />
+      <soap12:operation soapAction="http://dynadox.pro/service/BuildDynaMenu" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1145,7 +1101,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="ProcessDynaFiles">
-      <soap12:operation soapAction="http://tempuri.org/ProcessDynaFiles" style="document" />
+      <soap12:operation soapAction="http://dynadox.pro/service/ProcessDynaFiles" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1154,7 +1110,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetFilesByDate">
-      <soap12:operation soapAction="http://tempuri.org/GetFilesByDate" style="document" />
+      <soap12:operation soapAction="http://dynadox.pro/service/GetFilesByDate" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1163,7 +1119,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetFiles">
-      <soap12:operation soapAction="http://tempuri.org/GetFiles" style="document" />
+      <soap12:operation soapAction="http://dynadox.pro/service/GetFiles" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1172,7 +1128,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="SaveFile">
-      <soap12:operation soapAction="http://tempuri.org/SaveFile" style="document" />
+      <soap12:operation soapAction="http://dynadox.pro/service/SaveFile" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1181,7 +1137,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetAnswerPresets">
-      <soap12:operation soapAction="http://tempuri.org/GetAnswerPresets" style="document" />
+      <soap12:operation soapAction="http://dynadox.pro/service/GetAnswerPresets" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1190,7 +1146,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetAllAnswerPresets">
-      <soap12:operation soapAction="http://tempuri.org/GetAllAnswerPresets" style="document" />
+      <soap12:operation soapAction="http://dynadox.pro/service/GetAllAnswerPresets" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1199,7 +1155,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="SaveAnswerPreset">
-      <soap12:operation soapAction="http://tempuri.org/SaveAnswerPreset" style="document" />
+      <soap12:operation soapAction="http://dynadox.pro/service/SaveAnswerPreset" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1208,7 +1164,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="UpdateAnswerPresetJson">
-      <soap12:operation soapAction="http://tempuri.org/UpdateAnswerPresetJson" style="document" />
+      <soap12:operation soapAction="http://dynadox.pro/service/UpdateAnswerPresetJson" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1217,7 +1173,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="DeleteAnswerPreset">
-      <soap12:operation soapAction="http://tempuri.org/DeleteAnswerPreset" style="document" />
+      <soap12:operation soapAction="http://dynadox.pro/service/DeleteAnswerPreset" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1226,7 +1182,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="SaveDictation">
-      <soap12:operation soapAction="http://tempuri.org/SaveDictation" style="document" />
+      <soap12:operation soapAction="http://dynadox.pro/service/SaveDictation" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1235,7 +1191,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="DeleteDicatation">
-      <soap12:operation soapAction="http://tempuri.org/DeleteDicatation" style="document" />
+      <soap12:operation soapAction="http://dynadox.pro/service/DeleteDicatation" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1244,7 +1200,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetFormDictations">
-      <soap12:operation soapAction="http://tempuri.org/GetFormDictations" style="document" />
+      <soap12:operation soapAction="http://dynadox.pro/service/GetFormDictations" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1253,7 +1209,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetAllAutoBoxData">
-      <soap12:operation soapAction="http://tempuri.org/GetAllAutoBoxData" style="document" />
+      <soap12:operation soapAction="http://dynadox.pro/service/GetAllAutoBoxData" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1262,7 +1218,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GenerateIME4">
-      <soap12:operation soapAction="http://tempuri.org/GenerateIME4" style="document" />
+      <soap12:operation soapAction="http://dynadox.pro/service/GenerateIME4" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1271,7 +1227,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GenerateSummaryFromHtml">
-      <soap12:operation soapAction="http://tempuri.org/GenerateSummaryFromHtml" style="document" />
+      <soap12:operation soapAction="http://dynadox.pro/service/GenerateSummaryFromHtml" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1280,7 +1236,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GenerateSummary">
-      <soap12:operation soapAction="http://tempuri.org/GenerateSummary" style="document" />
+      <soap12:operation soapAction="http://dynadox.pro/service/GenerateSummary" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1289,7 +1245,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetAllQuestionnaires">
-      <soap12:operation soapAction="http://tempuri.org/GetAllQuestionnaires" style="document" />
+      <soap12:operation soapAction="http://dynadox.pro/service/GetAllQuestionnaires" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1298,7 +1254,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="SubmitFormAnswers">
-      <soap12:operation soapAction="http://tempuri.org/SubmitFormAnswers" style="document" />
+      <soap12:operation soapAction="http://dynadox.pro/service/SubmitFormAnswers" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1307,7 +1263,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetFormQuestions">
-      <soap12:operation soapAction="http://tempuri.org/GetFormQuestions" style="document" />
+      <soap12:operation soapAction="http://dynadox.pro/service/GetFormQuestions" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1316,7 +1272,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetDoctorInput">
-      <soap12:operation soapAction="http://tempuri.org/GetDoctorInput" style="document" />
+      <soap12:operation soapAction="http://dynadox.pro/service/GetDoctorInput" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1325,7 +1281,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GetDynaReports">
-      <soap12:operation soapAction="http://tempuri.org/GetDynaReports" style="document" />
+      <soap12:operation soapAction="http://dynadox.pro/service/GetDynaReports" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1334,7 +1290,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="CreateDynaReport">
-      <soap12:operation soapAction="http://tempuri.org/CreateDynaReport" style="document" />
+      <soap12:operation soapAction="http://dynadox.pro/service/CreateDynaReport" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1343,7 +1299,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="GenerateReport">
-      <soap12:operation soapAction="http://tempuri.org/GenerateReport" style="document" />
+      <soap12:operation soapAction="http://dynadox.pro/service/GenerateReport" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1352,7 +1308,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="Login">
-      <soap12:operation soapAction="http://tempuri.org/Login" style="document" />
+      <soap12:operation soapAction="http://dynadox.pro/service/Login" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1361,7 +1317,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="PdfToPng">
-      <soap12:operation soapAction="http://tempuri.org/PdfToPng" style="document" />
+      <soap12:operation soapAction="http://dynadox.pro/service/PdfToPng" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1370,7 +1326,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="ConvertPDFtoPNG">
-      <soap12:operation soapAction="http://tempuri.org/ConvertPDFtoPNG" style="document" />
+      <soap12:operation soapAction="http://dynadox.pro/service/ConvertPDFtoPNG" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>
@@ -1379,7 +1335,7 @@
       </wsdl:output>
     </wsdl:operation>
     <wsdl:operation name="ConvertPNGtoPDF">
-      <soap12:operation soapAction="http://tempuri.org/ConvertPNGtoPDF" style="document" />
+      <soap12:operation soapAction="http://dynadox.pro/service/ConvertPNGtoPDF" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>

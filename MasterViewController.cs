@@ -24,6 +24,7 @@ using System.Net;
 using System.Net.Sockets;
 using ToastIOS;
 using MimeKit;
+using System.Diagnostics;
 
 namespace DynaPad
 {
@@ -93,6 +94,22 @@ namespace DynaPad
 
 
 
+        protected void CheckStopwatch(Stopwatch sWatch, int seconds, string subject, string message)
+        {
+            sWatch.Stop();
+            if (sWatch.Elapsed.Seconds > seconds)
+            {
+                Console.WriteLine(subject + " - " + message);
+            }
+            else
+            {
+                Console.WriteLine(subject + " - " + message);
+            }
+            sWatch.Reset();
+        }
+
+        //Stopwatch timer;
+
         public override void ViewDidAppear(bool animated)
         {
             base.ViewDidAppear(animated);
@@ -101,6 +118,19 @@ namespace DynaPad
             //plist.SetString("DynaDomain", NSUserDefaults.StandardUserDefaults.StringForKey("Domain_Name"));
             //plist.Synchronize();
             //DynaDomain = plist.StringForKey("DynaDomain");
+
+            var timer = new Stopwatch();
+            timer.Start();
+
+
+            //var documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaFilesAwaitingUpload");
+            //var files = Directory.GetFiles(documentsPath, "*.*", SearchOption.AllDirectories);
+            //foreach (string file in files)
+            //{
+            //    File.Delete(file);
+            //}
+                                             
+                                         
 
             DynaDomain = plist.StringForKey("Domain_Name");
 
@@ -173,6 +203,8 @@ namespace DynaPad
 
                 Root = logRoot;
             }
+
+            CheckStopwatch(timer, 0, "ViewDidAppear", "ViewDidAppear took " + timer.Elapsed.Seconds + " seconds");
         }
 
         public void SaveDomain(string domainname)
@@ -195,6 +227,9 @@ namespace DynaPad
 
         public void DynaLocations()
         {
+            var timer = new Stopwatch();
+            timer.Start();
+
             var rootMainMenu = new DynaFormRootElement("Locations");
             var sectionMainMenu = new Section();
 
@@ -253,12 +288,16 @@ namespace DynaPad
             {
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+
+                CheckStopwatch(timer, 0, "DynaLocations Error", "DynaLocations took " + timer.Elapsed.Seconds + " seconds");
                 DetailViewController.Root.Clear();
                 DetailViewController.Root.Add(CommonFunctions.ErrorDetailSection());
                 sectionMainMenu.Add(GetLogoutElement());
                 rootMainMenu.Add(sectionMainMenu);
                 Root = rootMainMenu;
             }
+
+            CheckStopwatch(timer, 0, "DynaLocations", "DynaLocations took " + timer.Elapsed.Seconds + " seconds");
         }
 
         UIViewController GetRestoreStart(RootElement arg)
@@ -661,6 +700,10 @@ namespace DynaPad
             DetailViewController.NavigationController.PopToRootViewController(true);
             DetailViewController.Root.Clear();
 
+            mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[0]).TopViewController;
+            mvc.NavigationController.PopToRootViewController(true);
+            mvc.Root.Clear();
+
             needLogin = true;
             ViewDidAppear(true);
         }
@@ -669,6 +712,9 @@ namespace DynaPad
 
         public UIViewController GetDynaStart(RootElement rElement)
         {
+            var timer = new Stopwatch();
+            timer.Start();
+
             string menujson = "";
             try
             {
@@ -683,6 +729,8 @@ namespace DynaPad
 
                     if (string.IsNullOrEmpty(locid))
                     {
+                        CheckStopwatch(timer, 0, "GetDynaStart Location Error", "GetDynaStart took " + timer.Elapsed.Seconds + " seconds");
+
                         PresentViewController(CommonFunctions.AlertPrompt("Location Error", "An active location is required in order to run this app, please contact administration", true, null, false, null), true, null);
                         return new DynaDialogViewController(new RootElement("No Location"), true);
                     }
@@ -700,7 +748,13 @@ namespace DynaPad
                     };
 
                     var sectionMainMenu = new Section { HeaderView = null, FooterView = null };
+
+                    var bmtimer = new Stopwatch();
+                    bmtimer.Start();
+
                     BuildMenu(myDynaMenu, sectionMainMenu);
+
+                    CheckStopwatch(bmtimer, 0, "BuildMenu", "BuildMenu took " + bmtimer.Elapsed.Seconds + " seconds");
 
                     sectionMainMenu.Add(new SectionStringElement("Download Medical Records", delegate
                     {
@@ -726,8 +780,13 @@ namespace DynaPad
 
                         NavigationController.PopViewController(true);
                     });
+
+                    CheckStopwatch(timer, 0, "GetDynaStart", "GetDynaStart took " + timer.Elapsed.Seconds + " seconds");
+
                     return formDVC;
                 }
+
+                CheckStopwatch(timer, 0, "GetDynaStart No Internet Error", "GetDynaStart took " + timer.Elapsed.Seconds + " seconds");
 
                 PresentViewController(CommonFunctions.InternetAlertPrompt(), true, null);
                 return new DynaDialogViewController(new RootElement("No internet"), true);
@@ -735,6 +794,9 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
+
+                CheckStopwatch(timer, 0, "GetDynaStart Error", "GetDynaStart took " + timer.Elapsed.Seconds + " seconds");
+
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
                 return new DynaDialogViewController(CommonFunctions.ErrorRootElement(), true);
             }
@@ -878,6 +940,7 @@ namespace DynaPad
             {
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+
                 return null;
             }
         }
@@ -887,8 +950,12 @@ namespace DynaPad
 
         void SaveAutoData()//(string qid)
         {
+            var timer = new Stopwatch();
+
             try
             {
+                timer.Start();
+
                 var array = new NSMutableArray();
 
                 var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
@@ -948,10 +1015,15 @@ namespace DynaPad
                     webClient.Encoding = System.Text.Encoding.UTF8;
                     webClient.DownloadStringAsync(url);
                 }
+
+                CheckStopwatch(timer, 0, "SaveAutoData", "SaveAutoData took " + timer.Elapsed.Seconds + " seconds");
             }
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
+
+                CheckStopwatch(timer, 0, "SaveAutoData Error", "SaveAutoData took " + timer.Elapsed.Seconds + " seconds");
+
                 PresentViewController(CommonFunctions.AlertPrompt("Download Auto Data Files Failure", "There was a problem downloading location auto data files, if problem persists please re-login to the app.", true, null, false, null), true, null);
             }
         }
@@ -960,8 +1032,12 @@ namespace DynaPad
 
         void SavePresetData(bool ForceUpdate = false)//(string qid)
         {
+            var timer = new Stopwatch();
+
             try
             {
+                timer.Start();
+
                 var array = new NSMutableArray();
 
                 var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
@@ -1029,10 +1105,15 @@ namespace DynaPad
                     //webClient.Encoding = System.Text.Encoding.UTF8;
                     //webClient.DownloadStringAsync(url);
                 }
+
+                CheckStopwatch(timer, 0, "SavePresetData", "SavePresetData took " + timer.Elapsed.Seconds + " seconds");
             }
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
+
+                CheckStopwatch(timer, 0, "SavePresetData Error", "SavePresetData took " + timer.Elapsed.Seconds + " seconds");
+
                 PresentViewController(CommonFunctions.AlertPrompt("Download Preset Files Failure", "There was a problem downloading location preset files, if problem persists please re-login to the app.", true, null, false, null), true, null);
             }
         }
@@ -1064,8 +1145,12 @@ namespace DynaPad
 
         public UIViewController GetFormService(RootElement rElement)
         {
+            var timer = new Stopwatch();
+
             try
             {
+                timer.Start();
+
                 //if (DetailViewController.QuestionsView != null)
                 //{
                 //  DetailViewController.Title = "";
@@ -1082,6 +1167,8 @@ namespace DynaPad
 
                 var dfElemet = (DynaFormRootElement)rElement;
 
+                bool IsDoctorForm = dfElemet.IsDoctorForm;
+
 
                 string origJson;// = dds.GetFormQuestions(CommonFunctions.GetUserConfig(), dfElemet.FormID, dfElemet.DoctorID, dfElemet.LocationID, dfElemet.PatientID, dfElemet.PatientName, SelectedAppointment.CaseId, SelectedAppointment.ApptId, dfElemet.IsDoctorForm);
 
@@ -1091,7 +1178,13 @@ namespace DynaPad
                     IOrderedEnumerable<FileInfo> dfap = null;
                     if (Directory.Exists(documentsPath))
                     {
-                        dfap = new DirectoryInfo(documentsPath).GetFiles().Where(x => x.Name.StartsWith("Form", StringComparison.CurrentCulture)).OrderByDescending(x => x.LastWriteTime);
+                        var dfaptype = "patient";
+                        if (IsDoctorForm)
+                        {
+                            dfaptype = "doctor";
+                        }
+
+                        dfap = new DirectoryInfo(documentsPath).GetFiles().Where(x => x.Name.StartsWith("Form_" + dfaptype, StringComparison.CurrentCulture)).OrderByDescending(x => x.LastWriteTime);
                     }
 
                     if (dfap != null && dfap.Any())
@@ -1144,8 +1237,6 @@ namespace DynaPad
 
                 DetailViewController.Root.Caption = SelectedAppointment.SelectedQForm.FormName + " - " + SelectedAppointment.ApptPatientName;
                 DetailViewController.ReloadData();
-
-                bool IsDoctorForm = dfElemet.IsDoctorForm;
 
                 var navTitle = IsDoctorForm ? "Doctor Form" : "Patient Form";
                 var sectionsGroup = new RadioGroup("sections", -1);
@@ -1440,11 +1531,16 @@ namespace DynaPad
                 LoadSectionView(SelectedAppointment.SelectedQForm.FormSections[0].SectionId, SelectedAppointment.SelectedQForm.FormSections[0].SectionName, SelectedAppointment.SelectedQForm.FormSections[0], IsDoctorForm, sectionFormSections);
                 //}
 
+                CheckStopwatch(timer, 0, "GetFormService", "GetFormService took " + timer.Elapsed.Seconds + " seconds");
+
                 return formDVC;
             }
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
+
+                CheckStopwatch(timer, 0, "GetFormService Error", "GetFormService took " + timer.Elapsed.Seconds + " seconds");
+
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
                 return new DynaDialogViewController(CommonFunctions.ErrorRootElement(), true);
             }
@@ -2279,6 +2375,7 @@ namespace DynaPad
                     FileName = formFileName,
                     UserId = DynaClassLibrary.DynaClasses.LoginContainer.User.UserId,
                     UserConfig = userconfig,
+                    IsDoctorForm = IsDoctorForm,
                     ApptId = apptid,
                     FormId = formid,
                     DoctorId = doctorid,
