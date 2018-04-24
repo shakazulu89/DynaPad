@@ -165,8 +165,8 @@ namespace DynaPad
 
                 if (CrossConnectivity.Current.IsConnected)
                 {
-                    var dds = new DynaPadService.DynaPadService();
-                    var jsonUser = dds.Login(NSUserDefaults.StandardUserDefaults.StringForKey("Domain_Name"), userName, password);
+                    var dds = new DynaPadService.DynaPadService() { Timeout = 20000 };
+                    var jsonUser = dds.Login(NSUserDefaults.StandardUserDefaults.StringForKey("Domain_Name"), NSUserDefaults.StandardUserDefaults.StringForKey("Dyna_Device_Name"), userName, password);
                     JsonHandler.OriginalFormJsonString = jsonUser;
                     DynaClassLibrary.DynaClasses.LoginContainer.User = new DynaClassLibrary.DynaClasses.User();
                     DynaClassLibrary.DynaClasses.LoginContainer.User = JsonConvert.DeserializeObject<DynaClassLibrary.DynaClasses.User>(jsonUser);

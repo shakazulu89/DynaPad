@@ -40,6 +40,8 @@ namespace DynaPad.DynaPadService {
         
         private System.Threading.SendOrPostCallback GetAllAnswerPresetsOperationCompleted;
         
+        private System.Threading.SendOrPostCallback LogPresetRequestOperationCompleted;
+        
         private System.Threading.SendOrPostCallback SaveAnswerPresetOperationCompleted;
         
         private System.Threading.SendOrPostCallback UpdateAnswerPresetJsonOperationCompleted;
@@ -114,6 +116,9 @@ namespace DynaPad.DynaPadService {
         
         /// CodeRemarks
         public event GetAllAnswerPresetsCompletedEventHandler GetAllAnswerPresetsCompleted;
+        
+        /// CodeRemarks
+        public event LogPresetRequestCompletedEventHandler LogPresetRequestCompleted;
         
         /// CodeRemarks
         public event SaveAnswerPresetCompletedEventHandler SaveAnswerPresetCompleted;
@@ -435,32 +440,68 @@ namespace DynaPad.DynaPadService {
         
         /// CodeRemarks
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/GetAllAnswerPresets", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public string GetAllAnswerPresets(ConfigurationObjects domainConfig, string doctorId) {
+        public string GetAllAnswerPresets(ConfigurationObjects domainConfig, string userId, bool isForceUpdate) {
             object[] results = this.Invoke("GetAllAnswerPresets", new object[] {
                         domainConfig,
-                        doctorId});
+                        userId,
+                        isForceUpdate});
             return ((string)(results[0]));
         }
         
         /// CodeRemarks
-        public void GetAllAnswerPresetsAsync(ConfigurationObjects domainConfig, string doctorId) {
-            this.GetAllAnswerPresetsAsync(domainConfig, doctorId, null);
+        public void GetAllAnswerPresetsAsync(ConfigurationObjects domainConfig, string userId, bool isForceUpdate) {
+            this.GetAllAnswerPresetsAsync(domainConfig, userId, isForceUpdate, null);
         }
         
         /// CodeRemarks
-        public void GetAllAnswerPresetsAsync(ConfigurationObjects domainConfig, string doctorId, object userState) {
+        public void GetAllAnswerPresetsAsync(ConfigurationObjects domainConfig, string userId, bool isForceUpdate, object userState) {
             if ((this.GetAllAnswerPresetsOperationCompleted == null)) {
                 this.GetAllAnswerPresetsOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGetAllAnswerPresetsOperationCompleted);
             }
             this.InvokeAsync("GetAllAnswerPresets", new object[] {
                         domainConfig,
-                        doctorId}, this.GetAllAnswerPresetsOperationCompleted, userState);
+                        userId,
+                        isForceUpdate}, this.GetAllAnswerPresetsOperationCompleted, userState);
         }
         
         private void OnGetAllAnswerPresetsOperationCompleted(object arg) {
             if ((this.GetAllAnswerPresetsCompleted != null)) {
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
                 this.GetAllAnswerPresetsCompleted(this, new GetAllAnswerPresetsCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// CodeRemarks
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/LogPresetRequest", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public void LogPresetRequest(ConfigurationObjects domainConfig, string deviceName, string requestDateTime, int presetCount) {
+            this.Invoke("LogPresetRequest", new object[] {
+                        domainConfig,
+                        deviceName,
+                        requestDateTime,
+                        presetCount});
+        }
+        
+        /// CodeRemarks
+        public void LogPresetRequestAsync(ConfigurationObjects domainConfig, string deviceName, string requestDateTime, int presetCount) {
+            this.LogPresetRequestAsync(domainConfig, deviceName, requestDateTime, presetCount, null);
+        }
+        
+        /// CodeRemarks
+        public void LogPresetRequestAsync(ConfigurationObjects domainConfig, string deviceName, string requestDateTime, int presetCount, object userState) {
+            if ((this.LogPresetRequestOperationCompleted == null)) {
+                this.LogPresetRequestOperationCompleted = new System.Threading.SendOrPostCallback(this.OnLogPresetRequestOperationCompleted);
+            }
+            this.InvokeAsync("LogPresetRequest", new object[] {
+                        domainConfig,
+                        deviceName,
+                        requestDateTime,
+                        presetCount}, this.LogPresetRequestOperationCompleted, userState);
+        }
+        
+        private void OnLogPresetRequestOperationCompleted(object arg) {
+            if ((this.LogPresetRequestCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.LogPresetRequestCompleted(this, new System.ComponentModel.AsyncCompletedEventArgs(invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
         }
         
@@ -1092,26 +1133,28 @@ namespace DynaPad.DynaPadService {
         
         /// CodeRemarks
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/Login", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public string Login(string domain, string username, string password) {
+        public string Login(string domain, string deviceName, string username, string password) {
             object[] results = this.Invoke("Login", new object[] {
                         domain,
+                        deviceName,
                         username,
                         password});
             return ((string)(results[0]));
         }
         
         /// CodeRemarks
-        public void LoginAsync(string domain, string username, string password) {
-            this.LoginAsync(domain, username, password, null);
+        public void LoginAsync(string domain, string deviceName, string username, string password) {
+            this.LoginAsync(domain, deviceName, username, password, null);
         }
         
         /// CodeRemarks
-        public void LoginAsync(string domain, string username, string password, object userState) {
+        public void LoginAsync(string domain, string deviceName, string username, string password, object userState) {
             if ((this.LoginOperationCompleted == null)) {
                 this.LoginOperationCompleted = new System.Threading.SendOrPostCallback(this.OnLoginOperationCompleted);
             }
             this.InvokeAsync("Login", new object[] {
                         domain,
+                        deviceName,
                         username,
                         password}, this.LoginOperationCompleted, userState);
         }
@@ -1268,6 +1311,9 @@ namespace DynaPad.DynaPadService {
         
         /// <remarks/>
         public DomainPath[] DomainPaths;
+        
+        /// <remarks/>
+        public string DeviceId;
     }
     
     /// <remarks/>
@@ -1495,6 +1541,10 @@ namespace DynaPad.DynaPadService {
             }
         }
     }
+    
+    /// CodeRemarks
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    public delegate void LogPresetRequestCompletedEventHandler(object sender, System.ComponentModel.AsyncCompletedEventArgs e);
     
     /// CodeRemarks
     [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]

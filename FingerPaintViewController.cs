@@ -195,10 +195,11 @@ namespace DynaPad
 
                     var downloadPath = Path.Combine(Path.GetTempPath(), MREditName);
 
-                    var bw = new BackgroundWorker();
-
-                    // this allows our worker to report progress during work
-                    bw.WorkerReportsProgress = true;
+                    var bw = new BackgroundWorker
+                    {
+                        // this allows our worker to report progress during work
+                        WorkerReportsProgress = true
+                    };
 
                     // what to do in the background thread
                     bw.DoWork += delegate (object o, DoWorkEventArgs argss)
@@ -216,9 +217,11 @@ namespace DynaPad
                         //img = UIImage.FromFile(downloadPath);
                         //img = UIImage.LoadFromData(imageData);
                         img = UIImage.LoadFromData(UIImage.FromFile(downloadPath).AsJPEG(0),0);
-                        var imgView = new UIImageView(contentView.Bounds);
-                        imgView.Image = UIImage.LoadFromData(UIImage.FromFile(downloadPath).AsJPEG());
-                        imgView.ContentMode = UIViewContentMode.Center; // or ScaleAspectFill
+                        var imgView = new UIImageView(contentView.Bounds)
+                        {
+                            Image = UIImage.LoadFromData(UIImage.FromFile(downloadPath).AsJPEG()),
+                            ContentMode = UIViewContentMode.Center // or ScaleAspectFill
+                        };
                         //contentView.BackgroundColor = UIColor.White;
                         contentView.BackgroundColor = UIColor.FromPatternImage(img);
                     };
@@ -250,7 +253,7 @@ namespace DynaPad
 				{
 					DismissViewController(true, null);
 					CommonFunctions.sendErrorEmail(ex);
-                    PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                    PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 }
                 finally
                 {
@@ -466,10 +469,11 @@ namespace DynaPad
                 if (CrossConnectivity.Current.IsConnected)
                 {
 
-                    var bw = new BackgroundWorker();
-
-                    // this allows our worker to report progress during work
-                    bw.WorkerReportsProgress = true;
+                    var bw = new BackgroundWorker
+                    {
+                        // this allows our worker to report progress during work
+                        WorkerReportsProgress = true
+                    };
 
                     // what to do in the background thread
                     bw.DoWork += delegate (object o, DoWorkEventArgs argss)
@@ -509,7 +513,7 @@ namespace DynaPad
             catch (Exception ex)
 			{
 				CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
 			}
             finally
             {
@@ -531,7 +535,7 @@ namespace DynaPad
 			catch (Exception ex)
 			{
 				CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 return null;
 			}
         }
@@ -553,7 +557,7 @@ namespace DynaPad
 			catch (Exception ex)
 			{
 				CommonFunctions.sendErrorEmail(ex);
-                //PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                //PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 return null;
 			}
         }

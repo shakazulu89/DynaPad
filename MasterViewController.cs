@@ -38,6 +38,7 @@ namespace DynaPad
         bool needLogin = true;
         public string DocLocID { get; set; }
         public string DynaDomain { get; set; }
+        public string DynaDeviceUniqueName { get; set; }
         NSUserDefaults plist = NSUserDefaults.StandardUserDefaults;
 
 
@@ -97,9 +98,12 @@ namespace DynaPad
         protected void CheckStopwatch(Stopwatch sWatch, int seconds, string subject, string message)
         {
             sWatch.Stop();
-            if (sWatch.Elapsed.Seconds > seconds)
+
+            int checkSeconds = seconds != 0 ? seconds : 10;
+            if (sWatch.Elapsed.Seconds > checkSeconds)
             {
                 Console.WriteLine(subject + " - " + message);
+                CommonFunctions.sendAlertEmail("Subject: " + subject + "<br/>Message: " + message);
             }
             else
             {
@@ -132,12 +136,17 @@ namespace DynaPad
                                              
                                          
 
+
+
             DynaDomain = plist.StringForKey("Domain_Name");
+            DynaDeviceUniqueName = plist.StringForKey("Dyna_Device_Name");
 
             if (!string.IsNullOrEmpty(DynaDomain))
             {
                 //plist.SetString("DynaDomain", DynaDomain);
                 //plist.Synchronize();
+
+                CheckUniqueName();
 
                 var con = CrossConnectivity.Current;
 
@@ -211,6 +220,21 @@ namespace DynaPad
         {
             plist.SetString(domainname, "Domain_Name");
             plist.Synchronize();
+
+            DynaDeviceUniqueName = null;
+            CheckUniqueName();
+        }
+
+        public void CheckUniqueName()
+        {
+            if (string.IsNullOrEmpty(DynaDeviceUniqueName))
+            {
+                var uniquename = DynaDomain + "_" + UIDevice.CurrentDevice.IdentifierForVendor;
+                plist.SetString(uniquename, "Dyna_Device_Name");
+                plist.Synchronize();
+            }
+
+            DynaDeviceUniqueName = plist.StringForKey("Dyna_Device_Name");
         }
 
         public void Login()
@@ -287,7 +311,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
 
                 CheckStopwatch(timer, 0, "DynaLocations Error", "DynaLocations took " + timer.Elapsed.Seconds + " seconds");
                 DetailViewController.Root.Clear();
@@ -421,6 +445,40 @@ namespace DynaPad
 
             sSection.Add(btnDomain);
 
+            var uniqueNameLbl = new PaddedUIView<UILabel>
+            {
+                Frame = new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 30),
+                Padding = 5f
+            };
+            uniqueNameLbl.NestedView.Text = "UNIQUE DEVICE NAME:";
+            uniqueNameLbl.setStyle();
+
+            sSection.Add(uniqueNameLbl);
+
+            var uniqueName = new UILabel(new CGRect(5, 0, UIScreen.MainScreen.Bounds.Width - 250, 30)) { Text = plist.StringForKey("Dyna_Device_Name") };
+            sSection.Add(uniqueName);
+
+            var uploadOnSubmitLbl = new PaddedUIView<UILabel>
+            {
+                Frame = new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 30),
+                Padding = 5f
+            };
+            uploadOnSubmitLbl.NestedView.Text = "UPLOAD FORM ON SUBMIT?";
+            uploadOnSubmitLbl.setStyle();
+
+            sSection.Add(uploadOnSubmitLbl);
+
+            var boo = !string.IsNullOrEmpty(plist.StringForKey("Upload_On_Submit")) ? bool.Parse(plist.StringForKey("Upload_On_Submit")) : true;
+            var switchUploadOnSubmit = new UISwitch() { On = boo };
+            switchUploadOnSubmit.Frame = new CGRect(5, 0, switchUploadOnSubmit.Frame.Width, switchUploadOnSubmit.Frame.Height);
+            switchUploadOnSubmit.ValueChanged += delegate
+            {
+                plist.SetString(switchUploadOnSubmit.On.ToString(), "Upload_On_Submit");
+                plist.Synchronize();
+            };
+
+            sSection.Add(switchUploadOnSubmit);
+
             var ndia = new DialogViewController(SettingsView)
             {
                 ModalInPopover = true,
@@ -430,7 +488,7 @@ namespace DynaPad
 
             var btnRefreshAutoFiles = new UIButton(UIButtonType.System)
             {
-                Frame = new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 40),
+                Frame = new CGRect(5, 0, UIScreen.MainScreen.Bounds.Width - 250, 40),
                 HorizontalAlignment = UIControlContentHorizontalAlignment.Left
             };
             btnRefreshAutoFiles.SetTitle("Reload Auto Complete Files", UIControlState.Normal);
@@ -454,7 +512,7 @@ namespace DynaPad
 
             var btnRefreshPresetFiles = new UIButton(UIButtonType.System)
             {
-                Frame = new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 40),
+                Frame = new CGRect(5, 0, UIScreen.MainScreen.Bounds.Width - 250, 40),
                 HorizontalAlignment = UIControlContentHorizontalAlignment.Left
             };
             btnRefreshPresetFiles.SetTitle("Reload Preset Files", UIControlState.Normal);
@@ -478,7 +536,7 @@ namespace DynaPad
 
             var btnDeleteMRFiles = new UIButton(UIButtonType.System)
             {
-                Frame = new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 40),
+                Frame = new CGRect(5, 0, UIScreen.MainScreen.Bounds.Width - 250, 40),
                 HorizontalAlignment = UIControlContentHorizontalAlignment.Left
             };
             btnDeleteMRFiles.SetTitle("Delete Medical Records", UIControlState.Normal);
@@ -546,7 +604,7 @@ namespace DynaPad
 
             var btnDeletePendingFiles = new UIButton(UIButtonType.System)
             {
-                Frame = new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 40),
+                Frame = new CGRect(5, 0, UIScreen.MainScreen.Bounds.Width - 250, 40),
                 HorizontalAlignment = UIControlContentHorizontalAlignment.Left
             };
             btnDeletePendingFiles.SetTitle("Delete All Pending Files", UIControlState.Normal);
@@ -797,7 +855,7 @@ namespace DynaPad
 
                 CheckStopwatch(timer, 0, "GetDynaStart Error", "GetDynaStart took " + timer.Elapsed.Seconds + " seconds");
 
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 return new DynaDialogViewController(CommonFunctions.ErrorRootElement(), true);
             }
         }
@@ -846,11 +904,7 @@ namespace DynaPad
                             rootMenu.createOnSelected = GetMRFoldersService;
                             break;
                         case "GetReport":
-                            bool IsSelectedReport = false;
-                            if (mItem.MenuItemValue == mItem.ReportId)
-                            {
-                                IsSelectedReport = true;
-                            }
+                            bool IsSelectedReport = false || mItem.MenuItemValue == mItem.ReportId;
                             var reportElement = new SectionStringElement(mItem.MenuItemCaption, delegate
                             {
                                 secforcancel = sectionMenu;
@@ -939,7 +993,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
 
                 return null;
             }
@@ -1008,7 +1062,7 @@ namespace DynaPad
                         else
                         {
                             File.WriteAllText(localPath, text); // writes to local storage
-                            Console.WriteLine("New auto data file MOVED to : {0}", localPath);
+                            Console.WriteLine("New auto data file SAVED to : {0}", localPath);
                         }
                     };
 
@@ -1041,20 +1095,32 @@ namespace DynaPad
                 var array = new NSMutableArray();
 
                 var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
-                var presetfiles = dds.GetAllAnswerPresets(CommonFunctions.GetUserConfig(), DynaClassLibrary.DynaClasses.LoginContainer.User.UserId);
+                var presetfiles = dds.GetAllAnswerPresets(CommonFunctions.GetUserConfig(), DynaClassLibrary.DynaClasses.LoginContainer.User.UserId, ForceUpdate);
                 var deserializedpresetfiles = JsonConvert.DeserializeObject<List<DynaPreset>>(presetfiles);
-                //{ presetFormId, presetDoctorId, presetLocationId, presetSectionId, presetName, presetJson, presetId, domainConfig.DomainRootPathPhysical + presetPath }
+
+                var dcount = deserializedpresetfiles.Count;
+
+                Console.WriteLine("Starting download of : {0} preset files", dcount);
+
+                if (dcount > 0)
+                {
+                    var toast = new Toast("Starting download of " + dcount + " preset files");
+                    toast.SetDuration(5000);
+                    toast.SetType(ToastType.Info);
+                    toast.SetGravity(ToastGravity.Bottom);
+                    toast.Show();
+                }
 
                 foreach (DynaPreset presetfile in deserializedpresetfiles)
                 {
-                    //var url = new Uri(presetfile.PresetFileUrl);
+                    var url = new Uri(presetfile.PresetFileUrl);
 
-                    //var webClient = new WebClient();
+                    var webClient = new WebClient();
 
-                    //webClient.DownloadStringCompleted += (s, e) =>
-                    //{
-                        //var text = e.Result; // get the downloaded text
-                        var newFileInfo = JsonConvert.SerializeObject(presetfile);
+                    webClient.DownloadStringCompleted += (s, e) =>
+                    {
+                        var text = e.Result; // get the downloaded text
+                        //Console.WriteLine($"\nDownloaded: {e.Result}");
 
                         var fileidentity = presetfile.PresetId;
                         string localFilename = fileidentity + ".txt";
@@ -1084,10 +1150,10 @@ namespace DynaPad
                         {
                             var existingFileInfo = new FileInfo(localPath);
                             //if (existingFileInfo.Length != text.Length || ForceUpdate)
-                            if (existingFileInfo.Length != newFileInfo.Length || ForceUpdate)
+                            if (existingFileInfo.Length != text.Length || ForceUpdate)
                             {
                                 File.Delete(localPath);
-                                File.WriteAllText(localPath, newFileInfo); // writes to local storage
+                                File.WriteAllText(localPath, text); // writes to local storage
                                 Console.WriteLine("New preset file REPLACED to : {0}", localPath);
                             }
                             else
@@ -1097,14 +1163,25 @@ namespace DynaPad
                         }
                         else
                         {
-                            File.WriteAllText(localPath, newFileInfo); // writes to local storage
-                            Console.WriteLine("New preset file MOVED to : {0}", localPath);
+                            File.WriteAllText(localPath, text); // writes to local storage
+                            Console.WriteLine("New preset file SAVED to : {0}", localPath);
                         }
-                    //};
+                    };
 
-                    //webClient.Encoding = System.Text.Encoding.UTF8;
-                    //webClient.DownloadStringAsync(url);
+                    webClient.Encoding = System.Text.Encoding.UTF8;
+                    webClient.DownloadStringAsync(url);
+
+                    if (dcount > 0)
+                    {
+                        var ftoast = new Toast("Finished download of " + dcount + " preset files");
+                        ftoast.SetDuration(5000);
+                        ftoast.SetType(ToastType.Info);
+                        ftoast.SetGravity(ToastGravity.Bottom);
+                        ftoast.Show();
+                    }
                 }
+
+                dds.LogPresetRequest(CommonFunctions.GetUserConfig(), DynaDeviceUniqueName, DateTime.Now.ToString(), dcount);
 
                 CheckStopwatch(timer, 0, "SavePresetData", "SavePresetData took " + timer.Elapsed.Seconds + " seconds");
             }
@@ -1117,6 +1194,96 @@ namespace DynaPad
                 PresentViewController(CommonFunctions.AlertPrompt("Download Preset Files Failure", "There was a problem downloading location preset files, if problem persists please re-login to the app.", true, null, false, null), true, null);
             }
         }
+
+
+
+        //void SavePresetData(bool ForceUpdate = false)//(string qid)
+        //{
+        //    var timer = new Stopwatch();
+
+        //    try
+        //    {
+        //        timer.Start();
+
+        //        var array = new NSMutableArray();
+
+        //        var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
+        //        var presetfiles = dds.GetAllAnswerPresets(CommonFunctions.GetUserConfig(), DynaClassLibrary.DynaClasses.LoginContainer.User.UserId);
+        //        var deserializedpresetfiles = JsonConvert.DeserializeObject<List<DynaPreset>>(presetfiles);
+        //        //{ presetFormId, presetDoctorId, presetLocationId, presetSectionId, presetName, presetJson, presetId, domainConfig.DomainRootPathPhysical + presetPath }
+
+        //        foreach (DynaPreset presetfile in deserializedpresetfiles)
+        //        {
+        //            //var url = new Uri(presetfile.PresetFileUrl);
+
+        //            //var webClient = new WebClient();
+
+        //            //webClient.DownloadStringCompleted += (s, e) =>
+        //            //{
+        //                //var text = e.Result; // get the downloaded text
+        //                var newFileInfo = JsonConvert.SerializeObject(presetfile);
+
+        //                var fileidentity = presetfile.PresetId;
+        //                string localFilename = fileidentity + ".txt";
+        //                string localPath;
+
+        //                var documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaPresets/" + presetfile.FormId + "/" + presetfile.DoctorId);
+        //                if (!Directory.Exists(documentsPath))
+        //                {
+        //                    Directory.CreateDirectory(documentsPath);
+        //                }
+        //                if (!string.IsNullOrEmpty(presetfile.SectionId))
+        //                {
+        //                    var documentsSectionPath = Path.Combine(documentsPath, presetfile.SectionId);
+        //                    if (!Directory.Exists(documentsSectionPath))
+        //                    {
+        //                        Directory.CreateDirectory(documentsSectionPath);
+        //                    }
+
+        //                    localPath = Path.Combine(documentsSectionPath, localFilename);
+        //                }
+        //                else
+        //                {
+        //                    localPath = Path.Combine(documentsPath, localFilename);
+        //                }
+
+        //                if (File.Exists(localPath))
+        //                {
+        //                    var existingFileInfo = new FileInfo(localPath);
+        //                    //if (existingFileInfo.Length != text.Length || ForceUpdate)
+        //                    if (existingFileInfo.Length != newFileInfo.Length || ForceUpdate)
+        //                    {
+        //                        File.Delete(localPath);
+        //                        File.WriteAllText(localPath, newFileInfo); // writes to local storage
+        //                        Console.WriteLine("New preset file REPLACED to : {0}", localPath);
+        //                    }
+        //                    else
+        //                    {
+        //                        Console.WriteLine("New preset file matches old file, IGNORED : {0}", localPath);
+        //                    }
+        //                }
+        //                else
+        //                {
+        //                    File.WriteAllText(localPath, newFileInfo); // writes to local storage
+        //                    Console.WriteLine("New preset file MOVED to : {0}", localPath);
+        //                }
+        //            //};
+
+        //            //webClient.Encoding = System.Text.Encoding.UTF8;
+        //            //webClient.DownloadStringAsync(url);
+        //        }
+
+        //        CheckStopwatch(timer, 0, "SavePresetData", "SavePresetData took " + timer.Elapsed.Seconds + " seconds");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        CommonFunctions.sendErrorEmail(ex);
+
+        //        CheckStopwatch(timer, 0, "SavePresetData Error", "SavePresetData took " + timer.Elapsed.Seconds + " seconds");
+
+        //        PresentViewController(CommonFunctions.AlertPrompt("Download Preset Files Failure", "There was a problem downloading location preset files, if problem persists please re-login to the app.", true, null, false, null), true, null);
+        //    }
+        //}
 
 
         List<DynaPreset> GetPresetData(string formid, string doctorid)
@@ -1541,7 +1708,7 @@ namespace DynaPad
 
                 CheckStopwatch(timer, 0, "GetFormService Error", "GetFormService took " + timer.Elapsed.Seconds + " seconds");
 
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 return new DynaDialogViewController(CommonFunctions.ErrorRootElement(), true);
             }
             //finally
@@ -1693,7 +1860,7 @@ namespace DynaPad
             {
                 NavigationController.PopViewController(true);
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
             }
         }
 
@@ -1828,7 +1995,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
             }
         }
 
@@ -1922,7 +2089,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(true), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex, true), true, null);
                 return null;
             }
         }
@@ -2051,7 +2218,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(true), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex, true), true, null);
                 return null;
             }
         }
@@ -2089,7 +2256,7 @@ namespace DynaPad
             {
                 NavigationController.PopViewController(true);
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
             }
         }
 
@@ -2142,7 +2309,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
             }
         }
 
@@ -2324,7 +2491,7 @@ namespace DynaPad
                 sections.GetContainerTableView().ReloadData();
 
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 DetailViewController.Root.Clear();
                 DetailViewController.Root.Add(CommonFunctions.ErrorDetailSection());
                 DetailViewController.ReloadData();
@@ -2404,7 +2571,7 @@ namespace DynaPad
                 }
                 sections.GetContainerTableView().ReloadData();
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
             }
         }
 
@@ -2435,7 +2602,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 return new DynaDialogViewController(CommonFunctions.ErrorRootElement(), true);
             }
         }
@@ -2476,7 +2643,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 return new DynaDialogViewController(CommonFunctions.ErrorRootElement(), true);
             }
         }
@@ -2555,7 +2722,7 @@ namespace DynaPad
         //	catch (Exception ex)
         //	{
         //		CommonFunctions.sendErrorEmail(ex);
-        //              PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+        //              PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
         //              return new DynaDialogViewController(CommonFunctions.ErrorRootElement(), true);
         //		//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
         //	}
@@ -2652,7 +2819,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 return new DynaDialogViewController(CommonFunctions.ErrorRootElement(), true);
             }
 
@@ -2690,7 +2857,7 @@ namespace DynaPad
             {
                 NavigationController.PopViewController(true);
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
             }
         }
 
@@ -2729,7 +2896,7 @@ namespace DynaPad
                 DetailViewController.Root.Add(CommonFunctions.ErrorDetailSection());
                 DetailViewController.ReloadData();
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
             }
 
             //finally
@@ -2775,7 +2942,7 @@ namespace DynaPad
                 DetailViewController.Root.Add(CommonFunctions.ErrorDetailSection());
                 DetailViewController.ReloadData();
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
             }
 
             //finally
@@ -2821,7 +2988,7 @@ namespace DynaPad
                 DetailViewController.Root.Add(CommonFunctions.ErrorDetailSection());
                 DetailViewController.ReloadData();
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
             }
 
             //finally
@@ -2957,7 +3124,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 return null;
             }
         }
@@ -3056,7 +3223,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
             }
         }
 
@@ -3175,7 +3342,7 @@ namespace DynaPad
         //	//catch (Exception ex)
         //	//{
         //	//	CommonFunctions.sendErrorEmail(ex);
-        //              PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+        //              PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
         //	//	//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
         //	//}
         //}

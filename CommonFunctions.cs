@@ -9,6 +9,7 @@ using MailKit.Net.Smtp;
 using MimeKit;
 using CoreGraphics;
 using System.Diagnostics;
+using Foundation;
 
 namespace DynaPad
 {
@@ -39,7 +40,8 @@ namespace DynaPad
 					DomainRootPathPhysical = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainRootPathPhysical,
 					DomainClaimantsPathVirtual = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainClaimantsPathVirtual,
 					DomainClaimantsPathPhysical = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainClaimantsPathPhysical,
-					DomainHost = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainHost
+                    DomainHost = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainHost,
+                    DeviceId = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DeviceId
 					//DomainPaths = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainPaths.Select(dPath => new DynaClassLibrary.DynaClasses.DomainPath[]
 					//{
 					//	DomainPathName = dPath.DomainPathName,
@@ -90,25 +92,38 @@ namespace DynaPad
 			return prompt;
 		}
 
-		public static UIAlertController InternetAlertPrompt()
+        public static UIAlertController InternetAlertPrompt()
 		{
 			var prompt = UIAlertController.Create("No Internet Connection", "An active internet connection is required", UIAlertControllerStyle.Alert);
 			prompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, null));
 			return prompt;
 		}
 
-		public static UIAlertController ExceptionAlertPrompt(bool ReloginPrompt = false)
+        public static UIAlertController ExceptionAlertPrompt(Exception exception, bool ReloginPrompt = false)
 		{
             var relogin = "try again.";
             if (ReloginPrompt)
             {
                 relogin = "re-login to ensure form loads properly.";
             }
-            var message = "An error has occurred, " + relogin;
+            var message = "An error has occurred, " + relogin + ": " + exception.Message;
             var prompt = UIAlertController.Create("Error", message, UIAlertControllerStyle.Alert);
 			prompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, null));
 			return prompt;
-		}
+        }
+
+        public static UIAlertController NSExceptionAlertPrompt(NSError exception, bool ReloginPrompt = false)
+        {
+            var relogin = "try again.";
+            if (ReloginPrompt)
+            {
+                relogin = "re-login to ensure form loads properly.";
+            }
+            var message = "An error has occurred, " + relogin + ": " + exception.Code;
+            var prompt = UIAlertController.Create("Error", message, UIAlertControllerStyle.Alert);
+            prompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, null));
+            return prompt;
+        }
 
         public static RootElement ErrorRootElement()
         {
@@ -135,6 +150,40 @@ namespace DynaPad
         static string emailUser = "info@dynadox.pro";//"dharel.cm@gmail.com";//DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailUser;//ConfigurationManager.AppSettings.Get("emailUser");
         static string emailPass = "jxKr:9e";//'"madona007";//DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailPass;//ConfigurationManager.AppSettings.Get("emailPass");
         static int emailPort = 25;//587;//Convert.ToInt32(DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailPort);//ConfigurationManager.AppSettings.Get("emailPort"));   
+
+        public static void sendAlertEmail(string body)
+        {
+            try
+            {
+                string subject = "DynaPad Alert - on " + DateTime.Now.ToShortDateString();
+
+                var message = new MimeMessage();
+                message.From.Add(new MailboxAddress("DynaPad App", emailFrom));
+                message.To.Add(new MailboxAddress("DynaDox Support", emailTo));
+                message.Cc.Add(new MailboxAddress("DynaDox Support", emailCc1));
+                message.Subject = subject;
+
+                message.Body = new TextPart("html")
+                {
+                    Text = body
+                };
+
+                using (var client = new SmtpClient())
+                {
+                    client.Connect(emailSMTP, emailPort);
+                    client.AuthenticationMechanisms.Remove("XOAUTH2");
+                    // Note: only needed if the SMTP server requires authentication
+                    client.Authenticate(emailUser, emailPass);
+
+                    client.Send(message);
+                    client.Disconnect(true);
+                }
+            }
+            catch (Exception ex)
+            {
+                //Console.WriteLine(ex.Message);
+            }
+        }
 
         public static void sendNSErrorEmail(Foundation.NSError exception)
         {

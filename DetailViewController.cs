@@ -71,6 +71,7 @@ namespace DynaPad
         UIButton DeleteSavedDictationButton = new UIButton();
         UITableViewCell cellDict = new UITableViewCell(UITableViewCellStyle.Default, null);
         UIPopoverController pop;
+        NSUserDefaults plist = NSUserDefaults.StandardUserDefaults;
 
         public Menu DynaMenu { get; set; }
 
@@ -615,6 +616,12 @@ namespace DynaPad
                                     summarySection.Add(webView);
 
                                     summaryElement.Add(summarySection);
+
+                                    var boo = !string.IsNullOrEmpty(plist.StringForKey("Upload_On_Submit")) ? bool.Parse(plist.StringForKey("Upload_On_Submit")) : true;
+                                    if (boo)
+                                    {
+                                        DoSubmitUpload();
+                                    }
                                 }
 
                                 Root = summaryElement;
@@ -890,7 +897,7 @@ namespace DynaPad
                 Root.Add(CommonFunctions.ErrorDetailSection());
                 ReloadData();
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
             }
             finally
@@ -901,7 +908,39 @@ namespace DynaPad
 
 
 
-        public async void UploadSubmittedForms(string[] folders)
+        public void DoSubmitUpload()
+        {
+            string documentsPath;
+
+            documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaFilesAwaitingUpload/" + SelectedAppointment.ApptPatientId + "/" + SelectedAppointment.ApptId);
+
+            var array = new List<DynaFile>();
+            string[] files;
+
+            if (Directory.Exists(documentsPath) && Directory.GetFiles(documentsPath, "*.*", SearchOption.AllDirectories).Length > 0)
+            {
+                files = Directory.GetFiles(documentsPath, "*.*", SearchOption.AllDirectories);
+
+                foreach (string file in files)
+                {
+                    string contents = File.ReadAllText(file);
+                    var userconfig = CommonFunctions.GetUserConfig();
+
+                    var filename = Path.GetFileName(file);
+                    var filetype = filename.Substring(0, filename.IndexOf("_", StringComparison.CurrentCulture));
+
+                    var upload = JsonConvert.DeserializeObject<DynaFile>(File.ReadAllText(file));
+
+                    array.Add(upload);
+                }
+            }
+
+            UploadSubmittedForms(new string[] { documentsPath }, "DoSubmitUpload", false);
+        }
+
+
+
+        public async void UploadSubmittedForms(string[] folders, string context, bool returnToGrid)
         {
             var boundsh = base.TableView.Frame;
             mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
@@ -941,7 +980,7 @@ namespace DynaPad
                     //await Task.Delay(TimeSpan.FromSeconds(1), cts.Token);
                     await Task.Delay(10, cts.Token);
 
-                    var task = DoUpload(folders, cts.Token);
+                    var task = DoUpload(folders, cts.Token, context, returnToGrid);
                     var result = await task;
                 }
                 catch (TaskCanceledException tex)       // if the operation is cancelled, do nothing
@@ -956,7 +995,7 @@ namespace DynaPad
 
 
 
-        public async Task<string> DoUpload(string[] folders, CancellationToken cts)
+        public async Task<string> DoUpload(string[] folders, CancellationToken cts, string context, bool returnToGrid)
         {
             //await Task.Delay(TimeSpan.FromSeconds(2), cts);
             await Task.Delay(10, cts);
@@ -1034,13 +1073,16 @@ namespace DynaPad
             {
                 //loadingOverlay.Hide();
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
             }
             finally
             {
                 loadingOverlay.Hide();
-                SetDetailItem(new Section("Upload Submitted Forms"), "UploadSubmittedForms", DynaClassLibrary.DynaClasses.LoginContainer.User.SelectedLocation.LocationId, null, false);
+                if (returnToGrid)
+                {
+                    SetDetailItem(new Section("Upload Submitted Forms"), context, DynaClassLibrary.DynaClasses.LoginContainer.User.SelectedLocation.LocationId, null, false);
+                }
             }
 
             return "Uploaded";
@@ -1333,7 +1375,7 @@ namespace DynaPad
                     else
                     {
                         fileManager.Move(destinationURL.Path, fileidentity, out NSError errorNewMove);
-                        Console.WriteLine("New file MOVED to : {0}", fileidentity);
+                        Console.WriteLine("New file SAVED to : {0}", fileidentity);
                     }
 
                     // we do not need to be on the main/UI thread to load the UIImage
@@ -1541,7 +1583,7 @@ namespace DynaPad
                 Root.Add(CommonFunctions.ErrorDetailSection());
                 ReloadData();
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
             }
 
@@ -1635,7 +1677,7 @@ namespace DynaPad
                 Root.Add(CommonFunctions.ErrorDetailSection());
                 ReloadData();
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
             }
 
@@ -1733,7 +1775,7 @@ namespace DynaPad
                 //Root.Add(CommonFunctions.ErrorDetailSection());
                 //ReloadData();
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
             }
             finally
             {
@@ -1905,7 +1947,7 @@ namespace DynaPad
             {
                 //loadingOverlay.Hide();
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
             }
 
@@ -2876,7 +2918,7 @@ namespace DynaPad
                 Root.Add(CommonFunctions.ErrorDetailSection());
                 ReloadData();
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
             }
 
@@ -2902,7 +2944,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
             }
         }
@@ -2923,7 +2965,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
             }
         }
@@ -2969,7 +3011,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
             }
         }
@@ -3001,7 +3043,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
             }
         }
@@ -3039,7 +3081,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
             }
         }
@@ -3276,7 +3318,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
             }
         }
@@ -3336,7 +3378,7 @@ namespace DynaPad
             {
                 NavigationController.PopViewController(true);
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
             }
         }
@@ -3378,7 +3420,7 @@ namespace DynaPad
             {
                 NavigationController.PopViewController(true);
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
             }
         }
@@ -3437,7 +3479,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 return null;
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
             }
@@ -3546,7 +3588,7 @@ namespace DynaPad
                 catch (Exception ex)
                 {
                     CommonFunctions.sendErrorEmail(ex);
-                    //PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                    //PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                     return false;
                     //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
                 }
@@ -3657,14 +3699,14 @@ namespace DynaPad
                     {
                         //Console.WriteLine("error");
                         CommonFunctions.sendNSErrorEmail(err);
-                        PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                        PresentViewController(CommonFunctions.NSExceptionAlertPrompt(err), true, null);
                     }
                 });
             }
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
             }
         }
@@ -3844,7 +3886,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 return null;
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
             }
@@ -3916,7 +3958,7 @@ namespace DynaPad
                 var errordata = (MR)e.RowData;
                 var errorfile = "<br/><br/><br/>FILE PATH:<br/><br/>" + errordata.MRPath;
                 CommonFunctions.sendErrorEmail(ex, errorfile);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
             }
         }
 
@@ -4040,7 +4082,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
             }
         }
@@ -4065,7 +4107,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
             }
             //finally
@@ -4180,7 +4222,7 @@ namespace DynaPad
                     UIAlertController UploadPrompt;
 
                     UploadPrompt = UIAlertController.Create("Upload Forms", "Upload forms? This will upload all forms to the server and generate reports, an internet connection is required!", UIAlertControllerStyle.Alert);
-                    UploadPrompt.AddAction(UIAlertAction.Create("Yes", UIAlertActionStyle.Default, action => UploadSubmittedForms(new string[] { documentsPath })));
+                    UploadPrompt.AddAction(UIAlertAction.Create("Yes", UIAlertActionStyle.Default, action => UploadSubmittedForms(new string[] { documentsPath }, context, true)));
                     UploadPrompt.AddAction(UIAlertAction.Create("No", UIAlertActionStyle.Cancel, null));
                     //Present Alert
                     PresentViewController(UploadPrompt, true, null);
@@ -4278,7 +4320,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 return null;
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
             }
@@ -4314,6 +4356,33 @@ namespace DynaPad
                 this.button.TouchUpInside += delegate {
 
                     var ass = DataColumn.CellValue.ToString();
+                    var hole = DataColumn;
+                    string documentsPath;
+
+                    documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaFilesAwaitingUpload/" + SelectedAppointment.ApptPatientId + "/" + SelectedAppointment.ApptId);
+
+                    var array = new List<DynaFile>();
+                    string[] files;
+
+                    if (Directory.Exists(documentsPath) && Directory.GetFiles(documentsPath, "*.*", SearchOption.AllDirectories).Length > 0)
+                    {
+                        files = Directory.GetFiles(documentsPath, "*.*", SearchOption.AllDirectories);
+
+                        foreach (string file in files)
+                        {
+                            string contents = File.ReadAllText(file);
+                            var userconfig = CommonFunctions.GetUserConfig();
+
+                            var filename = Path.GetFileName(file);
+                            var filetype = filename.Substring(0, filename.IndexOf("_", StringComparison.CurrentCulture));
+
+                            var upload = JsonConvert.DeserializeObject<DynaFile>(File.ReadAllText(file));
+
+                            array.Add(upload);
+                        }
+                    }
+
+                    //UploadSubmittedForms(new string[] { documentsPath });
                 };
             }
         }
@@ -4391,12 +4460,45 @@ namespace DynaPad
                 var errordata = (MR)e.RowData;
                 var errorfile = "<br/><br/><br/>FILE PATH:<br/><br/>" + errordata.MRPath;
                 CommonFunctions.sendErrorEmail(ex, errorfile);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
             }
         }
 
 
 
+
+
+
+        public class SwitchCell : GridCell
+        {
+            UISwitch gridswitch;
+            //UILabel label;
+
+            public SwitchCell()
+            {
+                gridswitch = new UISwitch();
+                this.AddSubview(gridswitch);
+                //label = new UILabel();
+                //this.AddSubview(label);
+                CanRenderUnLoad = false;
+            }
+
+            protected override void UnLoad()
+            {
+                RemoveFromSuperview();
+            }
+
+            public override void LayoutSubviews()
+            {
+                base.LayoutSubviews();
+                //button.Frame = new CGRect(Bounds.Left, Bounds.Top, Bounds.Width, Bounds.Height);
+                this.gridswitch.Enabled = false;
+                //this.gridswitch.BackgroundColor = UIColor.Gray;
+                //this.label.Frame = new CGRect(Bounds.Left, Bounds.Top, Bounds.Width, Bounds.Height);
+                //this.label.Text = DataColumn.CellValue.ToString();
+                this.gridswitch.On = (bool)DataColumn.CellValue;
+            }
+        }
 
 
 
@@ -4509,8 +4611,19 @@ namespace DynaPad
                     TextAlignment = UITextAlignment.Left
                 };
 
-                var mrDownloadedColumn = new GridSwitchColumn
+                //var mrDownloadedColumn = new GridSwitchColumn
+                //{
+                //    MappingName = "IsLocal",
+                //    HeaderText = "Downloaded",
+                //    Width = fgrid.Frame.Width * 0.10,
+                //    HeaderTextAlignment = UITextAlignment.Left,
+                //    TextAlignment = UITextAlignment.Left,
+                //    AllowEditing = false
+                //};
+
+                var mrDownloadedColumn = new GridTextColumn
                 {
+                    UserCellType = typeof(SwitchCell),
                     MappingName = "IsLocal",
                     HeaderText = "Downloaded",
                     Width = fgrid.Frame.Width * 0.10,
@@ -4534,7 +4647,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 return null;
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
             }
@@ -4556,7 +4669,7 @@ namespace DynaPad
         //    catch (Exception ex)
         //    {
         //        CommonFunctions.sendErrorEmail(ex);
-        //        PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+        //        PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
         //    }
         //}
         //WKWebView MRWebViews;
@@ -4833,7 +4946,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 return "error: " + ex.Message;
             }
         }
@@ -5036,7 +5149,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 return false;
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
             }
@@ -5143,7 +5256,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 return null;
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
             }
@@ -5186,7 +5299,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 return null;
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
             }
@@ -5282,7 +5395,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 return null;
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
             }
@@ -5368,7 +5481,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 return null;
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
             }
@@ -5629,7 +5742,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 return null;
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
             }
@@ -5682,7 +5795,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
             }
         }
@@ -5724,7 +5837,7 @@ namespace DynaPad
             if (error != null)
             {
                 CommonFunctions.sendNSErrorEmail(error);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.NSExceptionAlertPrompt(error), true, null);
                 //System.Console.WriteLine(error);
                 return;
             }
@@ -5733,7 +5846,7 @@ namespace DynaPad
             if (error != null)
             {
                 CommonFunctions.sendNSErrorEmail(error);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.NSExceptionAlertPrompt(error), true, null);
                 //System.Console.WriteLine(error);
                 return;
             }
@@ -5835,7 +5948,7 @@ namespace DynaPad
                 if (error != null)
                 {
                     CommonFunctions.sendNSErrorEmail(error);
-                    PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                    PresentViewController(CommonFunctions.NSExceptionAlertPrompt(error), true, null);
                     //throw new Exception(error.DebugDescription);
                 }
                 //player = new AVPlayer(audioFilePath);
@@ -5881,7 +5994,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //System.Console.WriteLine("There was a problem playing back audio: ");
                 //System.Console.WriteLine(ex.Message);
             }
@@ -5902,7 +6015,7 @@ namespace DynaPad
                 if (error != null)
                 {
                     CommonFunctions.sendNSErrorEmail(error);
-                    PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                    PresentViewController(CommonFunctions.NSExceptionAlertPrompt(error), true, null);
                     //throw new Exception(error.DebugDescription);
                 }
                 //byte[] bytes = Convert.FromBase64String(dictationBytes);
@@ -5947,7 +6060,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //System.Console.WriteLine("There was a problem playing back audio: ");
                 //System.Console.WriteLine(ex.Message);
             }
@@ -5971,7 +6084,7 @@ namespace DynaPad
             if (error != null)
             {
                 CommonFunctions.sendNSErrorEmail(error);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.NSExceptionAlertPrompt(error), true, null);
                 //System.Console.WriteLine(error);
                 return false;
             }
@@ -5989,7 +6102,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //System.Console.WriteLine("record error: " + ex.Message);
             }
 
@@ -6076,7 +6189,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
             }
             finally
@@ -6095,7 +6208,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-                PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //Console.WriteLine("There was a problem canceling audio: ");
                 //Console.WriteLine(ex.Message);
             }
@@ -6598,7 +6711,7 @@ namespace DynaPad
         //              var errordata = (MR)e.RowData;
         //              var errorfile = "<br/><br/><br/>FILE PATH:<br/><br/>" + errordata.MRPath;
         //              CommonFunctions.sendErrorEmail(ex, errorfile);
-        //              PresentViewController(CommonFunctions.ExceptionAlertPrompt(), true, null);
+        //              PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
         //      //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
         //  }
         //          //finally

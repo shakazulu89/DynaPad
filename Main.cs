@@ -89,7 +89,8 @@ namespace DynaClassLibrary
 			public string DomainClaimantsPathVirtual { get; set; }
 			public string DomainClaimantsPathPhysical { get; set; }
 			//public DataTable DomainPaths { get; set; }
-			public List<DomainPath> DomainPaths { get; set; }
+            public List<DomainPath> DomainPaths { get; set; }
+            public string DeviceId { get; set; }
 		}
 
 		public class DomainPath
