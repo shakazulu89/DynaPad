@@ -1080,6 +1080,10 @@ namespace DynaPad
         public bool ShowLoading { get; set; }
         public FileInfo RestoreFile { get; set; }
         public UIColor Color { get; set; }
+        public bool PendingUpdate { get; set; }
+        public bool SubmittedPatientForm { get; set; }
+        public bool SubmittedDoctorForm { get; set; }
+        public bool CreatedReport { get; set; }
 
         public override async void Selected(DialogViewController dvc, UITableView tableView, NSIndexPath path)
         {
@@ -1207,6 +1211,27 @@ namespace DynaPad
             if (Color != null)
             {
                 cell.BackgroundColor = Color;
+            }
+
+            if (PendingUpdate)
+            {
+                //cell.AccessoryView = new UIImageView(UIImage.FromBundle("Save"));
+                cell.Accessory = UITableViewCellAccessory.DetailDisclosureButton;
+            }
+
+            if (SubmittedPatientForm)
+            {
+                cell.BackgroundColor = UIColor.Yellow;
+            }
+
+            if (SubmittedDoctorForm)
+            {
+                cell.BackgroundColor = UIColor.Blue;
+            }
+
+            if (CreatedReport)
+            {
+                cell.BackgroundColor = UIColor.Green;
             }
 
             return cell;

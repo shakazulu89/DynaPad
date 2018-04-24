@@ -130,7 +130,10 @@ public class MenuItem
     public string ApptId { get; set; }
     public string ReportId { get; set; }
     public string Status { get; set; }
-	public string CaseId { get; set; }
+    public string CaseId { get; set; }
+    public bool SubmittedPatientForm { get; set; }
+    public bool SubmittedDoctorForm { get; set; }
+    public bool CreatedReport { get; set; }
 	public List<Menu> Menus { get; set; }
 }
 

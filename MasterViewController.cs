@@ -468,7 +468,7 @@ namespace DynaPad
 
             sSection.Add(uploadOnSubmitLbl);
 
-            var boo = !string.IsNullOrEmpty(plist.StringForKey("Upload_On_Submit")) ? bool.Parse(plist.StringForKey("Upload_On_Submit")) : true;
+            var boo = string.IsNullOrEmpty(plist.StringForKey("Upload_On_Submit")) || bool.Parse(plist.StringForKey("Upload_On_Submit"));
             var switchUploadOnSubmit = new UISwitch() { On = boo };
             switchUploadOnSubmit.Frame = new CGRect(5, 0, switchUploadOnSubmit.Frame.Width, switchUploadOnSubmit.Frame.Height);
             switchUploadOnSubmit.ValueChanged += delegate
@@ -883,6 +883,9 @@ namespace DynaPad
                         LocationID = mItem.LocationId,
                         ApptID = mItem.ApptId,
                         ReportID = mItem.ReportId,
+                        SubmittedPatientForm = mItem.SubmittedPatientForm,
+                        SubmittedDoctorForm = mItem.SubmittedDoctorForm,
+                        CreatedReport = mItem.CreatedReport,
                         IsDoctorForm = mItem.MenuItemAction == "GetDoctorForm"
                     };
 
@@ -895,6 +898,13 @@ namespace DynaPad
                             break;
                         case "GetAppt":
                             rootMenu.createOnSelected = GetApptService;
+
+                            string documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaFilesAwaitingUpload/" + mItem.PatientId + "/" + mItem.ApptId);
+
+                            if (Directory.Exists(documentsPath) && Directory.GetFiles(documentsPath, "*.*", SearchOption.AllDirectories).Length > 0)
+                            {
+                                rootMenu.PendingUpdate = true;
+                            }
                             break;
                         case "GetApptForm":
                             rootMenu.createOnSelected = GetApptFormService;
@@ -1122,6 +1132,9 @@ namespace DynaPad
                         var text = e.Result; // get the downloaded text
                         //Console.WriteLine($"\nDownloaded: {e.Result}");
 
+                        presetfile.PresetJson = text;
+                        var newFileInfo = JsonConvert.SerializeObject(presetfile);
+
                         var fileidentity = presetfile.PresetId;
                         string localFilename = fileidentity + ".txt";
                         string localPath;
@@ -1150,10 +1163,10 @@ namespace DynaPad
                         {
                             var existingFileInfo = new FileInfo(localPath);
                             //if (existingFileInfo.Length != text.Length || ForceUpdate)
-                            if (existingFileInfo.Length != text.Length || ForceUpdate)
+                            if (existingFileInfo.Length != newFileInfo.Length || ForceUpdate)
                             {
                                 File.Delete(localPath);
-                                File.WriteAllText(localPath, text); // writes to local storage
+                                File.WriteAllText(localPath, newFileInfo); // writes to local storage
                                 Console.WriteLine("New preset file REPLACED to : {0}", localPath);
                             }
                             else
@@ -1163,7 +1176,7 @@ namespace DynaPad
                         }
                         else
                         {
-                            File.WriteAllText(localPath, text); // writes to local storage
+                            File.WriteAllText(localPath, newFileInfo); // writes to local storage
                             Console.WriteLine("New preset file SAVED to : {0}", localPath);
                         }
                     };
