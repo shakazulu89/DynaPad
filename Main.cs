@@ -131,9 +131,9 @@ public class MenuItem
     public string ReportId { get; set; }
     public string Status { get; set; }
     public string CaseId { get; set; }
-    public bool SubmittedPatientForm { get; set; }
-    public bool SubmittedDoctorForm { get; set; }
-    public bool CreatedReport { get; set; }
+    public bool IsPatientFormSubmitted { get; set; }
+    public bool IsDoctorFormSubmitted { get; set; }
+    public bool IsReportCreated { get; set; }
 	public List<Menu> Menus { get; set; }
 }
 

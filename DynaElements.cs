@@ -1085,8 +1085,26 @@ namespace DynaPad
         public bool SubmittedDoctorForm { get; set; }
         public bool CreatedReport { get; set; }
 
+        public Boolean isRunning = false;
+        Object _lockObject = new object();
+
         public override async void Selected(DialogViewController dvc, UITableView tableView, NSIndexPath path)
         {
+
+            _lockObject = this;
+
+            lock (_lockObject)
+            {
+                if (isRunning)
+                {
+                    return;
+                }
+                else
+                {
+                    isRunning = true;
+                }
+            }
+
             var loadingOverlay = new LoadingOverlay(tableView.Bounds);
 
             //nfloat labelHeight = 22;
@@ -1131,6 +1149,8 @@ namespace DynaPad
             {
                 selected(this, EventArgs.Empty);
             }
+
+            isRunning = false;
         }
 
         public event EventHandler<EventArgs> OnSelected;

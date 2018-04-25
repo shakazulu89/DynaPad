@@ -5,9 +5,9 @@
 	<key>CFBundleName</key>
 	<string>DynaPad</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.2.6.4</string>
+	<string>1.2.6.8</string>
 	<key>CFBundleVersion</key>
-	<string>1.2.6.4</string>
+	<string>1.2.6.8</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>MinimumOSVersion</key>
@@ -45,6 +45,6 @@
 	<key>UIRequiresPersistentWiFi</key>
 	<true/>
 	<key>UIApplicationExitsOnSuspend</key>
-	<true/>
+	<false/>
 </dict>
 </plist>

@@ -557,8 +557,8 @@ namespace DynaPad
 
                             if (!IsViewSummary)
                             {
-                                if (CrossConnectivity.Current.IsConnected)
-                                {
+                                //if (CrossConnectivity.Current.IsConnected)
+                                //{
                                     //var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
                                     var finalJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
 
@@ -576,11 +576,11 @@ namespace DynaPad
 
                                     var mas = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[0]).TopViewController;
                                     mas.NavigationController.PopViewController(true);
-                                }
-                                else
-                                {
-                                    PresentViewController(CommonFunctions.InternetAlertPrompt(), true, null);
-                                }
+                                //}
+                                //else
+                                //{
+                                //    PresentViewController(CommonFunctions.InternetAlertPrompt(), true, null);
+                                //}
                             }
                             else
                             {
@@ -602,7 +602,7 @@ namespace DynaPad
                                 }
                                 else
                                 {
-                                    var sucmes = SelectedAppointment.SelectedQForm.IsDoctorForm ? "Doctor form submitted successfully. Upload appointment files to generate report." : "Patient form submitted successfully.";
+                                    var sucmes = SelectedAppointment.SelectedQForm.IsDoctorForm ? "Doctor form submitted successfully. If not done so already, upload appointment files to generate report." : "Patient form submitted successfully.";
                                     var se = new StringElement(sucmes);
                                     summarySection.Add(se);
 
@@ -617,10 +617,18 @@ namespace DynaPad
 
                                     summaryElement.Add(summarySection);
 
-                                    var boo = !string.IsNullOrEmpty(plist.StringForKey("Upload_On_Submit")) ? bool.Parse(plist.StringForKey("Upload_On_Submit")) : true;
+                                    var boo = string.IsNullOrEmpty(plist.StringForKey("Upload_On_Submit")) || bool.Parse(plist.StringForKey("Upload_On_Submit"));
                                     if (boo)
                                     {
-                                        DoSubmitUpload();
+                                        loadingOverlay.Hide();
+                                        if (CrossConnectivity.Current.IsConnected)
+                                        {
+                                            DoSubmitUpload();
+                                        }
+                                        else
+                                        {
+                                            PresentViewController(CommonFunctions.InternetAlertPrompt(), true, null);
+                                        }
                                     }
                                 }
 
@@ -903,6 +911,8 @@ namespace DynaPad
             finally
             {
                 loadingOverlay.Hide();
+                var master = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
+                master.isRunning = false;
             }
         }
 
@@ -910,32 +920,42 @@ namespace DynaPad
 
         public void DoSubmitUpload()
         {
-            string documentsPath;
-
-            documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaFilesAwaitingUpload/" + SelectedAppointment.ApptPatientId + "/" + SelectedAppointment.ApptId);
-
-            var array = new List<DynaFile>();
-            string[] files;
-
-            if (Directory.Exists(documentsPath) && Directory.GetFiles(documentsPath, "*.*", SearchOption.AllDirectories).Length > 0)
+            try
             {
-                files = Directory.GetFiles(documentsPath, "*.*", SearchOption.AllDirectories);
+                string documentsPath;
 
-                foreach (string file in files)
+                documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaFilesAwaitingUpload/" + SelectedAppointment.ApptPatientId + "/" + SelectedAppointment.ApptId);
+
+                var array = new List<DynaFile>();
+                string[] files;
+
+                if (Directory.Exists(documentsPath) && Directory.GetFiles(documentsPath, "*.*", SearchOption.AllDirectories).Length > 0)
                 {
-                    string contents = File.ReadAllText(file);
-                    var userconfig = CommonFunctions.GetUserConfig();
+                    files = Directory.GetFiles(documentsPath, "*.*", SearchOption.AllDirectories);
 
-                    var filename = Path.GetFileName(file);
-                    var filetype = filename.Substring(0, filename.IndexOf("_", StringComparison.CurrentCulture));
+                    foreach (string file in files)
+                    {
+                        string contents = File.ReadAllText(file);
+                        var userconfig = CommonFunctions.GetUserConfig();
 
-                    var upload = JsonConvert.DeserializeObject<DynaFile>(File.ReadAllText(file));
+                        var filename = Path.GetFileName(file);
+                        var filetype = filename.Substring(0, filename.IndexOf("_", StringComparison.CurrentCulture));
 
-                    array.Add(upload);
+                        var upload = JsonConvert.DeserializeObject<DynaFile>(File.ReadAllText(file));
+
+                        array.Add(upload);
+                    }
                 }
-            }
 
-            UploadSubmittedForms(new string[] { documentsPath }, "DoSubmitUpload", false);
+                UploadSubmittedForms(new string[] { documentsPath }, "DoSubmitUpload", false);
+            }
+            catch (Exception ex)
+            {
+                //loadingOverlay.Hide();
+                CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
+                //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+            }
         }
 
 
@@ -1002,71 +1022,78 @@ namespace DynaPad
 
             try
             {
-                var array = new List<DynaFile>();
-
-                foreach (var folder in folders)
+                if (CrossConnectivity.Current.IsConnected)
                 {
-                    if (Directory.Exists(folder) && Directory.GetFiles(folder, "*.*", SearchOption.AllDirectories).Length > 0)
+                    var array = new List<DynaFile>();
+
+                    foreach (var folder in folders)
                     {
-                        var files = Directory.GetFiles(folder, "*.*", SearchOption.AllDirectories);
-
-                        foreach (string file in files)
+                        if (Directory.Exists(folder) && Directory.GetFiles(folder, "*.*", SearchOption.AllDirectories).Length > 0)
                         {
-                            var upload = JsonConvert.DeserializeObject<DynaFile>(File.ReadAllText(file));
+                            var files = Directory.GetFiles(folder, "*.*", SearchOption.AllDirectories);
 
-                            array.Add(upload);
-                        }
-                    }
-                }
+                            foreach (string file in files)
+                            {
+                                var upload = JsonConvert.DeserializeObject<DynaFile>(File.ReadAllText(file));
 
-                var starttoast = new Toast("Uploading " + array.Count.ToString() + " files. This may take a while, please be patient.");
-                starttoast.SetDuration(20000);
-                starttoast.SetType(ToastType.Info);
-                starttoast.SetGravity(ToastGravity.Bottom);
-                starttoast.Show();
-
-                var dds = new DynaPadService.DynaPadService { Timeout = 180000 };
-                var result = dds.ProcessDynaFiles(CommonFunctions.GetUserConfig(), JsonConvert.SerializeObject(array));
-
-                if (!result.StartsWith("Error", StringComparison.CurrentCulture))
-                {
-                    foreach (var file in array)
-                    {
-                        var documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaFilesUploaded/" + file.PatientId + "/" + file.ApptId);
-                        var awaitingDocumentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaFilesAwaitingUpload/" + file.PatientId + "/" + file.ApptId);
-
-                        var filePath = documentsPath + "/" + file.FileName + ".txt";
-                        var awaitingFilePath = awaitingDocumentsPath + "/" + file.FileName + ".txt";
-
-                        if (!Directory.Exists(documentsPath))
-                        {
-                            Directory.CreateDirectory(documentsPath);
-                        }
-
-                        file.Status = "Uploaded";
-
-                        File.WriteAllText(filePath, JsonConvert.SerializeObject(file)); // writes to local storage
-                        if (File.Exists(awaitingFilePath))
-                        {
-                            File.Delete(awaitingFilePath);
+                                array.Add(upload);
+                            }
                         }
                     }
 
-                    var finishtoast = new Toast("The requested form(s) have been uploaded");
-                    finishtoast.SetDuration(20000);
-                    finishtoast.SetType(ToastType.Info);
-                    finishtoast.SetGravity(ToastGravity.Bottom);
-                    finishtoast.Show();
+                    var starttoast = new Toast("Uploading " + array.Count.ToString() + " files. This may take a while, please be patient.");
+                    starttoast.SetDuration(20000);
+                    starttoast.SetType(ToastType.Info);
+                    starttoast.SetGravity(ToastGravity.Bottom);
+                    starttoast.Show();
+
+                    var dds = new DynaPadService.DynaPadService { Timeout = 180000 };
+                    var result = dds.ProcessDynaFiles(CommonFunctions.GetUserConfig(), JsonConvert.SerializeObject(array));
+
+                    if (!result.StartsWith("Error", StringComparison.CurrentCulture))
+                    {
+                        foreach (var file in array)
+                        {
+                            var documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaFilesUploaded/" + file.PatientId + "/" + file.ApptId);
+                            var awaitingDocumentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaFilesAwaitingUpload/" + file.PatientId + "/" + file.ApptId);
+
+                            var filePath = documentsPath + "/" + file.FileName + ".txt";
+                            var awaitingFilePath = awaitingDocumentsPath + "/" + file.FileName + ".txt";
+
+                            if (!Directory.Exists(documentsPath))
+                            {
+                                Directory.CreateDirectory(documentsPath);
+                            }
+
+                            file.Status = "Uploaded";
+
+                            File.WriteAllText(filePath, JsonConvert.SerializeObject(file)); // writes to local storage
+                            if (File.Exists(awaitingFilePath))
+                            {
+                                File.Delete(awaitingFilePath);
+                            }
+                        }
+
+                        var finishtoast = new Toast("The requested form(s) have been uploaded");
+                        finishtoast.SetDuration(20000);
+                        finishtoast.SetType(ToastType.Info);
+                        finishtoast.SetGravity(ToastGravity.Bottom);
+                        finishtoast.Show();
 
 
+                    }
+                    else
+                    {
+                        var errortoast = new Toast("Uploading error, try again");
+                        errortoast.SetDuration(20000);
+                        errortoast.SetType(ToastType.Info);
+                        errortoast.SetGravity(ToastGravity.Bottom);
+                        errortoast.Show();
+                    }
                 }
                 else
                 {
-                    var errortoast = new Toast("Uploading error, try again");
-                    errortoast.SetDuration(20000);
-                    errortoast.SetType(ToastType.Info);
-                    errortoast.SetGravity(ToastGravity.Bottom);
-                    errortoast.Show();
+                    PresentViewController(CommonFunctions.InternetAlertPrompt(), true, null);
                 }
             }
             catch (Exception ex)
@@ -1734,6 +1761,8 @@ namespace DynaPad
                         //await Task.Delay(TimeSpan.FromSeconds(1), cts.Token);
                         await Task.Delay(10, cts.Token);
 
+                        loadingOverlay.Hide();
+
                         var task = SubmitForm("Submit", password, isDoctorForm, sig, cts.Token, cancelButtonF);
                         var result = await task;
                         //Console.WriteLine($"\nGot section with: {result}");
@@ -1774,13 +1803,14 @@ namespace DynaPad
                 //Root.Clear();
                 //Root.Add(CommonFunctions.ErrorDetailSection());
                 //ReloadData();
+                loadingOverlay.Hide();
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
             }
-            finally
-            {
-                loadingOverlay.Hide();
-            }
+            //finally
+            //{
+            //    loadingOverlay.Hide();
+            //}
         }
 
 
@@ -1791,6 +1821,11 @@ namespace DynaPad
 
             try
             {
+                var boundsh = base.TableView.Frame;
+                loadingOverlay = new LoadingOverlay(boundsh, true);// { loadingLabelText = "Finalizing..." };
+                loadingOverlay.SetText("Saving form...", true);
+                mvc.Add(loadingOverlay);
+
                 ////var bounds = base.TableView.Frame;
                 //loadingOverlay = new LoadingOverlay(SplitViewController.View.Bounds);// { loadingLabelText = "Submitting Form..."};
                 //loadingOverlay.SetText("Submitting a form may take a few minutes. Please wait patiently...");
@@ -1823,8 +1858,8 @@ namespace DynaPad
                     }
                 }
 
-                if (CrossConnectivity.Current.IsConnected)
-                {
+                //if (CrossConnectivity.Current.IsConnected)
+                //{
                     if (isValid && isSigned)
                     {
                         var finalJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
@@ -1935,17 +1970,17 @@ namespace DynaPad
 
                         PresentViewController(CommonFunctions.AlertPrompt("Error", failPass + failSign, true, null, false, null), true, null);
                     }
-                }
-                else
-                {
-                    //loadingOverlay.Hide();
+                //}
+                //else
+                //{
+                //    loadingOverlay.Hide();
 
-                    PresentViewController(CommonFunctions.InternetAlertPrompt(), true, null);
-                }
+                //    PresentViewController(CommonFunctions.InternetAlertPrompt(), true, null);
+                //}
             }
             catch (Exception ex)
             {
-                //loadingOverlay.Hide();
+                loadingOverlay.Hide();
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
@@ -2640,7 +2675,7 @@ namespace DynaPad
 
                                 if (!string.IsNullOrEmpty(htidval) && IsDigitsOnly(htidval))
                                 {
-                                    seg.SelectedSegment = Convert.ToInt16(htidval) - 1;
+                                    seg.SelectedSegment = Convert.ToInt16(htidval);// - 1;
                                 }
 
                                 qSection.Add(seg);
@@ -3341,6 +3376,9 @@ namespace DynaPad
                     var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
                     dds.SaveAnswerPreset(CommonFunctions.GetUserConfig(), SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, true, presetName, presetJson, SelectedAppointment.ApptLocationId, presetId);
 
+                    var master = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
+                    master.SavePresetData();
+
                     if (presetId == null)
                     {
                         var mre = GetPreset(presetId, presetName, presetJson, fs, sectionId, presetGroup, sectionQuestions, presetSection, origS, isDoctorInput, nextbtn);
@@ -3397,6 +3435,15 @@ namespace DynaPad
                     var presetJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm.FormSections[fs]);
                     var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
                     dds.DeleteAnswerPreset(CommonFunctions.GetUserConfig(), SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, presetId);
+
+                    var presetPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaPresets/" + SelectedAppointment.SelectedQForm.FormId + "/" + SelectedAppointment.ApptDoctorId + "/" + sectionId + "/" + presetId + ".txt");
+                    if (File.Exists(presetPath))
+                    {
+                        File.Delete(presetPath);
+                    }
+
+                    var master = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
+                    master.SavePresetData();
 
                     //var mre = GetPreset(presetId, presetName, presetJson, fs, sectionId, presetGroup, sectionQuestions, presetSection, origS, isDoctorInput, nextbtn);
 
