@@ -1129,6 +1129,41 @@ namespace DynaPad
 
                 var dcount = deserializedpresetfiles.Count;
 
+                //deserializedpresetfiles.Remove(deserializedpresetfiles.Find(y => y.PresetName == "dan"));
+
+                var localPresets = GetPresetData(null, null, true);
+
+                if (ForceUpdate)
+                {
+                    foreach (DynaPreset lfile in localPresets)
+                    {
+                        if (!deserializedpresetfiles.Exists(x => x.PresetId == lfile.PresetId))
+                        {
+                            var lfileidentity = lfile.PresetId;
+                            string llocalFilename = lfileidentity + ".txt";
+                            string llocalPath;
+
+                            var ldocumentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaPresets/" + lfile.FormId + "/" + lfile.DoctorId);
+                            if (!string.IsNullOrEmpty(lfile.SectionId))
+                            {
+                                var ldocumentsSectionPath = Path.Combine(ldocumentsPath, lfile.SectionId);
+
+                                llocalPath = Path.Combine(ldocumentsSectionPath, llocalFilename);
+                            }
+                            else
+                            {
+                                llocalPath = Path.Combine(ldocumentsPath, llocalFilename);
+                            }
+
+                            if (File.Exists(llocalPath))
+                            {
+                                File.Delete(llocalPath);
+                                Console.WriteLine("Local preset file DELETED at : {0}", llocalPath);
+                            }
+                        }
+                    }
+                }
+
                 Console.WriteLine("Starting download of : {0} preset files", dcount);
 
                 if (dcount > 0)
@@ -1318,13 +1353,23 @@ namespace DynaPad
         //}
 
 
-        List<DynaPreset> GetPresetData(string formid, string doctorid)
+        List<DynaPreset> GetPresetData(string formid, string doctorid, bool getall = false)
         {
             var array = new List<DynaPreset>();
 
-            var documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaPresets/" + formid + "/" + doctorid);
+            string documentsPath;
+            string[] files;
 
-            var files = Directory.GetFiles(documentsPath);
+            if (getall)
+            {
+                documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaPresets/");
+                files = Directory.GetFiles(documentsPath, "*.*", SearchOption.AllDirectories);
+            }
+            else
+            {
+                documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaPresets/" + formid + "/" + doctorid);
+                files = Directory.GetFiles(documentsPath);
+            }
 
             foreach (string file in files)
             {
@@ -2310,6 +2355,12 @@ namespace DynaPad
                     if (File.Exists(presetPath))
                     {
                         File.Delete(presetPath);
+
+                        var toast = new Toast("Preset file was deleted");
+                        toast.SetDuration(5000);
+                        toast.SetType(ToastType.Info);
+                        toast.SetGravity(ToastGravity.Bottom);
+                        toast.Show();
                     }
 
                     SavePresetData();

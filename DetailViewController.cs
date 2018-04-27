@@ -3440,6 +3440,12 @@ namespace DynaPad
                     if (File.Exists(presetPath))
                     {
                         File.Delete(presetPath);
+
+                        var toast = new Toast("Preset file was deleted");
+                        toast.SetDuration(5000);
+                        toast.SetType(ToastType.Info);
+                        toast.SetGravity(ToastGravity.Bottom);
+                        toast.Show();
                     }
 
                     var master = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
