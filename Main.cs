@@ -125,12 +125,14 @@ public class MenuItem
 	public string MenuItemCaption { get; set; }
 	public string PatientId { get; set; }
 	public string PatientName { get; set; }
-	public string DoctorId { get; set; }
+    public string DoctorId { get; set; }
+    public string DoctorName { get; set; }
 	public string LocationId { get; set; }
     public string ApptId { get; set; }
     public string ReportId { get; set; }
     public string Status { get; set; }
     public string CaseId { get; set; }
+    public string ApptNotes { get; set; }
     public bool IsPatientFormSubmitted { get; set; }
     public bool IsDoctorFormSubmitted { get; set; }
     public bool IsReportCreated { get; set; }
@@ -165,10 +167,12 @@ public static class SelectedAppointment
     public static string ApptId { get; set; }
     public static string ApptReportId { get; set; }
     public static string ApptStatus { get; set; }
-	public static string CaseId { get; set; }
+    public static string CaseId { get; set; }
+    public static string ApptNotes { get; set; }
 	public static string ApptPatientId { get; set; }
 	public static string ApptPatientName { get; set; }
-	public static string ApptDoctorId { get; set; }
+    public static string ApptDoctorId { get; set; }
+    public static string ApptDoctorName { get; set; }
 	public static string ApptLocationId { get; set; }
 	public static string ApptCompanyId { get; set; }
 	public static List<Report> ApptReports { get; set; }

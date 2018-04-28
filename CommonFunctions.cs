@@ -101,10 +101,10 @@ namespace DynaPad
 
         public static UIAlertController ExceptionAlertPrompt(Exception exception, bool ReloginPrompt = false)
 		{
-            var relogin = "try again.";
+            var relogin = "try again";
             if (ReloginPrompt)
             {
-                relogin = "re-login to ensure form loads properly.";
+                relogin = "re-login to ensure form loads properly";
             }
             var message = "An error has occurred, " + relogin + ": " + exception.Message;
             var prompt = UIAlertController.Create("Error", message, UIAlertControllerStyle.Alert);
@@ -114,10 +114,10 @@ namespace DynaPad
 
         public static UIAlertController NSExceptionAlertPrompt(NSError exception, bool ReloginPrompt = false)
         {
-            var relogin = "try again.";
+            var relogin = "try again";
             if (ReloginPrompt)
             {
-                relogin = "re-login to ensure form loads properly.";
+                relogin = "re-login to ensure form loads properly";
             }
             var message = "An error has occurred, " + relogin + ": " + exception.Code;
             var prompt = UIAlertController.Create("Error", message, UIAlertControllerStyle.Alert);

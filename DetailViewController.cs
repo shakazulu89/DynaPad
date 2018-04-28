@@ -354,9 +354,20 @@ namespace DynaPad
                             //Root.TableView.ScrollEnabled = true;
 
                             //break;
+                        case "ApptInfo":
+                            loadingOverlay = new LoadingOverlay(boundsh, true);
+                            loadingOverlay.SetText("Loading...");
+                            mvc.Add(loadingOverlay);
+
+                            await Task.Delay(10);
+
+                            var apptInfoElement = GetApptInfoElement();
+                            Root = apptInfoElement;
+
+                            break;
                         case "UploadSubmittedForms":
                         case "UploadSubmittedPatientForms":
-                            loadingOverlay = new LoadingOverlay(boundsh, true);// { loadingLabelText = "Loading MR..." };
+                            loadingOverlay = new LoadingOverlay(boundsh, true);
                             loadingOverlay.SetText("Loading...");
                             mvc.Add(loadingOverlay);
 
@@ -962,53 +973,62 @@ namespace DynaPad
 
         public async void UploadSubmittedForms(string[] folders, string context, bool returnToGrid)
         {
-            var boundsh = base.TableView.Frame;
-            mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
-            loadingOverlay = new LoadingOverlay(boundsh, true);
-            loadingOverlay.SetText("Uploading...");
-            centerX = new nfloat(loadingOverlay.Frame.Width / 2);
-            centerY = new nfloat(loadingOverlay.Frame.Height / 2);
-
-            cancelButton = new UIButton(UIButtonType.System)
-            {
-                Frame = new CGRect(centerX - (labelWidth / 2), centerY + 50, labelWidth, labelHeight)
-            };
-            cancelButton.SetTitle("Cancel", UIControlState.Normal);
-            cancelButton.TouchUpInside += (sender, e) =>
-            {
-                cts.Cancel();
-            };
-
-            loadingOverlay.AddSubview(cancelButton);
-
-            mvc.Add(loadingOverlay);
-
             try
             {
-                cts?.Cancel();     // cancel previous search
-            }
-            catch (ObjectDisposedException oex)     // in case previous search completed
-            {
-                Console.WriteLine($"\nObjectDisposedException with: {oex.Message}");
-            }
+                var boundsh = base.TableView.Frame;
+                mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
+                loadingOverlay = new LoadingOverlay(boundsh, true);
+                loadingOverlay.SetText("Uploading...");
+                centerX = new nfloat(loadingOverlay.Frame.Width / 2);
+                centerY = new nfloat(loadingOverlay.Frame.Height / 2);
 
-            using (cts = new CancellationTokenSource())
-            {
+                cancelButton = new UIButton(UIButtonType.System)
+                {
+                    Frame = new CGRect(centerX - (labelWidth / 2), centerY + 50, labelWidth, labelHeight)
+                };
+                cancelButton.SetTitle("Cancel", UIControlState.Normal);
+                cancelButton.TouchUpInside += (sender, e) =>
+                {
+                    cts.Cancel();
+                };
+
+                loadingOverlay.AddSubview(cancelButton);
+
+                mvc.Add(loadingOverlay);
+
                 try
                 {
-                    cts.CancelAfter(TimeSpan.FromSeconds(10));
-                    //await Task.Delay(TimeSpan.FromSeconds(1), cts.Token);
-                    await Task.Delay(10, cts.Token);
-
-                    var task = DoUpload(folders, cts.Token, context, returnToGrid);
-                    var result = await task;
+                    cts?.Cancel();     // cancel previous search
                 }
-                catch (TaskCanceledException tex)       // if the operation is cancelled, do nothing
+                catch (ObjectDisposedException oex)     // in case previous search completed
                 {
-                    Console.WriteLine($"\nCanceled with: {tex.Message}");
-
-                    PresentViewController(CommonFunctions.AlertPrompt("Canceled/Timeout", "Operation was canceled or timed out, please try again", true, null, false, null), true, null);
+                    Console.WriteLine($"\nObjectDisposedException with: {oex.Message}");
                 }
+
+                using (cts = new CancellationTokenSource())
+                {
+                    try
+                    {
+                        cts.CancelAfter(TimeSpan.FromSeconds(10));
+                        //await Task.Delay(TimeSpan.FromSeconds(1), cts.Token);
+                        await Task.Delay(10, cts.Token);
+
+                        var task = DoUpload(folders, cts.Token, context, returnToGrid);
+                        var result = await task;
+                    }
+                    catch (TaskCanceledException tex)       // if the operation is cancelled, do nothing
+                    {
+                        Console.WriteLine($"\nCanceled with: {tex.Message}");
+                        loadingOverlay.Hide();
+                        PresentViewController(CommonFunctions.AlertPrompt("Canceled/Timeout", "Operation was canceled or timed out, please try again", true, null, false, null), true, null);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                loadingOverlay.Hide();
+                CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
             }
         }
 
@@ -1772,7 +1792,7 @@ namespace DynaPad
                         Console.WriteLine($"\nCanceled with: {tex.Message}");
 
                         //CommonFunctions.sendErrorEmail((Exception)tex);
-
+                        loadingOverlay.Hide();
                         var master = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
 
                         //foreach (Element d in master.secforcancel.Elements)
@@ -1954,7 +1974,7 @@ namespace DynaPad
                         //    CommonFunctions.sendErrorEmail(new Exception("dds.SaveFile error: apptid = " + SelectedAppointment.ApptId));
                         //}
 
-                        loadingOverlay.Hide();
+                        //loadingOverlay.Hide();
 
                         SetDetailItem(new Section("Summary"), "Summary", "", null, false);
                     }
@@ -1980,10 +2000,14 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
-                loadingOverlay.Hide();
+                //loadingOverlay.Hide();
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+            }
+            finally
+            {
+                loadingOverlay.Hide();
             }
 
             return context;
@@ -3676,28 +3700,36 @@ namespace DynaPad
 
         void GetAutoData(string qid)
         {
-            var array = new NSMutableArray();
-            //array.Add(getDictionary("John", "24"));
-            //array.Add(getDictionary("James", "37"));
-
-            var documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaAutoBoxes");
-            string localFilename = qid + ".txt";
-            var localPath = Path.Combine(documentsPath, localFilename);
-
-            if (File.Exists(localPath))
+            try
             {
-                var listxml = new XmlDocument();
-                listxml.Load(localPath);
-                XmlElement root = listxml.DocumentElement;
-                var nodes = root.SelectNodes("/Items/Item");
+                var array = new NSMutableArray();
+                //array.Add(getDictionary("John", "24"));
+                //array.Add(getDictionary("James", "37"));
 
-                foreach (XmlNode node in nodes)
+                var documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaAutoBoxes");
+                string localFilename = qid + ".txt";
+                var localPath = Path.Combine(documentsPath, localFilename);
+
+                if (File.Exists(localPath))
                 {
-                    array.Add(getDictionary(node.Attributes[0].Value, node.Attributes[1].Value));
-                }
-            }
+                    var listxml = new XmlDocument();
+                    listxml.Load(localPath);
+                    XmlElement root = listxml.DocumentElement;
+                    var nodes = root.SelectNodes("/Items/Item");
 
-            AutoDetails = array;
+                    foreach (XmlNode node in nodes)
+                    {
+                        array.Add(getDictionary(node.Attributes[0].Value, node.Attributes[1].Value));
+                    }
+                }
+
+                AutoDetails = array;
+            }
+            catch (Exception ex)
+            {
+                CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
+            }
         }
 
 
@@ -3728,6 +3760,7 @@ namespace DynaPad
             keys.SetValue("Value", 1);
             objects.SetValue((NSString)text, 0);
             objects.SetValue((NSString)value, 1);
+
             return NSDictionary.FromObjectsAndKeys(objects, keys);
         }
 
@@ -3764,7 +3797,90 @@ namespace DynaPad
             }
         }
 
-        SFBusyIndicator busyIndicator;
+
+
+
+
+        public DynaMultiRootElement GetApptInfoElement()
+        {
+            try
+            {
+                var apptInfoElement = new DynaMultiRootElement(SelectedAppointment.ApptPatientName);
+
+                var apptInfoPaddedView = new PaddedUIView<UILabel>
+                {
+                    Enabled = true,
+                    Type = "Section",
+                    Frame = new CGRect(0, 0, 0, 40),
+                    Padding = 5f
+                };
+                apptInfoPaddedView.NestedView.Text = "Appointment Info - " + SelectedAppointment.ApptPatientName;
+                apptInfoPaddedView.NestedView.TextAlignment = UITextAlignment.Center;
+                apptInfoPaddedView.NestedView.Font = UIFont.BoldSystemFontOfSize(17);
+                apptInfoPaddedView.setStyle();
+
+                var apptInfoSection = new DynaSection("ApptInfo")
+                {
+                    HeaderView = new UIView(new CGRect(0, 0, 0, 0)),
+                    FooterView = new UIView(new CGRect(0, 0, 0, 0))
+                };
+                apptInfoSection.FooterView.Hidden = true;
+
+                var patientNamePaddedView = new PaddedUIView<UILabel>
+                {
+                    Frame = new CGRect(0, 0, View.Bounds.Width, 30),
+                    Padding = 5f
+                };
+                patientNamePaddedView.NestedView.Text = "Patient Name:";
+                patientNamePaddedView.setStyle();
+                apptInfoSection.Add(patientNamePaddedView);
+                var patientNameLabel = new UILabel(new CGRect(5, 0, View.Bounds.Width, 30)) { Text = SelectedAppointment.ApptPatientName };
+                apptInfoSection.Add(patientNameLabel);
+
+                var doctorNamePaddedView = new PaddedUIView<UILabel>
+                {
+                    Frame = new CGRect(0, 0, View.Bounds.Width, 30),
+                    Padding = 5f
+                };
+                doctorNamePaddedView.NestedView.Text = "Doctor Name:";
+                doctorNamePaddedView.setStyle();
+                apptInfoSection.Add(doctorNamePaddedView);
+                var doctorNameLabel = new UILabel(new CGRect(5, 0, View.Bounds.Width, 30)) { Text = SelectedAppointment.ApptDoctorName };
+                apptInfoSection.Add(doctorNameLabel);
+
+                var apptnotes = string.IsNullOrEmpty(SelectedAppointment.ApptNotes) ? "" : SelectedAppointment.ApptNotes;
+                //var apptnotes = "Resolved pending breakpoint at 'DetailViewController.cs:4449,1' to DynaPad.DynaMultiRootElement DynaPad.DetailViewController.GetUploadElement (string valueId, string context). Resolved pending breakpoint.";
+
+                var ww = (decimal)apptnotes.Length / 100;
+                var wlines = (int)Math.Ceiling(ww);
+                var fwlines = wlines == 0 ? 1 : wlines;
+                var wheight = 30 * fwlines;
+
+                var apptNotesPaddedView = new PaddedUIView<UILabel>
+                {
+                    Frame = new CGRect(0, 0, View.Bounds.Width, 30),
+                    Padding = 5f
+                };
+                apptNotesPaddedView.NestedView.Text = "Appointment Notes:";
+                apptNotesPaddedView.setStyle();
+                apptInfoSection.Add(apptNotesPaddedView);
+                var apptNotesLabel = new UILabel(new CGRect(5, 0, View.Bounds.Width - 10, wheight)) { Text = apptnotes, LineBreakMode = UILineBreakMode.WordWrap, Lines = 0 };
+                apptInfoSection.Add(apptNotesLabel);
+
+                apptInfoElement.Add(apptInfoSection);
+
+                return apptInfoElement;
+            }
+            catch (Exception ex)
+            {
+                CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
+                return null;
+                //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+            }
+        }
+
+        //SFBusyIndicator busyIndicator;
 
         public UIBarButtonItem GetMRNavBtn()
         {
@@ -3772,11 +3888,11 @@ namespace DynaPad
             {
                 var navmr = new UIBarButtonItem(UIBarButtonSystemItem.Organize, (sender, args) =>
                 {
-                    var nlab = new UILabel(new CGRect(10, 0, View.Bounds.Width - 60, 50)) { Text = "Medical Records: " + SelectedAppointment.ApptPatientName };
+                    var nlab = new UILabel(new CGRect(10, 0, View.Bounds.Width, 50)) { Text = "Medical Records: " + SelectedAppointment.ApptPatientName };
 
                     var ncellHeader = new UITableViewCell(UITableViewCellStyle.Default, null) { Frame = new CGRect(0, 0, View.Bounds.Width, 50) };
 
-                    var nheadclosebtn = new UIButton(new CGRect(View.Bounds.Width - 50, 0, 50, 50));
+                    var nheadclosebtn = new UIButton(new CGRect(View.Bounds.Width, 0, 50, 50));
                     nheadclosebtn.SetImage(UIImage.FromBundle("Close"), UIControlState.Normal);
 
                     ncellHeader.ContentView.Add(nlab);
@@ -3785,6 +3901,7 @@ namespace DynaPad
                     var nsec = new Section(ncellHeader) { FooterView = new UIView(new CGRect(0, 0, 0, 0)) };
                     nsec.FooterView.Hidden = true;
 
+                    var dynanroo = new DynaMultiRootElement();
 
                     var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
                     var origJson = dds.GetFiles(CommonFunctions.GetUserConfig(), SelectedAppointment.ApptId, SelectedAppointment.ApptPatientId, SelectedAppointment.ApptPatientName, SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId);
@@ -3887,8 +4004,9 @@ namespace DynaPad
                         TextAlignment = UITextAlignment.Left
                     };
 
-                    var mrDownloadedColumn = new GridSwitchColumn
+                    var mrDownloadedColumn = new GridTextColumn
                     {
+                        UserCellType = typeof(SwitchCell),
                         MappingName = "IsLocal",
                         HeaderText = "Downloaded",
                         Width = fgrid.Frame.Width * 0.10,
@@ -3915,12 +4033,14 @@ namespace DynaPad
                         nsec
                     };
 
-                    var ndia = new DialogViewController(nroo)
+                    var ndia = new DialogViewController(dynanroo)
                     {
                         ModalInPopover = true,
-                        ModalPresentationStyle = UIModalPresentationStyle.FormSheet,
-                        PreferredContentSize = new CGSize(View.Bounds.Size)
+                        ModalPresentationStyle = UIModalPresentationStyle.PageSheet,
+                        //PreferredContentSize = new CGSize(View.Bounds.Size)
                     };
+
+                    dynanroo.Add(nsec);
 
                     nheadclosebtn.TouchUpInside += delegate
                     {
@@ -4002,8 +4122,6 @@ namespace DynaPad
                         var sfViewController = new SFSafariViewController(wkurl);
                         PresentViewController(sfViewController, true, null);
                     }
-
-                    loadingOverlay.Hide();
                 }
             }
             catch (Exception ex)
@@ -4012,6 +4130,10 @@ namespace DynaPad
                 var errorfile = "<br/><br/><br/>FILE PATH:<br/><br/>" + errordata.MRPath;
                 CommonFunctions.sendErrorEmail(ex, errorfile);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
+            }
+            finally
+            {
+                loadingOverlay.Hide();
             }
         }
 
@@ -4462,7 +4584,7 @@ namespace DynaPad
 
                     if (filepath.StartsWith("Error:", StringComparison.CurrentCulture))
                     {
-                        loadingOverlay.Hide();
+                        //loadingOverlay.Hide();
                         PresentViewController(CommonFunctions.AlertPrompt("File Error", "File unavailable, contact administration", true, null, false, null), true, null);
                         return;
                     }
@@ -4495,7 +4617,7 @@ namespace DynaPad
                     }
                     else
                     {
-                        loadingOverlay.Hide();
+                        //loadingOverlay.Hide();
                         PresentViewController(CommonFunctions.AlertPrompt("File Error", "File unavailable, contact administration", true, null, false, null), true, null);
                         return;
                     }
@@ -4505,7 +4627,7 @@ namespace DynaPad
                     //    PreviewController.PresentPreview(true);
                     //});
 
-                    loadingOverlay.Hide();
+                    //loadingOverlay.Hide();
                 }
             }
             catch (Exception ex)
@@ -4514,6 +4636,10 @@ namespace DynaPad
                 var errorfile = "<br/><br/><br/>FILE PATH:<br/><br/>" + errordata.MRPath;
                 CommonFunctions.sendErrorEmail(ex, errorfile);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
+            }
+            finally
+            {
+                loadingOverlay.Hide();
             }
         }
 
@@ -5078,16 +5204,24 @@ namespace DynaPad
         public TextToSpeech tts;
         void ExecuteSpeechCommand(string speechText)
         {
-            if (tts != null && tts.IsSpeaking)
+            try
             {
-                tts.StopSpeach();
-                //Title = "Start speech";
+                if (tts != null && tts.IsSpeaking)
+                {
+                    tts.StopSpeach();
+                    //Title = "Start speech";
+                }
+                else
+                {
+                    tts = new TextToSpeech();
+                    //Title = "Stop Speech";
+                    tts.Speak(speechText);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                tts = new TextToSpeech();
-                //Title = "Stop Speech";
-                tts.Speak(speechText);
+                CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
             }
         }
 
@@ -6182,13 +6316,14 @@ namespace DynaPad
 
         void OnSaveRecordedSound(string sectionId, UIPopoverController popd)
         {
-            var bounds = pop.PopoverContentSize;
-            loadingOverlay = new LoadingOverlay(new CGRect(new CGPoint(0, 0), bounds));
-            //mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
-            //mvc.Add(loadingOverlay);
-            popd.ContentViewController.Add(loadingOverlay);
             try
             {
+                var bounds = pop.PopoverContentSize;
+                loadingOverlay = new LoadingOverlay(new CGRect(new CGPoint(0, 0), bounds));
+                //mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
+                //mvc.Add(loadingOverlay);
+                popd.ContentViewController.Add(loadingOverlay);
+
                 if (CrossConnectivity.Current.IsConnected)
                 {
                     var dictationData = NSData.FromUrl(audioFilePath); //the path here can be a path to a video on the camera roll

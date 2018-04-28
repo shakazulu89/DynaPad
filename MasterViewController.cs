@@ -237,23 +237,39 @@ namespace DynaPad
 
         public void SaveDomain(string domainname)
         {
-            plist.SetString(domainname, "Domain_Name");
-            plist.Synchronize();
+            try
+            {
+                plist.SetString(domainname, "Domain_Name");
+                plist.Synchronize();
 
-            DynaDeviceUniqueName = null;
-            CheckUniqueName();
+                DynaDeviceUniqueName = null;
+                CheckUniqueName();
+            }
+            catch (Exception ex)
+            {
+                CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
+            }
         }
 
         public void CheckUniqueName()
         {
-            if (string.IsNullOrEmpty(DynaDeviceUniqueName))
+            try
             {
-                var uniquename = DynaDomain + "_" + UIDevice.CurrentDevice.IdentifierForVendor;
-                plist.SetString(uniquename, "Dyna_Device_Name");
-                plist.Synchronize();
-            }
+                if (string.IsNullOrEmpty(DynaDeviceUniqueName))
+                {
+                    var uniquename = DynaDomain + "_" + UIDevice.CurrentDevice.IdentifierForVendor;
+                    plist.SetString(uniquename, "Dyna_Device_Name");
+                    plist.Synchronize();
+                }
 
-            DynaDeviceUniqueName = plist.StringForKey("Dyna_Device_Name");
+                DynaDeviceUniqueName = plist.StringForKey("Dyna_Device_Name");
+            }
+            catch (Exception ex)
+            {
+                CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
+            }
         }
 
         public void Login()
@@ -345,400 +361,547 @@ namespace DynaPad
 
         UIViewController GetRestoreStart(RootElement arg)
         {
-            DetailViewController.Root.Clear();
-            DetailViewController.Root.Add(new Section("Select a form to restore from the left menu")
+            try
             {
-                FooterView = new UIView(new CGRect(0, 0, 0, 0))
-                {
-                    Hidden = true
-                }
-            });
-
-            var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            var directoryname = Path.Combine(documents, "DynaRestore");
-            messageLabel = new UILabel();
-            var backups = new DirectoryInfo(directoryname).GetFiles().Where(x => x.LastWriteTime.Date == DateTime.Today.Date).OrderByDescending(x => x.LastWriteTime);
-            var restoreSection = new Section { HeaderView = null };
-
-            if (backups.Any())
-            {
-                foreach (var fi in backups)
-                {
-                    var splits = fi.Name.Split('_');
-                    var IsDoctorForm = splits[2] == "doctor";// ? true : false;
-                    var formtype = new System.Globalization.CultureInfo("en-US").TextInfo.ToTitleCase(splits[2]);
-
-                    var restoreRoot = new DynaFormRootElement(splits[3] + " - " + formtype + " (" + fi.CreationTime.ToShortTimeString() + ")")
-                    {
-                        RestoreFile = fi,
-                        Enabled = true,
-                        UnevenRows = true,
-                        ShowLoading = true,
-                        MenuAction = IsDoctorForm ? "GetDoctorForm" : "GetPatientForm",
-                        IsDoctorForm = IsDoctorForm
-                    };
-
-                    restoreRoot.createOnSelected = GetFormService;
-
-                    restoreSection.Add(restoreRoot);
-                }
-            }
-            else
-            {
-                restoreSection.Add(new SectionStringElement("No Forms Found"));
-            }
-
-            arg.Add(restoreSection);
-
-            var formDVC = new DynaDialogViewController(arg, true);
-            formDVC.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, delegate
-            {
-                DetailViewController.QuestionsView = null; //.Clear();
-                DetailViewController.NavigationItem.RightBarButtonItem = null;
                 DetailViewController.Root.Clear();
-                DetailViewController.Root.Caption = "";
-                DetailViewController.ReloadData();
+                DetailViewController.Root.Add(new Section("Select a form to restore from the left menu")
+                {
+                    FooterView = new UIView(new CGRect(0, 0, 0, 0))
+                    {
+                        Hidden = true
+                    }
+                });
 
-                NavigationController.PopViewController(true);
-            });
+                var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                var directoryname = Path.Combine(documents, "DynaRestore");
+                messageLabel = new UILabel();
+                var backups = new DirectoryInfo(directoryname).GetFiles().Where(x => x.LastWriteTime.Date == DateTime.Today.Date).OrderByDescending(x => x.LastWriteTime);
+                var restoreSection = new Section { HeaderView = null };
 
-            return formDVC;
+                if (backups.Any())
+                {
+                    foreach (var fi in backups)
+                    {
+                        var splits = fi.Name.Split('_');
+                        var IsDoctorForm = splits[2] == "doctor";// ? true : false;
+                        var formtype = new System.Globalization.CultureInfo("en-US").TextInfo.ToTitleCase(splits[2]);
+
+                        var restoreRoot = new DynaFormRootElement(splits[3] + " - " + formtype + " (" + fi.CreationTime.ToShortTimeString() + ")")
+                        {
+                            RestoreFile = fi,
+                            Enabled = true,
+                            UnevenRows = true,
+                            ShowLoading = true,
+                            MenuAction = IsDoctorForm ? "GetDoctorForm" : "GetPatientForm",
+                            IsDoctorForm = IsDoctorForm
+                        };
+
+                        restoreRoot.createOnSelected = GetFormService;
+
+                        restoreSection.Add(restoreRoot);
+                    }
+                }
+                else
+                {
+                    restoreSection.Add(new SectionStringElement("No Forms Found"));
+                }
+
+                arg.Add(restoreSection);
+
+                var formDVC = new DynaDialogViewController(arg, true);
+                formDVC.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, delegate
+                {
+                    DetailViewController.QuestionsView = null; //.Clear();
+                DetailViewController.NavigationItem.RightBarButtonItem = null;
+                    DetailViewController.Root.Clear();
+                    DetailViewController.Root.Caption = "";
+                    DetailViewController.ReloadData();
+
+                    NavigationController.PopViewController(true);
+                });
+
+                return formDVC;
+            }
+            catch (Exception ex)
+            {
+                CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
+                return new DynaDialogViewController(CommonFunctions.ErrorRootElement(), true);
+            }
         }
 
         public void ShowSettings()
         {
-            var nlab = new UILabel(new CGRect(10, 0, UIScreen.MainScreen.Bounds.Width - 310, 50)) { Text = "Settings" };
-
-            var ncellHeader = new UITableViewCell(UITableViewCellStyle.Default, null) { Frame = new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 50) };
-            var nheadclosebtn = new UIButton(new CGRect(UIScreen.MainScreen.Bounds.Width - 300, 0, 50, 50));
-            nheadclosebtn.SetImage(UIImage.FromBundle("Close"), UIControlState.Normal);
-            ncellHeader.ContentView.Add(nlab);
-            ncellHeader.ContentView.Add(nheadclosebtn);
-
-            var nsec = new Section(ncellHeader) { FooterView = new UIView(new CGRect(0, 0, 0, 0)) { Hidden = true } };
-
-            var SettingsView = new DynaMultiRootElement();
-
-            var sSection = new DynaSection("Settings")
+            try
             {
-                HeaderView = new UIView(new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 30)),
-                FooterView = new UIView(new CGRect(0, 0, 0, 0))
-            };
-            sSection.FooterView.Hidden = true;
+                var nlab = new UILabel(new CGRect(10, 0, UIScreen.MainScreen.Bounds.Width - 310, 50)) { Text = "Settings" };
 
-            var sPaddedView = new PaddedUIView<UILabel>
-            {
-                Frame = new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 30),
-                Padding = 5f
-            };
-            sPaddedView.NestedView.Text = "DOMAIN NAME:";
-            sPaddedView.setStyle();
+                var ncellHeader = new UITableViewCell(UITableViewCellStyle.Default, null) { Frame = new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 50) };
+                var nheadclosebtn = new UIButton(new CGRect(UIScreen.MainScreen.Bounds.Width - 300, 0, 50, 50));
+                nheadclosebtn.SetImage(UIImage.FromBundle("Close"), UIControlState.Normal);
+                ncellHeader.ContentView.Add(nlab);
+                ncellHeader.ContentView.Add(nheadclosebtn);
 
-            sSection.HeaderView.Add(sPaddedView);
+                var nsec = new Section(ncellHeader) { FooterView = new UIView(new CGRect(0, 0, 0, 0)) { Hidden = true } };
 
-            var txtDomain = new UITextView(new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 30)) { Text = plist.StringForKey("Domain_Name") };
+                var SettingsView = new DynaMultiRootElement();
 
-            sSection.Add(txtDomain);
-
-            var btnDomain = new UIButton(new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 40))
-            {
-                BackgroundColor = UIColor.FromRGB(224, 238, 240),
-                HorizontalAlignment = UIControlContentHorizontalAlignment.Center
-            };
-            btnDomain.SetTitle("Update Domain", UIControlState.Normal);
-            btnDomain.SetTitleColor(UIColor.Black, UIControlState.Normal);
-            btnDomain.TouchUpInside += delegate
-            {
-                var UpdateDomainPrompt = UIAlertController.Create("Update Domain", "Updating the domain will require a re-login, continue?", UIAlertControllerStyle.Alert);
-                UpdateDomainPrompt.AddAction(UIAlertAction.Create("Yes", UIAlertActionStyle.Default, action =>
+                var sSection = new DynaSection("Settings")
                 {
-                    plist.SetString(txtDomain.Text, "Domain_Name");
-                    plist.Synchronize();
-                    NavigationController.DismissViewController(true, null);
-                    Logout();
-                }));
-                UpdateDomainPrompt.AddAction(UIAlertAction.Create("No", UIAlertActionStyle.Cancel, null));
+                    HeaderView = new UIView(new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 30)),
+                    FooterView = new UIView(new CGRect(0, 0, 0, 0))
+                };
+                sSection.FooterView.Hidden = true;
+
+                var sPaddedView = new PaddedUIView<UILabel>
+                {
+                    Frame = new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 30),
+                    Padding = 5f
+                };
+                sPaddedView.NestedView.Text = "DOMAIN NAME:";
+                sPaddedView.setStyle();
+
+                sSection.HeaderView.Add(sPaddedView);
+
+                var txtDomain = new UITextView(new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 30)) { Text = plist.StringForKey("Domain_Name") };
+
+                sSection.Add(txtDomain);
+
+                var btnDomain = new UIButton(new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 40))
+                {
+                    BackgroundColor = UIColor.FromRGB(224, 238, 240),
+                    HorizontalAlignment = UIControlContentHorizontalAlignment.Center
+                };
+                btnDomain.SetTitle("Update Domain", UIControlState.Normal);
+                btnDomain.SetTitleColor(UIColor.Black, UIControlState.Normal);
+                btnDomain.TouchUpInside += delegate
+                {
+                    var UpdateDomainPrompt = UIAlertController.Create("Update Domain", "Updating the domain will require a re-login, continue?", UIAlertControllerStyle.Alert);
+                    UpdateDomainPrompt.AddAction(UIAlertAction.Create("Yes", UIAlertActionStyle.Default, action =>
+                    {
+                        try
+                        {
+                            _lockObject = btnDomain;
+                            lock (_lockObject)
+                            {
+                                if (isRunning)
+                                    return;
+                                isRunning = true;
+                            }
+
+                            plist.SetString(txtDomain.Text, "Domain_Name");
+                            plist.Synchronize();
+                            NavigationController.DismissViewController(true, null);
+                            Logout();
+                        }
+                        catch (Exception ex)
+                        {
+                            CommonFunctions.sendErrorEmail(ex);
+                            PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
+                        }
+                        finally
+                        {
+                            isRunning = false;
+                        }
+                    }));
+                    UpdateDomainPrompt.AddAction(UIAlertAction.Create("No", UIAlertActionStyle.Cancel, null));
                 //Present Alert
                 PresentViewController(UpdateDomainPrompt, true, null);
-            };
+                };
 
-            sSection.Add(btnDomain);
+                sSection.Add(btnDomain);
 
-            var uniqueNameLbl = new PaddedUIView<UILabel>
-            {
-                Frame = new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 30),
-                Padding = 5f
-            };
-            uniqueNameLbl.NestedView.Text = "UNIQUE DEVICE NAME:";
-            uniqueNameLbl.setStyle();
-
-            sSection.Add(uniqueNameLbl);
-
-            var uniqueName = new UILabel(new CGRect(5, 0, UIScreen.MainScreen.Bounds.Width - 250, 30)) { Text = plist.StringForKey("Dyna_Device_Name") };
-            sSection.Add(uniqueName);
-
-            var uploadOnSubmitLbl = new PaddedUIView<UILabel>
-            {
-                Frame = new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 30),
-                Padding = 5f
-            };
-            uploadOnSubmitLbl.NestedView.Text = "UPLOAD FORM ON SUBMIT?";
-            uploadOnSubmitLbl.setStyle();
-
-            sSection.Add(uploadOnSubmitLbl);
-
-            var boo = string.IsNullOrEmpty(plist.StringForKey("Upload_On_Submit")) || bool.Parse(plist.StringForKey("Upload_On_Submit"));
-            var switchUploadOnSubmit = new UISwitch() { On = boo };
-            switchUploadOnSubmit.Frame = new CGRect(5, 0, switchUploadOnSubmit.Frame.Width, switchUploadOnSubmit.Frame.Height);
-            switchUploadOnSubmit.ValueChanged += delegate
-            {
-                plist.SetString(switchUploadOnSubmit.On.ToString(), "Upload_On_Submit");
-                plist.Synchronize();
-            };
-
-            sSection.Add(switchUploadOnSubmit);
-
-            var ndia = new DialogViewController(SettingsView)
-            {
-                ModalInPopover = true,
-                ModalPresentationStyle = UIModalPresentationStyle.PageSheet,
-                PreferredContentSize = new CGSize(View.Bounds.Size)
-            };
-
-            var btnRefreshAutoFiles = new UIButton(UIButtonType.System)
-            {
-                Frame = new CGRect(5, 0, UIScreen.MainScreen.Bounds.Width - 250, 40),
-                HorizontalAlignment = UIControlContentHorizontalAlignment.Left
-            };
-            btnRefreshAutoFiles.SetTitle("Reload Auto Complete Files", UIControlState.Normal);
-            btnRefreshAutoFiles.TouchUpInside += delegate
-            {
-                var ReloadAutoDataPrompt = UIAlertController.Create("Reload Auto Data", "Re-download the auto complete files?", UIAlertControllerStyle.Alert);
-                ReloadAutoDataPrompt.AddAction(UIAlertAction.Create("Yes", UIAlertActionStyle.Default, action =>
+                var uniqueNameLbl = new PaddedUIView<UILabel>
                 {
-                    loadingOverlay = new LoadingOverlay(ndia.TableView.Bounds, true);
-                    loadingOverlay.SetText("Downloading Files...");
-                    ndia.Add(loadingOverlay);
-                    SaveAutoData();
-                    loadingOverlay.Hide();
-                }));
-                ReloadAutoDataPrompt.AddAction(UIAlertAction.Create("No", UIAlertActionStyle.Cancel, null));
+                    Frame = new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 30),
+                    Padding = 5f
+                };
+                uniqueNameLbl.NestedView.Text = "UNIQUE DEVICE NAME:";
+                uniqueNameLbl.setStyle();
+
+                sSection.Add(uniqueNameLbl);
+
+                var uniqueName = new UILabel(new CGRect(5, 0, UIScreen.MainScreen.Bounds.Width - 250, 30)) { Text = plist.StringForKey("Dyna_Device_Name") };
+                sSection.Add(uniqueName);
+
+                var uploadOnSubmitLbl = new PaddedUIView<UILabel>
+                {
+                    Frame = new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 30),
+                    Padding = 5f
+                };
+                uploadOnSubmitLbl.NestedView.Text = "UPLOAD FORM ON SUBMIT?";
+                uploadOnSubmitLbl.setStyle();
+
+                sSection.Add(uploadOnSubmitLbl);
+
+                var boo = string.IsNullOrEmpty(plist.StringForKey("Upload_On_Submit")) || bool.Parse(plist.StringForKey("Upload_On_Submit"));
+                var switchUploadOnSubmit = new UISwitch() { On = boo };
+                switchUploadOnSubmit.Frame = new CGRect(5, 0, switchUploadOnSubmit.Frame.Width, switchUploadOnSubmit.Frame.Height);
+                switchUploadOnSubmit.ValueChanged += delegate
+                {
+                    try
+                    {
+                        plist.SetString(switchUploadOnSubmit.On.ToString(), "Upload_On_Submit");
+                        plist.Synchronize();
+                    }
+                    catch (Exception ex)
+                    {
+                        CommonFunctions.sendErrorEmail(ex);
+                        PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
+                    }
+                };
+
+                sSection.Add(switchUploadOnSubmit);
+
+                var ndia = new DialogViewController(SettingsView)
+                {
+                    ModalInPopover = true,
+                    ModalPresentationStyle = UIModalPresentationStyle.PageSheet,
+                    PreferredContentSize = new CGSize(View.Bounds.Size)
+                };
+
+                var btnRefreshAutoFiles = new UIButton(UIButtonType.System)
+                {
+                    Frame = new CGRect(5, 0, UIScreen.MainScreen.Bounds.Width - 250, 40),
+                    HorizontalAlignment = UIControlContentHorizontalAlignment.Left
+                };
+                btnRefreshAutoFiles.SetTitle("Reload Auto Complete Files", UIControlState.Normal);
+                btnRefreshAutoFiles.TouchUpInside += delegate
+                {
+                    var ReloadAutoDataPrompt = UIAlertController.Create("Reload Auto Data", "Re-download the auto complete files?", UIAlertControllerStyle.Alert);
+                    ReloadAutoDataPrompt.AddAction(UIAlertAction.Create("Yes", UIAlertActionStyle.Default, action =>
+                    {
+                        try
+                        {
+                            _lockObject = btnRefreshAutoFiles;
+                            lock (_lockObject)
+                            {
+                                if (isRunning)
+                                    return;
+                                isRunning = true;
+                            }
+
+                            loadingOverlay = new LoadingOverlay(ndia.TableView.Bounds, true);
+                            loadingOverlay.SetText("Downloading Files...");
+                            ndia.Add(loadingOverlay);
+                            SaveAutoData();
+                        }
+                        catch (Exception ex)
+                        {
+                            CommonFunctions.sendErrorEmail(ex);
+                            PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
+                        }
+                        finally
+                        {
+                            isRunning = false;
+                            loadingOverlay.Hide();
+                        }
+                    }));
+                    ReloadAutoDataPrompt.AddAction(UIAlertAction.Create("No", UIAlertActionStyle.Cancel, null));
                 //Present Alert
                 ndia.PresentViewController(ReloadAutoDataPrompt, true, null);
-            };
+                };
 
-            sSection.Add(btnRefreshAutoFiles);
+                sSection.Add(btnRefreshAutoFiles);
 
-            var btnRefreshPresetFiles = new UIButton(UIButtonType.System)
-            {
-                Frame = new CGRect(5, 0, UIScreen.MainScreen.Bounds.Width - 250, 40),
-                HorizontalAlignment = UIControlContentHorizontalAlignment.Left
-            };
-            btnRefreshPresetFiles.SetTitle("Reload Preset Files", UIControlState.Normal);
-            btnRefreshPresetFiles.TouchUpInside += delegate
-            {
-                var ReloadPresetPrompt = UIAlertController.Create("Reload Presets", "Re-download the preset files?", UIAlertControllerStyle.Alert);
-                ReloadPresetPrompt.AddAction(UIAlertAction.Create("Yes", UIAlertActionStyle.Default, action =>
+                var btnRefreshPresetFiles = new UIButton(UIButtonType.System)
                 {
-                    loadingOverlay = new LoadingOverlay(ndia.TableView.Bounds, true);
-                    loadingOverlay.SetText("Downloading Files...");
-                    ndia.Add(loadingOverlay);
-                    SavePresetData(true);
-                    loadingOverlay.Hide();
-                }));
-                ReloadPresetPrompt.AddAction(UIAlertAction.Create("No", UIAlertActionStyle.Cancel, null));
+                    Frame = new CGRect(5, 0, UIScreen.MainScreen.Bounds.Width - 250, 40),
+                    HorizontalAlignment = UIControlContentHorizontalAlignment.Left
+                };
+                btnRefreshPresetFiles.SetTitle("Reload Preset Files", UIControlState.Normal);
+                btnRefreshPresetFiles.TouchUpInside += delegate
+                {
+                    var ReloadPresetPrompt = UIAlertController.Create("Reload Presets", "Re-download the preset files?", UIAlertControllerStyle.Alert);
+                    ReloadPresetPrompt.AddAction(UIAlertAction.Create("Yes", UIAlertActionStyle.Default, action =>
+                    {
+                        try
+                        {
+                            _lockObject = btnRefreshPresetFiles;
+                            lock (_lockObject)
+                            {
+                                if (isRunning)
+                                    return;
+                                isRunning = true;
+                            }
+
+                            loadingOverlay = new LoadingOverlay(ndia.TableView.Bounds, true);
+                            loadingOverlay.SetText("Downloading Files...");
+                            ndia.Add(loadingOverlay);
+                            SavePresetData(true);
+                        }
+                        catch (Exception ex)
+                        {
+                            CommonFunctions.sendErrorEmail(ex);
+                            PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
+                        }
+                        finally
+                        {
+                            isRunning = false;
+                            loadingOverlay.Hide();
+                        }
+                    }));
+                    ReloadPresetPrompt.AddAction(UIAlertAction.Create("No", UIAlertActionStyle.Cancel, null));
                 //Present Alert
                 ndia.PresentViewController(ReloadPresetPrompt, true, null);
-            };
+                };
 
-            sSection.Add(btnRefreshPresetFiles);
+                sSection.Add(btnRefreshPresetFiles);
 
-            var btnDeleteMRFiles = new UIButton(UIButtonType.System)
-            {
-                Frame = new CGRect(5, 0, UIScreen.MainScreen.Bounds.Width - 250, 40),
-                HorizontalAlignment = UIControlContentHorizontalAlignment.Left
-            };
-            btnDeleteMRFiles.SetTitle("Delete Medical Records", UIControlState.Normal);
-            btnDeleteMRFiles.TouchUpInside += delegate
-            {
-                var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                var cache = Path.Combine(documents, "..", "Library", "Caches");
-                var directoryname = Path.Combine(cache, "DynaMedicalRecords");
-                var di = new DirectoryInfo(directoryname);
-                var mrfiles = di.GetFiles("*", SearchOption.AllDirectories);
-                long size = 0;
-                foreach (FileInfo fi in mrfiles)
+                var btnDeleteMRFiles = new UIButton(UIButtonType.System)
                 {
-                    size += fi.Length;
-                }
-                double mbsize = (size / 1024f) / 1024f;
-
-                UIAlertController DeleteMRFilesPrompt;
-                string msg;
-
-                if (!mrfiles.Any())
+                    Frame = new CGRect(5, 0, UIScreen.MainScreen.Bounds.Width - 250, 40),
+                    HorizontalAlignment = UIControlContentHorizontalAlignment.Left
+                };
+                btnDeleteMRFiles.SetTitle("Delete Medical Records", UIControlState.Normal);
+                btnDeleteMRFiles.TouchUpInside += delegate
                 {
-                    msg = "Medical records folder is empty";
-                    DeleteMRFilesPrompt = UIAlertController.Create("Delete Medical Records", msg, UIAlertControllerStyle.Alert);
-                    DeleteMRFilesPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
-                }
-                else
-                {
-                    msg = "Delete " + mrfiles.Count() + " files (" + mbsize.ToString("0.00") + "mb)?";
-                    DeleteMRFilesPrompt = UIAlertController.Create("Delete Medical Records", msg, UIAlertControllerStyle.Alert);
-                    DeleteMRFilesPrompt.AddTextField((field) =>
+                    var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                    var cache = Path.Combine(documents, "..", "Library", "Caches");
+                    var directoryname = Path.Combine(cache, "DynaMedicalRecords");
+                    var di = new DirectoryInfo(directoryname);
+                    var mrfiles = di.GetFiles("*", SearchOption.AllDirectories);
+                    long size = 0;
+                    foreach (FileInfo fi in mrfiles)
                     {
-                        field.SecureTextEntry = true;
-                        field.Placeholder = "Password";
-                    });
-                    DeleteMRFilesPrompt.AddAction(UIAlertAction.Create("Yes", UIAlertActionStyle.Default, action =>
+                        size += fi.Length;
+                    }
+                    double mbsize = (size / 1024f) / 1024f;
+
+                    UIAlertController DeleteMRFilesPrompt;
+                    string msg;
+
+                    if (!mrfiles.Any())
                     {
-                        loadingOverlay = new LoadingOverlay(ndia.TableView.Bounds, true);
-                        loadingOverlay.SetText("Deleting Files...");
-                        ndia.Add(loadingOverlay);
-
-                        bool isValid = false;
-                        isValid |= DeleteMRFilesPrompt.TextFields[0].Text == DynaClassLibrary.DynaClasses.LoginContainer.User.DynaPassword;
-
-                        if (isValid)
+                        msg = "Medical records folder is empty";
+                        DeleteMRFilesPrompt = UIAlertController.Create("Delete Medical Records", msg, UIAlertControllerStyle.Alert);
+                        DeleteMRFilesPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
+                    }
+                    else
+                    {
+                        msg = "Delete " + mrfiles.Count() + " files (" + mbsize.ToString("0.00") + "mb)?";
+                        DeleteMRFilesPrompt = UIAlertController.Create("Delete Medical Records", msg, UIAlertControllerStyle.Alert);
+                        DeleteMRFilesPrompt.AddTextField((field) =>
                         {
-                            DeleteMRFiles(di);
-                        }
-                        else
+                            field.SecureTextEntry = true;
+                            field.Placeholder = "Password";
+                        });
+                        DeleteMRFilesPrompt.AddAction(UIAlertAction.Create("Yes", UIAlertActionStyle.Default, action =>
                         {
-                            var failPass = "Wrong password. ";
-                            PresentViewController(CommonFunctions.AlertPrompt("Error", failPass, true, null, false, null), true, null);
-                        }
+                            try
+                            {
+                                _lockObject = btnDeleteMRFiles;
+                                lock (_lockObject)
+                                {
+                                    if (isRunning)
+                                        return;
+                                    isRunning = true;
+                                }
 
-                        loadingOverlay.Hide();
-                    }));
-                    DeleteMRFilesPrompt.AddAction(UIAlertAction.Create("No", UIAlertActionStyle.Cancel, null));
-                }
+                                loadingOverlay = new LoadingOverlay(ndia.TableView.Bounds, true);
+                                loadingOverlay.SetText("Deleting Files...");
+                                ndia.Add(loadingOverlay);
+
+                                bool isValid = false;
+                                isValid |= DeleteMRFilesPrompt.TextFields[0].Text == DynaClassLibrary.DynaClasses.LoginContainer.User.DynaPassword;
+
+                                if (isValid)
+                                {
+                                    DeleteMRFiles(di);
+                                }
+                                else
+                                {
+                                    var failPass = "Wrong password. ";
+                                    PresentViewController(CommonFunctions.AlertPrompt("Error", failPass, true, null, false, null), true, null);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                CommonFunctions.sendErrorEmail(ex);
+                                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
+                            }
+                            finally
+                            {
+                                isRunning = false;
+                                loadingOverlay.Hide();
+                            }
+                        }));
+                        DeleteMRFilesPrompt.AddAction(UIAlertAction.Create("No", UIAlertActionStyle.Cancel, null));
+                    }
 
                 //Present Alert
                 ndia.PresentViewController(DeleteMRFilesPrompt, true, null);
-            };
+                };
 
-            sSection.Add(btnDeleteMRFiles);
+                sSection.Add(btnDeleteMRFiles);
 
-            var btnDeletePendingFiles = new UIButton(UIButtonType.System)
-            {
-                Frame = new CGRect(5, 0, UIScreen.MainScreen.Bounds.Width - 250, 40),
-                HorizontalAlignment = UIControlContentHorizontalAlignment.Left
-            };
-            btnDeletePendingFiles.SetTitle("Delete All Pending Files", UIControlState.Normal);
-            btnDeletePendingFiles.TouchUpInside += delegate
-            {
-                var directoryname = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaFilesAwaitingUpload/");
-                var di = new DirectoryInfo(directoryname);
-                var pendingfiles = di.GetFiles("*", SearchOption.AllDirectories);
-                long size = 0;
-                foreach (FileInfo fi in pendingfiles)
+                var btnDeletePendingFiles = new UIButton(UIButtonType.System)
                 {
-                    size += fi.Length;
-                }
-                double mbsize = (size / 1024f) / 1024f;
-
-                UIAlertController DeletePendingFilesPrompt;
-                string msg;
-
-                if (!pendingfiles.Any())
+                    Frame = new CGRect(5, 0, UIScreen.MainScreen.Bounds.Width - 250, 40),
+                    HorizontalAlignment = UIControlContentHorizontalAlignment.Left
+                };
+                btnDeletePendingFiles.SetTitle("Delete All Pending Files", UIControlState.Normal);
+                btnDeletePendingFiles.TouchUpInside += delegate
                 {
-                    msg = "Pending files folder is empty";
-                    DeletePendingFilesPrompt = UIAlertController.Create("Delete All Pending Files", msg, UIAlertControllerStyle.Alert);
-                    DeletePendingFilesPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
-                }
-                else
-                {
-                    msg = "Delete " + pendingfiles.Count() + " files (" + mbsize.ToString("0.00") + "mb)?";
-                    DeletePendingFilesPrompt = UIAlertController.Create("Delete All Pending Files", msg, UIAlertControllerStyle.Alert);
-                    DeletePendingFilesPrompt.AddTextField((field) =>
+                    try
                     {
-                        field.SecureTextEntry = true;
-                        field.Placeholder = "Password";
-                    });
-                    DeletePendingFilesPrompt.AddAction(UIAlertAction.Create("Yes", UIAlertActionStyle.Default, action =>
-                    {
-                        loadingOverlay = new LoadingOverlay(ndia.TableView.Bounds, true);
-                        loadingOverlay.SetText("Deleting Files...");
-                        ndia.Add(loadingOverlay);
-
-                        bool isValid = false;
-                        isValid |= DeletePendingFilesPrompt.TextFields[0].Text == DynaClassLibrary.DynaClasses.LoginContainer.User.DynaPassword;
-
-                        if (isValid)
+                        var directoryname = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaFilesAwaitingUpload/");
+                        var di = new DirectoryInfo(directoryname);
+                        var pendingfiles = di.GetFiles("*", SearchOption.AllDirectories);
+                        long size = 0;
+                        foreach (FileInfo fi in pendingfiles)
                         {
-                            DeletePendingFiles(di);
+                            size += fi.Length;
+                        }
+                        double mbsize = (size / 1024f) / 1024f;
+
+                        UIAlertController DeletePendingFilesPrompt;
+                        string msg;
+
+                        if (!pendingfiles.Any())
+                        {
+                            msg = "Pending files folder is empty";
+                            DeletePendingFilesPrompt = UIAlertController.Create("Delete All Pending Files", msg, UIAlertControllerStyle.Alert);
+                            DeletePendingFilesPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
                         }
                         else
                         {
-                            var failPass = "Wrong password. ";
-                            PresentViewController(CommonFunctions.AlertPrompt("Error", failPass, true, null, false, null), true, null);
+                            msg = "Delete " + pendingfiles.Count() + " files (" + mbsize.ToString("0.00") + "mb)?";
+                            DeletePendingFilesPrompt = UIAlertController.Create("Delete All Pending Files", msg, UIAlertControllerStyle.Alert);
+                            DeletePendingFilesPrompt.AddTextField((field) =>
+                            {
+                                field.SecureTextEntry = true;
+                                field.Placeholder = "Password";
+                            });
+                            DeletePendingFilesPrompt.AddAction(UIAlertAction.Create("Yes", UIAlertActionStyle.Default, action =>
+                            {
+                                try
+                                {
+                                    _lockObject = btnDeletePendingFiles;
+                                    lock (_lockObject)
+                                    {
+                                        if (isRunning)
+                                            return;
+                                        isRunning = true;
+                                    }
+
+                                    loadingOverlay = new LoadingOverlay(ndia.TableView.Bounds, true);
+                                    loadingOverlay.SetText("Deleting Files...");
+                                    ndia.Add(loadingOverlay);
+
+                                    bool isValid = false;
+                                    isValid |= DeletePendingFilesPrompt.TextFields[0].Text == DynaClassLibrary.DynaClasses.LoginContainer.User.DynaPassword;
+
+                                    if (isValid)
+                                    {
+                                        DeletePendingFiles(di);
+                                    }
+                                    else
+                                    {
+                                        var failPass = "Wrong password. ";
+                                        PresentViewController(CommonFunctions.AlertPrompt("Error", failPass, true, null, false, null), true, null);
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    CommonFunctions.sendErrorEmail(ex);
+                                    PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
+                                }
+                                finally
+                                {
+                                    isRunning = false;
+                                    loadingOverlay.Hide();
+                                }
+                            }));
+                            DeletePendingFilesPrompt.AddAction(UIAlertAction.Create("No", UIAlertActionStyle.Cancel, null));
                         }
 
-                        loadingOverlay.Hide();
-                    }));
-                    DeletePendingFilesPrompt.AddAction(UIAlertAction.Create("No", UIAlertActionStyle.Cancel, null));
-                }
+                        //Present Alert
+                        ndia.PresentViewController(DeletePendingFilesPrompt, true, null);
+                    }
+                    catch (Exception ex)
+                    {
+                        CommonFunctions.sendErrorEmail(ex);
+                        PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
+                    }
+                };
 
-                //Present Alert
-                ndia.PresentViewController(DeletePendingFilesPrompt, true, null);
-            };
+                sSection.Add(btnDeletePendingFiles);
 
-            sSection.Add(btnDeletePendingFiles);
+                SettingsView.Add(nsec);
+                SettingsView.Add(sSection);
 
-            SettingsView.Add(nsec);
-            SettingsView.Add(sSection);
+                var nroo = new RootElement("Settings") { nsec };
 
-            var nroo = new RootElement("Settings") { nsec };
+                nheadclosebtn.TouchUpInside += delegate
+                {
+                    NavigationController.DismissViewController(true, null);
+                };
 
-            nheadclosebtn.TouchUpInside += delegate
+                NavigationController.PreferredContentSize = new CGSize(View.Bounds.Size);
+                NavigationController.PresentViewController(ndia, true, null);
+            }
+            catch (Exception ex)
             {
-                NavigationController.DismissViewController(true, null);
-            };
-
-            NavigationController.PreferredContentSize = new CGSize(View.Bounds.Size);
-            NavigationController.PresentViewController(ndia, true, null);
+                CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
+            }
         }
 
 
 
         public void DeleteMRFiles(DirectoryInfo di)
         {
-            foreach (FileInfo file in di.EnumerateFiles())
+            try
             {
-                file.Delete();
-            }
-            foreach (DirectoryInfo dir in di.EnumerateDirectories())
-            {
-                dir.Delete(true);
-            }
+                foreach (FileInfo file in di.EnumerateFiles())
+                {
+                    file.Delete();
+                }
+                foreach (DirectoryInfo dir in di.EnumerateDirectories())
+                {
+                    dir.Delete(true);
+                }
 
-            var toast = new Toast("All medical records were deleted");
-            toast.SetDuration(5000);
-            toast.SetType(ToastType.Info);
-            toast.SetGravity(ToastGravity.Bottom);
-            toast.Show();
+                var toast = new Toast("All medical records were deleted");
+                toast.SetDuration(5000);
+                toast.SetType(ToastType.Info);
+                toast.SetGravity(ToastGravity.Bottom);
+                toast.Show();
+            }
+            catch (Exception ex)
+            {
+                CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
+            }
         }
 
 
 
         public void DeletePendingFiles(DirectoryInfo di)
         {
-            foreach (FileInfo file in di.EnumerateFiles())
+            try
             {
-                file.Delete();
-            }
-            foreach (DirectoryInfo dir in di.EnumerateDirectories())
-            {
-                dir.Delete(true);
-            }
+                foreach (FileInfo file in di.EnumerateFiles())
+                {
+                    file.Delete();
+                }
+                foreach (DirectoryInfo dir in di.EnumerateDirectories())
+                {
+                    dir.Delete(true);
+                }
 
-            var toast = new Toast("All pending files were deleted");
-            toast.SetDuration(5000);
-            toast.SetType(ToastType.Info);
-            toast.SetGravity(ToastGravity.Bottom);
-            toast.Show();
+                var toast = new Toast("All pending files were deleted");
+                toast.SetDuration(5000);
+                toast.SetType(ToastType.Info);
+                toast.SetGravity(ToastGravity.Bottom);
+                toast.Show();
+            }
+            catch (Exception ex)
+            {
+                CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
+            }
         }
 
 
@@ -773,16 +936,24 @@ namespace DynaPad
 
         public void Logout()
         {
-            DetailViewController = (DetailViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
-            DetailViewController.NavigationController.PopToRootViewController(true);
-            DetailViewController.Root.Clear();
+            try
+            {
+                DetailViewController = (DetailViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
+                DetailViewController.NavigationController.PopToRootViewController(true);
+                DetailViewController.Root.Clear();
 
-            mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[0]).TopViewController;
-            mvc.NavigationController.PopToRootViewController(true);
-            mvc.Root.Clear();
+                mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[0]).TopViewController;
+                mvc.NavigationController.PopToRootViewController(true);
+                mvc.Root.Clear();
 
-            needLogin = true;
-            ViewDidAppear(true);
+                needLogin = true;
+                ViewDidAppear(true);
+            }
+            catch (Exception ex)
+            {
+                CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
+            }
         }
 
 
@@ -1255,9 +1426,7 @@ namespace DynaPad
             catch (Exception ex)
             {
                 CommonFunctions.sendErrorEmail(ex);
-
                 CheckStopwatch(timer, 0, "SavePresetData Error", "SavePresetData took " + timer.Elapsed.Seconds + " seconds");
-
                 PresentViewController(CommonFunctions.AlertPrompt("Download Preset Files Failure", "There was a problem downloading location preset files, if problem persists please re-login to the app.", true, null, false, null), true, null);
             }
         }
@@ -1595,10 +1764,7 @@ namespace DynaPad
                             {
                                 return;
                             }
-                            else
-                            {
-                                isRunning = true;
-                            }
+                            isRunning = true;
                         }
 
                         LoadSectionView(fSection.SectionId, fSection.SectionName, fSection, IsDoctorForm, sectionFormSections);
@@ -1634,10 +1800,7 @@ namespace DynaPad
                         {
                             return;
                         }
-                        else
-                        {
-                            isRunning = true;
-                        }
+                        isRunning = true;
                     }
 
                     LoadSectionView("", "Finalize", null, IsDoctorForm, sectionFormSections);
@@ -2210,36 +2373,44 @@ namespace DynaPad
 
         void BackUp(bool IsDoctorForm)
         {
-            string jsonEnding = IsDoctorForm ? "doctor" : "patient";
-            var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            var directoryname = Path.Combine(documents, "DynaRestore");
-            var fileidentity = SelectedAppointment.ApptId + "_" + SelectedAppointment.SelectedQForm.FormId + "_" + jsonEnding;
-            var filename = fileidentity + "_" + SelectedAppointment.ApptPatientName + "_" + DateTime.Now.ToFileTimeUtc() + ".json";
-            var filefullpath = Path.Combine(directoryname, filename);
-            var sourceJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
-
-            var backups = new DirectoryInfo(directoryname).GetFiles("*" + fileidentity + "*", SearchOption.AllDirectories).OrderByDescending(x => x.LastWriteTime);
-
-            if (backups.Any())
+            try
             {
-                var restoreFile = File.ReadAllText(backups.First().FullName);
-                var sourceJObject = JsonConvert.DeserializeObject<JObject>(sourceJson);
-                var targetJObject = JsonConvert.DeserializeObject<JObject>(restoreFile);
+                string jsonEnding = IsDoctorForm ? "doctor" : "patient";
+                var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                var directoryname = Path.Combine(documents, "DynaRestore");
+                var fileidentity = SelectedAppointment.ApptId + "_" + SelectedAppointment.SelectedQForm.FormId + "_" + jsonEnding;
+                var filename = fileidentity + "_" + SelectedAppointment.ApptPatientName + "_" + DateTime.Now.ToFileTimeUtc() + ".json";
+                var filefullpath = Path.Combine(directoryname, filename);
+                var sourceJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
 
-                if (!JToken.DeepEquals(sourceJObject, targetJObject))
+                var backups = new DirectoryInfo(directoryname).GetFiles("*" + fileidentity + "*", SearchOption.AllDirectories).OrderByDescending(x => x.LastWriteTime);
+
+                if (backups.Any())
                 {
-                    foreach (var fi in backups.Skip(4))
-                    {
-                        fi.Delete();
-                    }
+                    var restoreFile = File.ReadAllText(backups.First().FullName);
+                    var sourceJObject = JsonConvert.DeserializeObject<JObject>(sourceJson);
+                    var targetJObject = JsonConvert.DeserializeObject<JObject>(restoreFile);
 
+                    if (!JToken.DeepEquals(sourceJObject, targetJObject))
+                    {
+                        foreach (var fi in backups.Skip(4))
+                        {
+                            fi.Delete();
+                        }
+
+                        File.WriteAllText(filefullpath, sourceJson);
+                    }
+                }
+                else
+                {
+                    Directory.CreateDirectory(directoryname);
                     File.WriteAllText(filefullpath, sourceJson);
                 }
             }
-            else
+            catch (Exception ex)
             {
-                Directory.CreateDirectory(directoryname);
-                File.WriteAllText(filefullpath, sourceJson);
+                CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex, true), true, null);
             }
         }
 
@@ -2535,7 +2706,7 @@ namespace DynaPad
 
                             if (qSection == null)
                             {
-                                loadingOverlay.Hide();
+                                //loadingOverlay.Hide();
 
                                 return;
                             }
@@ -2544,7 +2715,7 @@ namespace DynaPad
                             nextSectionQuestions.Revalidating = true;
                             ValidationAlert(qelements, nextSectionQuestions, IsDoctorForm, sections, firstinvalid);
 
-                            loadingOverlay.Hide();
+                            //loadingOverlay.Hide();
 
                             return;
                         }
@@ -2591,20 +2762,20 @@ namespace DynaPad
 
                     DetailViewController.ReloadData();
 
-                    loadingOverlay.Hide();
+                    //loadingOverlay.Hide();
 
                     NavigationController.PopViewController(true);
                 }
                 else
                 {
-                    loadingOverlay.Hide();
+                    //loadingOverlay.Hide();
 
                     PresentViewController(CommonFunctions.AlertPrompt("Error", "Wrong password", true, null, false, null), true, null);
                 }
             }
             catch (Exception ex)
             {
-                loadingOverlay.Hide();
+                //loadingOverlay.Hide();
 
                 foreach (Element d in sections.Elements)
                 {
@@ -2623,6 +2794,10 @@ namespace DynaPad
                 DetailViewController.Root.Clear();
                 DetailViewController.Root.Add(CommonFunctions.ErrorDetailSection());
                 DetailViewController.ReloadData();
+            }
+            finally
+            {
+                loadingOverlay.Hide();
             }
         }
 
@@ -2652,7 +2827,7 @@ namespace DynaPad
                 {
                     formtype = "doctor";
                 }
-                string formFileName = "Form_" + formtype + "_" + SelectedAppointment.SelectedQForm.PatientName.Replace(" ", "") + "_" + DateTime.Now.ToString("yyyyMMddHHmmss");
+                string formFileName = "Form_" + formtype + "_" + SelectedAppointment.SelectedQForm.PatientName.Replace(" ", "") + "_" + DateTime.Now.ToString("yyyyMMdd");
 
                 var documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaFilesAwaitingUpload/" + SelectedAppointment.ApptPatientId + "/" + SelectedAppointment.ApptId);
                 if (!Directory.Exists(documentsPath))
@@ -2719,12 +2894,25 @@ namespace DynaPad
                 SelectedAppointment.ApptPatientId = dfElemet.PatientID;
                 SelectedAppointment.ApptPatientName = dfElemet.PatientName;
                 SelectedAppointment.ApptDoctorId = dfElemet.DoctorID;
+                SelectedAppointment.ApptDoctorName = dfElemet.DoctorName;
                 SelectedAppointment.ApptLocationId = dfElemet.LocationID;
                 SelectedAppointment.ApptId = dfElemet.ApptID;
                 SelectedAppointment.ApptReportId = dfElemet.ReportID;
                 SelectedAppointment.CaseId = dfElemet.CaseID;
+                SelectedAppointment.ApptNotes = dfElemet.ApptNotes;
+
+                DetailViewController.SetDetailItem(new Section("Appointment Info"), "ApptInfo", null, null, false);
 
                 var formDVC = new DynaDialogViewController(rElement, true);
+                formDVC.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, delegate
+                {
+                    DetailViewController.QuestionsView = null;
+                    DetailViewController.Root.Clear();
+                    DetailViewController.Root.Caption = "";
+                    DetailViewController.ReloadData();
+
+                    NavigationController.PopViewController(true);
+                });
                 return formDVC;
             }
             catch (Exception ex)
@@ -2887,7 +3075,61 @@ namespace DynaPad
                     {
                         var mrfolder = new SectionStringElement(mrf.MRFolderName, delegate
                         {
-                            LoadMRView(mrf.MRFolderName, mrf.MRFolderId);
+                            try
+                            {
+                                _lockObject = this;
+                                lock (_lockObject)
+                                {
+                                    if (isRunning)
+                                    {
+                                        return;
+                                    }
+                                    isRunning = true;
+                                }
+
+                                LoadMRView(mrf.MRFolderName, mrf.MRFolderId);
+
+                                foreach (Element d in mrFolderSections.Elements)
+                                {
+                                    var t = d.GetType();
+                                    if (t == typeof(SectionStringElement))
+                                    {
+                                        var di = (SectionStringElement)d;
+                                        di.selected = false;
+                                    }
+                                }
+
+                                mrFolderSections.GetContainerTableView().ReloadData();
+                            }
+                            catch (Exception ex)
+                            {
+                                CommonFunctions.sendErrorEmail(ex);
+                                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
+                            }
+                            finally
+                            {
+                                isRunning = false;
+                            }
+                        });
+
+                        mrFolderSections.Add(mrfolder);
+                    }
+
+                    mrFolderSections.Add(new SectionStringElement("Download Medical Records", delegate
+                    {
+                        try
+                        {
+                            _lockObject = this;
+                            lock (_lockObject)
+                            {
+                                if (isRunning)
+                                {
+                                    return;
+                                }
+                                isRunning = true;
+                            }
+
+                            DetailViewController.SetDetailItem(new Section("Download Medical Records"), "MRPatientDownload", null, null, false);
 
                             foreach (Element d in mrFolderSections.Elements)
                             {
@@ -2900,26 +3142,16 @@ namespace DynaPad
                             }
 
                             mrFolderSections.GetContainerTableView().ReloadData();
-                        });
-
-                        mrFolderSections.Add(mrfolder);
-                    }
-
-                    mrFolderSections.Add(new SectionStringElement("Download Medical Records", delegate
-                    {
-                        DetailViewController.SetDetailItem(new Section("Download Medical Records"), "MRPatientDownload", null, null, false);
-
-                        foreach (Element d in mrFolderSections.Elements)
-                        {
-                            var t = d.GetType();
-                            if (t == typeof(SectionStringElement))
-                            {
-                                var di = (SectionStringElement)d;
-                                di.selected = false;
-                            }
                         }
-
-                        mrFolderSections.GetContainerTableView().ReloadData();
+                        catch (Exception ex)
+                        {
+                            CommonFunctions.sendErrorEmail(ex);
+                            PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
+                        }
+                        finally
+                        {
+                            isRunning = false;
+                        }
                     })
                     { mrdownload = true });
 
@@ -3261,66 +3493,74 @@ namespace DynaPad
 
         void ValidationAlert(List<SectionStringElement> qlist, FormSection nextSectionQuestions, bool isDoctorForm, Section sections, int firstinvalid)
         {
-            var nlab = new UILabel(new CGRect(10, 0, UIScreen.MainScreen.Bounds.Width - 250, 50))
+            try
             {
-                Text = "Validation Error",
-                TextAlignment = UITextAlignment.Center
-            };
+                var nlab = new UILabel(new CGRect(10, 0, UIScreen.MainScreen.Bounds.Width - 250, 50))
+                {
+                    Text = "Validation Error",
+                    TextAlignment = UITextAlignment.Center
+                };
 
-            var ncellHeader = new UITableViewCell(UITableViewCellStyle.Default, null) { Frame = new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 50) };
-            ncellHeader.ContentView.Add(nlab);
+                var ncellHeader = new UITableViewCell(UITableViewCellStyle.Default, null) { Frame = new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 50) };
+                ncellHeader.ContentView.Add(nlab);
 
-            var nsec = new Section(ncellHeader) { FooterView = new UIView(new CGRect(0, 0, 0, 0)) { Hidden = true } };
+                var nsec = new Section(ncellHeader) { FooterView = new UIView(new CGRect(0, 0, 0, 0)) { Hidden = true } };
 
-            var SettingsView = new DynaMultiRootElement();
+                var SettingsView = new DynaMultiRootElement();
 
-            var sSection = new DynaSection("ValidationError")
+                var sSection = new DynaSection("ValidationError")
+                {
+                    HeaderView = new UIView(new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 30)),
+                    FooterView = new UIView(new CGRect(0, 0, 0, 0))
+                };
+                sSection.FooterView.Hidden = true;
+
+                var sPaddedView = new PaddedUIView<UILabel>
+                {
+                    Frame = new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 30),
+                    Padding = 5f
+                };
+                sPaddedView.NestedView.Text = "Please provide the required information (marked with a red asterisk):";
+                sPaddedView.Type = "Validation";
+                sPaddedView.setStyle();
+
+                sSection.HeaderView.Add(sPaddedView);
+
+                sSection.AddAll(qlist);
+
+                var btnDismiss = new UIButton(new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 40));
+                btnDismiss.SetTitle("Return", UIControlState.Normal);
+                btnDismiss.SetTitleColor(UIColor.Black, UIControlState.Normal);
+                btnDismiss.BackgroundColor = UIColor.FromRGB(224, 238, 240);
+                btnDismiss.HorizontalAlignment = UIControlContentHorizontalAlignment.Center;
+                btnDismiss.TouchUpInside += delegate
+                {
+                    ReValidate(nextSectionQuestions, isDoctorForm, sections, firstinvalid);
+                    NavigationController.DismissViewController(true, null);
+                };
+
+                sSection.Add(btnDismiss);
+
+                SettingsView.Add(nsec);
+                SettingsView.Add(sSection);
+
+                var nroo = new RootElement("Validations") { nsec };
+
+                var ndia = new DialogViewController(SettingsView)
+                {
+                    ModalInPopover = true,
+                    ModalPresentationStyle = UIModalPresentationStyle.PageSheet,
+                    PreferredContentSize = new CGSize(View.Bounds.Size)
+                };
+
+                NavigationController.PreferredContentSize = new CGSize(View.Bounds.Size);
+                NavigationController.PresentViewController(ndia, true, null);
+            }
+            catch (Exception ex)
             {
-                HeaderView = new UIView(new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 30)),
-                FooterView = new UIView(new CGRect(0, 0, 0, 0))
-            };
-            sSection.FooterView.Hidden = true;
-
-            var sPaddedView = new PaddedUIView<UILabel>
-            {
-                Frame = new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 30),
-                Padding = 5f
-            };
-            sPaddedView.NestedView.Text = "Please provide the required information (marked with a red asterisk):";
-            sPaddedView.Type = "Validation";
-            sPaddedView.setStyle();
-
-            sSection.HeaderView.Add(sPaddedView);
-
-            sSection.AddAll(qlist);
-
-            var btnDismiss = new UIButton(new CGRect(0, 0, UIScreen.MainScreen.Bounds.Width - 250, 40));
-            btnDismiss.SetTitle("Return", UIControlState.Normal);
-            btnDismiss.SetTitleColor(UIColor.Black, UIControlState.Normal);
-            btnDismiss.BackgroundColor = UIColor.FromRGB(224, 238, 240);
-            btnDismiss.HorizontalAlignment = UIControlContentHorizontalAlignment.Center;
-            btnDismiss.TouchUpInside += delegate
-            {
-                ReValidate(nextSectionQuestions, isDoctorForm, sections, firstinvalid);
-                NavigationController.DismissViewController(true, null);
-            };
-
-            sSection.Add(btnDismiss);
-
-            SettingsView.Add(nsec);
-            SettingsView.Add(sSection);
-
-            var nroo = new RootElement("Validations") { nsec };
-
-            var ndia = new DialogViewController(SettingsView)
-            {
-                ModalInPopover = true,
-                ModalPresentationStyle = UIModalPresentationStyle.PageSheet,
-                PreferredContentSize = new CGSize(View.Bounds.Size)
-            };
-
-            NavigationController.PreferredContentSize = new CGSize(View.Bounds.Size);
-            NavigationController.PresentViewController(ndia, true, null);
+                CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex, true), true, null);
+            }
         }
 
 

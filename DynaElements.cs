@@ -605,17 +605,28 @@ namespace DynaPad
 
         public override void Selected(DialogViewController dvc, UITableView tableView, NSIndexPath path)
         {
-            var cell = base.GetCell(tableView);
-            cell.BackgroundColor = UIColor.Red;
+            try
+            {
+                var cell = base.GetCell(tableView);
+                cell.BackgroundColor = UIColor.Red;
 
-            base.Selected(dvc, tableView, path);
+                base.Selected(dvc, tableView, path);
 
-            //prevsel = tableView.IndexPathForSelectedRow;
+                //prevsel = tableView.IndexPathForSelectedRow;
 
-            if (Tapped != null)
-                Tapped();
-            selected = !selected;
-            tableView.SelectRow(path, true, UITableViewScrollPosition.None);
+                if (Tapped != null)
+                    Tapped();
+                selected = !selected;
+                tableView.SelectRow(path, true, UITableViewScrollPosition.None);
+            }
+            catch (Exception ex)
+            {
+                CommonFunctions.sendErrorEmail(ex);
+                dvc.InvokeOnMainThread(() =>
+                {
+                    dvc.PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
+                });
+            }
         }
 
         public override bool Matches(string text)
@@ -1071,10 +1082,12 @@ namespace DynaPad
         public string PatientID { get; set; }
         public string PatientName { get; set; }
         public string DoctorID { get; set; }
+        public string DoctorName { get; set; }
         public string LocationID { get; set; }
         public string ApptID { get; set; }
         public string ReportID { get; set; }
         public string CaseID { get; set; }
+        public string ApptNotes { get; set; }
         public List<Report> ApptReports { get; set; }
         public Group thisGroup { get; set; }
         public bool ShowLoading { get; set; }
@@ -1090,67 +1103,80 @@ namespace DynaPad
 
         public override async void Selected(DialogViewController dvc, UITableView tableView, NSIndexPath path)
         {
-
-            _lockObject = this;
-
-            lock (_lockObject)
-            {
-                if (isRunning)
-                {
-                    return;
-                }
-                else
-                {
-                    isRunning = true;
-                }
-            }
-
             var loadingOverlay = new LoadingOverlay(tableView.Bounds);
 
-            //nfloat labelHeight = 22;
-            //nfloat labelWidth = 70;
-            //// derive the center x and y
-            //nfloat centerX = loadingOverlay.Frame.Width / 2;
-            //nfloat centerY = loadingOverlay.Frame.Height / 2;
-            //var cancelButton = new UIButton(UIButtonType.System);
-            //cancelButton.Frame = new CGRect(
-            //    centerX - (labelWidth / 2),
-            //    centerY + 50,
-            //    labelWidth,
-            //    labelHeight);
-            //cancelButton.SetTitle("Retry", UIControlState.Normal);
-            //cancelButton.TouchUpInside += (sender, e) =>
-            //{
-            //    loadingOverlay.Hide();
-            //    //dvc.TableView.DeselectRow(path, true);
-            //    ///dvc.WillDeselectRow(tableView, path);
-            //    //dvc.Deselected(path);
-            //    //dvc.RowDeselected(tableView, path);
-            //    //base.Selected(dvc, tableView, path);
-            //    //dvc.NavigationController.PopViewController(true);
-            //    //dvc.TableView.ReloadData();
-            //};
-            //loadingOverlay.AddSubview(cancelButton);
-
-
-            if (ShowLoading)
+            try
             {
-                dvc.Add(loadingOverlay);
+                _lockObject = this;
 
-                await Task.Delay(10);
+                lock (_lockObject)
+                {
+                    if (isRunning)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        isRunning = true;
+                    }
+                }
+
+                //nfloat labelHeight = 22;
+                //nfloat labelWidth = 70;
+                //// derive the center x and y
+                //nfloat centerX = loadingOverlay.Frame.Width / 2;
+                //nfloat centerY = loadingOverlay.Frame.Height / 2;
+                //var cancelButton = new UIButton(UIButtonType.System);
+                //cancelButton.Frame = new CGRect(
+                //    centerX - (labelWidth / 2),
+                //    centerY + 50,
+                //    labelWidth,
+                //    labelHeight);
+                //cancelButton.SetTitle("Retry", UIControlState.Normal);
+                //cancelButton.TouchUpInside += (sender, e) =>
+                //{
+                //    loadingOverlay.Hide();
+                //    //dvc.TableView.DeselectRow(path, true);
+                //    ///dvc.WillDeselectRow(tableView, path);
+                //    //dvc.Deselected(path);
+                //    //dvc.RowDeselected(tableView, path);
+                //    //base.Selected(dvc, tableView, path);
+                //    //dvc.NavigationController.PopViewController(true);
+                //    //dvc.TableView.ReloadData();
+                //};
+                //loadingOverlay.AddSubview(cancelButton);
+
+
+                if (ShowLoading)
+                {
+                    dvc.Add(loadingOverlay);
+
+                    await Task.Delay(10);
+                }
+
+                base.Selected(dvc, tableView, path);
+
+                //loadingOverlay.Hide();
+
+                var selected = OnSelected;
+                if (selected != null)
+                {
+                    selected(this, EventArgs.Empty);
+                }
             }
-
-            base.Selected(dvc, tableView, path);
-
-            loadingOverlay.Hide();
-
-            var selected = OnSelected;
-            if (selected != null)
+            catch (Exception ex)
             {
-                selected(this, EventArgs.Empty);
+                CommonFunctions.sendErrorEmail(ex);
+                dvc.InvokeOnMainThread(() =>
+                {
+                    dvc.PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
+                }); 
             }
-
-            isRunning = false;
+            finally
+            {
+                isRunning = false;
+                loadingOverlay.Hide();
+            }
         }
 
         public event EventHandler<EventArgs> OnSelected;
