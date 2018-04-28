@@ -1974,13 +1974,13 @@ namespace DynaPad
                         //    CommonFunctions.sendErrorEmail(new Exception("dds.SaveFile error: apptid = " + SelectedAppointment.ApptId));
                         //}
 
-                        //loadingOverlay.Hide();
+                        loadingOverlay.Hide();
 
                         SetDetailItem(new Section("Summary"), "Summary", "", null, false);
                     }
                     else
                     {
-                        //loadingOverlay.Hide();
+                        loadingOverlay.Hide();
 
                         messageLabel.Text = "Submit failed";
                         var failPass = "";
