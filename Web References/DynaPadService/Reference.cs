@@ -18,7 +18,7 @@ namespace DynaPad.DynaPadService {
     
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Web.Services.WebServiceBindingAttribute(Name="DynaPadServiceSoap", Namespace="http://dynadox.pro/service")]
@@ -39,6 +39,8 @@ namespace DynaPad.DynaPadService {
         private System.Threading.SendOrPostCallback GetAnswerPresetsOperationCompleted;
         
         private System.Threading.SendOrPostCallback GetAllAnswerPresetsOperationCompleted;
+        
+        private System.Threading.SendOrPostCallback GetFormPresetsOperationCompleted;
         
         private System.Threading.SendOrPostCallback LogPresetRequestOperationCompleted;
         
@@ -116,6 +118,9 @@ namespace DynaPad.DynaPadService {
         
         /// CodeRemarks
         public event GetAllAnswerPresetsCompletedEventHandler GetAllAnswerPresetsCompleted;
+        
+        /// CodeRemarks
+        public event GetFormPresetsCompletedEventHandler GetFormPresetsCompleted;
         
         /// CodeRemarks
         public event LogPresetRequestCompletedEventHandler LogPresetRequestCompleted;
@@ -472,29 +477,64 @@ namespace DynaPad.DynaPadService {
         }
         
         /// CodeRemarks
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/GetFormPresets", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        [return: System.Xml.Serialization.XmlArrayItemAttribute("ArrayOfString")]
+        [return: System.Xml.Serialization.XmlArrayItemAttribute(NestingLevel=1)]
+        public string[][] GetFormPresets(ConfigurationObjects domainConfig, string formId, bool isDocInput) {
+            object[] results = this.Invoke("GetFormPresets", new object[] {
+                        domainConfig,
+                        formId,
+                        isDocInput});
+            return ((string[][])(results[0]));
+        }
+        
+        /// CodeRemarks
+        public void GetFormPresetsAsync(ConfigurationObjects domainConfig, string formId, bool isDocInput) {
+            this.GetFormPresetsAsync(domainConfig, formId, isDocInput, null);
+        }
+        
+        /// CodeRemarks
+        public void GetFormPresetsAsync(ConfigurationObjects domainConfig, string formId, bool isDocInput, object userState) {
+            if ((this.GetFormPresetsOperationCompleted == null)) {
+                this.GetFormPresetsOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGetFormPresetsOperationCompleted);
+            }
+            this.InvokeAsync("GetFormPresets", new object[] {
+                        domainConfig,
+                        formId,
+                        isDocInput}, this.GetFormPresetsOperationCompleted, userState);
+        }
+        
+        private void OnGetFormPresetsOperationCompleted(object arg) {
+            if ((this.GetFormPresetsCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.GetFormPresetsCompleted(this, new GetFormPresetsCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// CodeRemarks
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/LogPresetRequest", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public void LogPresetRequest(ConfigurationObjects domainConfig, string deviceName, string requestDateTime, int presetCount) {
+        public void LogPresetRequest(ConfigurationObjects domainConfig, string deviceName, string requestDateTimeUTC, int presetCount) {
             this.Invoke("LogPresetRequest", new object[] {
                         domainConfig,
                         deviceName,
-                        requestDateTime,
+                        requestDateTimeUTC,
                         presetCount});
         }
         
         /// CodeRemarks
-        public void LogPresetRequestAsync(ConfigurationObjects domainConfig, string deviceName, string requestDateTime, int presetCount) {
-            this.LogPresetRequestAsync(domainConfig, deviceName, requestDateTime, presetCount, null);
+        public void LogPresetRequestAsync(ConfigurationObjects domainConfig, string deviceName, string requestDateTimeUTC, int presetCount) {
+            this.LogPresetRequestAsync(domainConfig, deviceName, requestDateTimeUTC, presetCount, null);
         }
         
         /// CodeRemarks
-        public void LogPresetRequestAsync(ConfigurationObjects domainConfig, string deviceName, string requestDateTime, int presetCount, object userState) {
+        public void LogPresetRequestAsync(ConfigurationObjects domainConfig, string deviceName, string requestDateTimeUTC, int presetCount, object userState) {
             if ((this.LogPresetRequestOperationCompleted == null)) {
                 this.LogPresetRequestOperationCompleted = new System.Threading.SendOrPostCallback(this.OnLogPresetRequestOperationCompleted);
             }
             this.InvokeAsync("LogPresetRequest", new object[] {
                         domainConfig,
                         deviceName,
-                        requestDateTime,
+                        requestDateTimeUTC,
                         presetCount}, this.LogPresetRequestOperationCompleted, userState);
         }
         
@@ -1257,7 +1297,7 @@ namespace DynaPad.DynaPadService {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1317,7 +1357,7 @@ namespace DynaPad.DynaPadService {
     }
     
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
@@ -1335,11 +1375,11 @@ namespace DynaPad.DynaPadService {
     }
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     public delegate void HelloDynaCompletedEventHandler(object sender, HelloDynaCompletedEventArgs e);
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class HelloDynaCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -1361,11 +1401,11 @@ namespace DynaPad.DynaPadService {
     }
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     public delegate void BuildDynaMenuCompletedEventHandler(object sender, BuildDynaMenuCompletedEventArgs e);
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class BuildDynaMenuCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -1387,11 +1427,11 @@ namespace DynaPad.DynaPadService {
     }
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     public delegate void ProcessDynaFilesCompletedEventHandler(object sender, ProcessDynaFilesCompletedEventArgs e);
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class ProcessDynaFilesCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -1413,11 +1453,11 @@ namespace DynaPad.DynaPadService {
     }
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     public delegate void GetFilesByDateCompletedEventHandler(object sender, GetFilesByDateCompletedEventArgs e);
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetFilesByDateCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -1439,11 +1479,11 @@ namespace DynaPad.DynaPadService {
     }
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     public delegate void GetFilesCompletedEventHandler(object sender, GetFilesCompletedEventArgs e);
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetFilesCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -1465,11 +1505,11 @@ namespace DynaPad.DynaPadService {
     }
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     public delegate void SaveFileCompletedEventHandler(object sender, SaveFileCompletedEventArgs e);
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class SaveFileCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -1491,11 +1531,11 @@ namespace DynaPad.DynaPadService {
     }
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     public delegate void GetAnswerPresetsCompletedEventHandler(object sender, GetAnswerPresetsCompletedEventArgs e);
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetAnswerPresetsCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -1517,11 +1557,11 @@ namespace DynaPad.DynaPadService {
     }
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     public delegate void GetAllAnswerPresetsCompletedEventHandler(object sender, GetAllAnswerPresetsCompletedEventArgs e);
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetAllAnswerPresetsCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -1543,15 +1583,41 @@ namespace DynaPad.DynaPadService {
     }
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
+    public delegate void GetFormPresetsCompletedEventHandler(object sender, GetFormPresetsCompletedEventArgs e);
+    
+    /// CodeRemarks
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class GetFormPresetsCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal GetFormPresetsCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// CodeRemarks
+        public string[][] Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string[][])(this.results[0]));
+            }
+        }
+    }
+    
+    /// CodeRemarks
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     public delegate void LogPresetRequestCompletedEventHandler(object sender, System.ComponentModel.AsyncCompletedEventArgs e);
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     public delegate void SaveAnswerPresetCompletedEventHandler(object sender, SaveAnswerPresetCompletedEventArgs e);
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class SaveAnswerPresetCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -1573,11 +1639,11 @@ namespace DynaPad.DynaPadService {
     }
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     public delegate void UpdateAnswerPresetJsonCompletedEventHandler(object sender, UpdateAnswerPresetJsonCompletedEventArgs e);
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class UpdateAnswerPresetJsonCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -1599,15 +1665,15 @@ namespace DynaPad.DynaPadService {
     }
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     public delegate void DeleteAnswerPresetCompletedEventHandler(object sender, System.ComponentModel.AsyncCompletedEventArgs e);
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     public delegate void SaveDictationCompletedEventHandler(object sender, SaveDictationCompletedEventArgs e);
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class SaveDictationCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -1629,11 +1695,11 @@ namespace DynaPad.DynaPadService {
     }
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     public delegate void DeleteDicatationCompletedEventHandler(object sender, DeleteDicatationCompletedEventArgs e);
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class DeleteDicatationCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -1655,11 +1721,11 @@ namespace DynaPad.DynaPadService {
     }
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     public delegate void GetFormDictationsCompletedEventHandler(object sender, GetFormDictationsCompletedEventArgs e);
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetFormDictationsCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -1681,11 +1747,11 @@ namespace DynaPad.DynaPadService {
     }
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     public delegate void GetAllAutoBoxDataCompletedEventHandler(object sender, GetAllAutoBoxDataCompletedEventArgs e);
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetAllAutoBoxDataCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -1707,11 +1773,11 @@ namespace DynaPad.DynaPadService {
     }
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     public delegate void GenerateIME4CompletedEventHandler(object sender, GenerateIME4CompletedEventArgs e);
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GenerateIME4CompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -1733,11 +1799,11 @@ namespace DynaPad.DynaPadService {
     }
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     public delegate void GenerateSummaryFromHtmlCompletedEventHandler(object sender, GenerateSummaryFromHtmlCompletedEventArgs e);
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GenerateSummaryFromHtmlCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -1759,11 +1825,11 @@ namespace DynaPad.DynaPadService {
     }
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     public delegate void GenerateSummaryCompletedEventHandler(object sender, GenerateSummaryCompletedEventArgs e);
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GenerateSummaryCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -1785,11 +1851,11 @@ namespace DynaPad.DynaPadService {
     }
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     public delegate void GetAllQuestionnairesCompletedEventHandler(object sender, GetAllQuestionnairesCompletedEventArgs e);
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetAllQuestionnairesCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -1811,11 +1877,11 @@ namespace DynaPad.DynaPadService {
     }
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     public delegate void SubmitFormAnswersCompletedEventHandler(object sender, SubmitFormAnswersCompletedEventArgs e);
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class SubmitFormAnswersCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -1837,11 +1903,11 @@ namespace DynaPad.DynaPadService {
     }
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     public delegate void GetFormQuestionsCompletedEventHandler(object sender, GetFormQuestionsCompletedEventArgs e);
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetFormQuestionsCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -1863,11 +1929,11 @@ namespace DynaPad.DynaPadService {
     }
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     public delegate void GetDoctorInputCompletedEventHandler(object sender, GetDoctorInputCompletedEventArgs e);
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetDoctorInputCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -1889,11 +1955,11 @@ namespace DynaPad.DynaPadService {
     }
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     public delegate void GetDynaReportsCompletedEventHandler(object sender, GetDynaReportsCompletedEventArgs e);
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetDynaReportsCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -1915,11 +1981,11 @@ namespace DynaPad.DynaPadService {
     }
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     public delegate void CreateDynaReportCompletedEventHandler(object sender, CreateDynaReportCompletedEventArgs e);
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class CreateDynaReportCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -1941,11 +2007,11 @@ namespace DynaPad.DynaPadService {
     }
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     public delegate void GenerateReportCompletedEventHandler(object sender, GenerateReportCompletedEventArgs e);
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GenerateReportCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -1967,11 +2033,11 @@ namespace DynaPad.DynaPadService {
     }
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     public delegate void LoginCompletedEventHandler(object sender, LoginCompletedEventArgs e);
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class LoginCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
@@ -1993,14 +2059,14 @@ namespace DynaPad.DynaPadService {
     }
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     public delegate void PdfToPngCompletedEventHandler(object sender, System.ComponentModel.AsyncCompletedEventArgs e);
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     public delegate void ConvertPDFtoPNGCompletedEventHandler(object sender, System.ComponentModel.AsyncCompletedEventArgs e);
     
     /// CodeRemarks
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.0.1033")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
     public delegate void ConvertPNGtoPDFCompletedEventHandler(object sender, System.ComponentModel.AsyncCompletedEventArgs e);
 }

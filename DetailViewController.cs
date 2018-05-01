@@ -353,7 +353,19 @@ namespace DynaPad
                             //Root = UploadsView;
                             //Root.TableView.ScrollEnabled = true;
 
-                            //break;
+                        //break;
+                        case "PatientInfo":
+                            loadingOverlay = new LoadingOverlay(boundsh, true);
+                            loadingOverlay.SetText("Loading...");
+                            mvc.Add(loadingOverlay);
+
+                            await Task.Delay(10);
+
+                            var patientInfoElement = GetPatientInfoElement();
+
+                            Root = patientInfoElement;
+
+                            break;
                         case "ApptInfo":
                             loadingOverlay = new LoadingOverlay(boundsh, true);
                             loadingOverlay.SetText("Loading...");
@@ -362,6 +374,7 @@ namespace DynaPad
                             await Task.Delay(10);
 
                             var apptInfoElement = GetApptInfoElement();
+
                             Root = apptInfoElement;
 
                             break;
@@ -374,6 +387,7 @@ namespace DynaPad
                             await Task.Delay(10);
 
                             var uploadElement = GetUploadElement(valueId, context);
+
                             Root = uploadElement;
 
                             break;
@@ -385,138 +399,7 @@ namespace DynaPad
 
                             await Task.Delay(10);
 
-                            var DownloadsView = new DynaMultiRootElement("Downloads");
-
-                            var downloadHeadPaddedView = new PaddedUIView<UILabel>
-                            {
-                                Enabled = true,
-                                Type = "Section",
-                                Frame = new CGRect(0, 0, 0, 40),
-                                Padding = 5f
-                            };
-                            downloadHeadPaddedView.NestedView.Text = "Download Medical Records";
-                            downloadHeadPaddedView.NestedView.TextAlignment = UITextAlignment.Center;
-                            downloadHeadPaddedView.NestedView.Font = UIFont.BoldSystemFontOfSize(17);
-                            downloadHeadPaddedView.setStyle();
-
-                            var downloadHeadSection = new DynaSection("MR")
-                            {
-                                HeaderView = downloadHeadPaddedView,
-                                FooterView = new UIView(new CGRect(0, 0, 0, 0))
-                            };
-                            downloadHeadSection.FooterView.Hidden = true;
-
-                            DownloadsView.Add(downloadHeadSection);
-
-                            var downloadMainSection = new DynaSection("MR")
-                            {
-                                HeaderView = new UIView(new CGRect(0, 0, 0, 0)),
-                                FooterView = new UIView(new CGRect(0, 0, 0, 0))
-                            };
-                            downloadMainSection.HeaderView.Hidden = true;
-                            downloadMainSection.FooterView.Hidden = true;
-
-                            nfloat qWidth = View.Frame.Width;
-
-                            progressView = new UIProgressView(new CGRect(0, 0, qWidth, 15))
-                            {
-                                Progress = 0,
-                                Hidden = true,
-                                ClipsToBounds = true
-                            };
-                            progressView.Layer.MasksToBounds = true;
-                            //Transform = CGAffineTransform.MakeScale(1, 20)
-
-                            //imageView = new UIImageView(new CGRect(0, 0, 100, 150));
-                            //imageView.Hidden = true;
-
-                            downloadMainSection.Add(progressView);
-                            //downloadMainSection.Add(imageView);
-
-                            var downloadPaddedView = new PaddedUIView<UILabel>
-                            {
-                                Frame = new CGRect(0, 0, qWidth, 50),
-                                Padding = 5f,
-                                Type = "Question"
-                            };
-
-                            btnDownload = new GlassButton(new RectangleF(0, 0, (float)qWidth, 50))
-                            {
-                                NormalColor = UIColor.FromRGB(224, 238, 240),
-                                Enabled = DownloadButtonGlobalEnabled
-                            };
-                            btnDownload.TitleLabel.Font = UIFont.BoldSystemFontOfSize(17);
-                            btnDownload.SetTitleColor(UIColor.Black, UIControlState.Normal);
-                            btnDownload.SetTitle("Download Files", UIControlState.Normal);
-
-                            if (context == "MRDownload")
-                            {
-                                downloadPaddedView.NestedView.Text = "Select a date to download medical records, then tap the download button:";
-                                downloadPaddedView.setStyle();
-
-                                downloadMainSection.Add(downloadPaddedView);
-
-                                var dde = new UIDatePicker(new CGRect(0, 0, qWidth, 180))
-                                {
-                                    Mode = UIDatePickerMode.Date,
-                                    Date = DateTime.Today.AddDays(1).ToNSDate()
-                                };
-
-                                downloadMainSection.Add(dde);
-
-                                btnDownload.TouchUpInside += (sender, e) =>
-                                {
-                                    //Create Alert
-                                    var DownloadMRPrompt = UIAlertController.Create("Download Medical Records", "Chosen medical records will be downloaded in the background", UIAlertControllerStyle.Alert);
-                                    //Add Actions
-                                    DownloadMRPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => DownloadMRs(valueId, dde.Date.ToDateTime(), false)));
-                                    DownloadMRPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
-                                    //Present Alert
-                                    PresentViewController(DownloadMRPrompt, true, null);
-                                };
-                            }
-                            else if (context == "MRPatientDownload")
-                            {
-                                downloadPaddedView.NestedView.Text = "Tap the download button to download patient medical records:";
-                                downloadPaddedView.setStyle();
-
-                                downloadMainSection.Add(downloadPaddedView);
-
-                                btnDownload.TouchUpInside += (sender, e) =>
-                                {
-                                    //Create Alert
-                                    var DownloadPatientMRPrompt = UIAlertController.Create("Download Medical Records", "Patient medical records will be downloaded in the background", UIAlertControllerStyle.Alert);
-                                    //Add Actions
-                                    DownloadPatientMRPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => DownloadMRs(valueId, DateTime.Today, true)));
-                                    DownloadPatientMRPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
-                                    //Present Alert
-                                    PresentViewController(DownloadPatientMRPrompt, true, null);
-                                };
-                            }
-
-                            DownloadsView.Add(downloadMainSection);
-
-                            var downloadFooterSection = new Section { HeaderView = null, FooterView = null };
-
-                            downloadFooterSection.Add(btnDownload);
-
-                            //var btnCrash = new GlassButton(new RectangleF((float)qWidth - 200, 0, 200, 50))
-                            //{
-                            //    NormalColor = UIColor.Red
-                            //};
-                            //btnCrash.TitleLabel.Font = UIFont.BoldSystemFontOfSize(17);
-                            //btnCrash.SetTitleColor(UIColor.Black, UIControlState.Normal);]
-                            //btnCrash.SetTitle("Crash", UIControlState.Normal);
-                            //btnCrash.TouchUpInside += delegate {
-                            //    // Force the app to crash
-                            //    string s = null;
-                            //    s.ToString();
-                            //};
-                            //downloadFooterSection.Add(btnCrash);
-
-                            DownloadsView.Add(downloadFooterSection);
-
-                            DownloadsView.UnevenRows = true;
+                            var DownloadsView = GetMRDownloadView(context, valueId);
 
                             Root.TableView.AutosizesSubviews = true;
                             Root = DownloadsView;
@@ -531,6 +414,7 @@ namespace DynaPad
                             await Task.Delay(10);
 
                             var mrElement = GetMRElement(valueId);
+
                             Root = mrElement;
 
                             break;
@@ -543,141 +427,14 @@ namespace DynaPad
                             }
                             await Task.Delay(10);
 
-                            var summaryElement = new DynaMultiRootElement(SelectedAppointment.ApptFormName + " - " + SelectedAppointment.ApptPatientName);
-
-                            var summaryPaddedView = new PaddedUIView<UILabel>
-                            {
-                                Enabled = true,
-                                Type = "Section",
-                                Frame = new CGRect(0, 0, 0, 40),
-                                Padding = 5f
-                            };
-                            summaryPaddedView.NestedView.Text = "SUMMARY";
-                            summaryPaddedView.NestedView.TextAlignment = UITextAlignment.Center;
-                            summaryPaddedView.NestedView.Font = UIFont.BoldSystemFontOfSize(17);
-                            summaryPaddedView.setStyle();
-
-                            var summarySection = new DynaSection("SUMMARY")
-                            {
-                                HeaderView = summaryPaddedView,
-                                FooterView = new UIView(new CGRect(0, 0, 0, 0))
-                            };
-                            summarySection.FooterView.Hidden = true;
-
-                            var summaryFileName = "";
-
-                            if (!IsViewSummary)
-                            {
-                                //if (CrossConnectivity.Current.IsConnected)
-                                //{
-                                    //var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
-                                    var finalJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
-
-                                    //summaryFileName = dds.GenerateSummary(CommonFunctions.GetUserConfig(), finalJson);
-                                    summaryFileName = GenerateSummary(finalJson);
-
-                                    //SFSafariViewController sfViewController = new SFSafariViewController(new NSUrl(summaryFileName));
-                                    //PresentViewController(sfViewController, true, null);
-                                    //var PreviewController = UIDocumentInteractionController.FromUrl(NSUrl.FromFilename(summaryFileName));
-                                    //PreviewController.Delegate = new UIDocumentInteractionControllerDelegateClass(UIApplication.SharedApplication.KeyWindow.RootViewController);
-                                    //BeginInvokeOnMainThread(() =>
-                                    //{
-                                    //PreviewController.PresentPreview(true);
-                                    //});
-
-                                    var mas = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[0]).TopViewController;
-                                    mas.NavigationController.PopViewController(true);
-                                //}
-                                //else
-                                //{
-                                //    PresentViewController(CommonFunctions.InternetAlertPrompt(), true, null);
-                                //}
-                            }
-                            else
-                            {
-                                summaryFileName = SummaryFileName;
-                            }
-
-                            if (!summaryFileName.StartsWith("Error:", StringComparison.CurrentCulture))
-                            {
-                                if (IsViewSummary)
-                                {
-                                    var webView = new WKWebView(View.Bounds, new WKWebViewConfiguration())
-                                    {
-                                        Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height)
-                                    };
-                                    webView.LoadRequest(new NSUrlRequest(new NSUrl(summaryFileName)));
-
-                                    summarySection.Add(webView);
-                                    summaryElement.Add(summarySection);
-                                }
-                                else
-                                {
-                                    var sucmes = SelectedAppointment.SelectedQForm.IsDoctorForm ? "Doctor form submitted successfully. If not done so already, upload appointment files to generate report." : "Patient form submitted successfully.";
-                                    var se = new StringElement(sucmes);
-                                    summarySection.Add(se);
-
-                                    var directoryname = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaFilesAwaitingUpload/");
-                                    var summaryDynaFile = JsonConvert.DeserializeObject<DynaFile>(File.ReadAllText(summaryFileName));
-                                    var webView = new UIWebView(new CGRect(View.Bounds.X + 5, View.Bounds.Y + 60, View.Bounds.Width - 5, View.Bounds.Height - 80))
-                                    {
-                                        ScalesPageToFit = true
-                                    };
-                                    webView.LoadHtmlString(summaryDynaFile.Html, new NSUrl(directoryname, true));
-                                    summarySection.Add(webView);
-
-                                    summaryElement.Add(summarySection);
-
-                                    var boo = string.IsNullOrEmpty(plist.StringForKey("Upload_On_Submit")) || bool.Parse(plist.StringForKey("Upload_On_Submit"));
-                                    if (boo)
-                                    {
-                                        loadingOverlay.Hide();
-                                        if (CrossConnectivity.Current.IsConnected)
-                                        {
-                                            DoSubmitUpload();
-                                        }
-                                        else
-                                        {
-                                            PresentViewController(CommonFunctions.InternetAlertPrompt(), true, null);
-                                        }
-                                    }
-                                }
-
-                                Root = summaryElement;
-                            }
-                            else
-                            {
-                                summarySection.Add(new StringElement("File unavailable, contact administration"));
-                                summaryElement.Add(summarySection);
-                                Root = summaryElement;
-                                Root.TableView.ScrollEnabled = false;
-                            }
+                            GetSummaryView(IsViewSummary, SummaryFileName);
 
                             break;
                         case "Report":
                             loadingOverlay = new LoadingOverlay(boundsh, true);// { loadingLabelText = "Finalizing..." };
                             loadingOverlay.SetText("Loading Report...");
 
-                            // derive the center x and y
-                            centerX = new nfloat(loadingOverlay.Frame.Width / 2);
-                            centerY = new nfloat(loadingOverlay.Frame.Height / 2);
-
-                            cancelButton = new UIButton(UIButtonType.System)
-                            {
-                                Frame = new CGRect(centerX - (labelWidth / 2), centerY + 50, labelWidth, labelHeight)
-                            };
-                            cancelButton.SetTitle("Cancel", UIControlState.Normal);
-                            cancelButton.TouchUpInside += (sender, e) =>
-                            {
-                                try
-                                {
-                                    cts?.Cancel();
-                                }
-                                catch (ObjectDisposedException oex)     // in case previous search completed
-                                {
-                                    Console.WriteLine($"\nObjectDisposedException in cancelButton.TouchUpInside with: {oex.Message}");
-                                }
-                            };
+                            SetCancelLoadingBtn();
 
                             loadingOverlay.AddSubview(cancelButton);
                             mvc.Add(loadingOverlay);
@@ -699,6 +456,7 @@ namespace DynaPad
                                     await Task.Delay(TimeSpan.FromSeconds(1), cts.Token);
 
                                     var task = ConfigureReportView(context, ReportName, valueId, cts.Token);
+
                                     var result = await task;
                                     //Console.WriteLine($"\nGot section with: {result}");
                                 }
@@ -708,28 +466,7 @@ namespace DynaPad
 
                                     //CommonFunctions.sendErrorEmail((Exception)tex);
 
-                                    var master = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
-
-                                    foreach (Element d in master.secforcancel.Elements)
-                                    {
-                                        var t = d.GetType();
-
-                                        if (t == typeof(SectionStringElement))
-                                        {
-                                            var di = (SectionStringElement)d;
-                                            if (di.IndexPath == master.oldsel)// di.prevsel)
-                                            {
-                                                di.selected = true;
-                                                //break;
-                                            }
-                                            else
-                                            {
-                                                di.selected = false;
-                                            }
-                                        }
-                                    }
-
-                                    master.secforcancel.GetContainerTableView().ReloadData();
+                                    HandleSectionForCancel();
 
                                     PresentViewController(CommonFunctions.AlertPrompt("Canceled/Timeout", "Operation was canceled or timed out, please try again", true, null, false, null), true, null);
                                 }
@@ -740,26 +477,7 @@ namespace DynaPad
                             loadingOverlay = new LoadingOverlay(boundsh, true);// { loadingLabelText = "Finalizing..." };
                             loadingOverlay.SetText("Finalizing...");
 
-                            // derive the center x and y
-                            centerX = new nfloat(loadingOverlay.Frame.Width / 2);
-                            centerY = new nfloat(loadingOverlay.Frame.Height / 2);
-
-                            cancelButton = new UIButton(UIButtonType.System)
-                            {
-                                Frame = new CGRect(centerX - (labelWidth / 2), centerY + 50, labelWidth, labelHeight)
-                            };
-                            cancelButton.SetTitle("Cancel", UIControlState.Normal);
-                            cancelButton.TouchUpInside += (sender, e) =>
-                            {
-                                try
-                                {
-                                    cts?.Cancel();
-                                }
-                                catch (ObjectDisposedException oex)     // in case previous search completed
-                                {
-                                    Console.WriteLine($"\nObjectDisposedException in cancelButton.TouchUpInside with: {oex.Message}");
-                                }
-                            };
+                            SetCancelLoadingBtn();
 
                             loadingOverlay.AddSubview(cancelButton);
                             mvc.Add(loadingOverlay);
@@ -790,28 +508,7 @@ namespace DynaPad
 
                                     //CommonFunctions.sendErrorEmail((Exception)tex);
 
-                                    var master = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
-
-                                    foreach (Element d in master.secforcancel.Elements)
-                                    {
-                                        var t = d.GetType();
-
-                                        if (t == typeof(SectionStringElement))
-                                        {
-                                            var di = (SectionStringElement)d;
-                                            if (di.IndexPath == master.oldsel)// di.prevsel)
-                                            {
-                                                di.selected = true;
-                                                //break;
-                                            }
-                                            else
-                                            {
-                                                di.selected = false;
-                                            }
-                                        }
-                                    }
-
-                                    master.secforcancel.GetContainerTableView().ReloadData();
+                                    HandleSectionForCancel();
 
                                     PresentViewController(CommonFunctions.AlertPrompt("Canceled/Timeout", "Operation was canceled or timed out, please try again", true, null, false, null), true, null);
                                 }
@@ -824,26 +521,7 @@ namespace DynaPad
                             //loadingOverlay.ShowCancel();
                             loadingOverlay.SetText("Loading Section...");
 
-                            // derive the center x and y
-                            centerX = new nfloat(loadingOverlay.Frame.Width / 2);
-                            centerY = new nfloat(loadingOverlay.Frame.Height / 2);
-
-                            cancelButton = new UIButton(UIButtonType.System)
-                            {
-                                Frame = new CGRect(centerX - (labelWidth / 2), centerY + 50, labelWidth, labelHeight)
-                            };
-                            cancelButton.SetTitle("Cancel", UIControlState.Normal);
-                            cancelButton.TouchUpInside += (sender, e) =>
-                            {
-                                try
-                                {
-                                    cts?.Cancel();
-                                }
-                                catch (ObjectDisposedException oex)     // in case previous search completed
-                                {
-                                    Console.WriteLine($"\nObjectDisposedException in cancelButton.TouchUpInside with: {oex.Message}");
-                                }
-                            };
+                            SetCancelLoadingBtn();
 
                             loadingOverlay.AddSubview(cancelButton);
 
@@ -877,28 +555,7 @@ namespace DynaPad
 
                                     //CommonFunctions.sendErrorEmail((Exception)tex);
 
-                                    var master = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
-
-                                    foreach (Element d in master.secforcancel.Elements)
-                                    {
-                                        var t = d.GetType();
-
-                                        if (t == typeof(SectionStringElement))
-                                        {
-                                            var di = (SectionStringElement)d;
-                                            if (di.IndexPath == master.oldsel)// di.prevsel)
-                                            {
-                                                di.selected = true;
-                                                //break;
-                                            }
-                                            else
-                                            {
-                                                di.selected = false;
-                                            }
-                                        }
-                                    }
-
-                                    master.secforcancel.GetContainerTableView().ReloadData();
+                                    HandleSectionForCancel();
 
                                     PresentViewController(CommonFunctions.AlertPrompt("Canceled/Timeout", "Operation was canceled or timed out, please try again", true, null, false, null), true, null);
                                 }
@@ -927,6 +584,306 @@ namespace DynaPad
             }
         }
 
+        public void HandleSectionForCancel()
+        {
+            var master = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
+
+            foreach (Element d in master.secforcancel.Elements)
+            {
+                var t = d.GetType();
+
+                if (t == typeof(SectionStringElement))
+                {
+                    var di = (SectionStringElement)d;
+                    if (di.IndexPath == master.oldsel)// di.prevsel)
+                    {
+                        di.selected = true;
+                        //break;
+                    }
+                    else
+                    {
+                        di.selected = false;
+                    }
+                }
+            }
+
+            master.secforcancel.GetContainerTableView().ReloadData();
+        }
+
+        public void SetCancelLoadingBtn()
+        {
+            // derive the center x and y
+            centerX = new nfloat(loadingOverlay.Frame.Width / 2);
+            centerY = new nfloat(loadingOverlay.Frame.Height / 2);
+
+            cancelButton = new UIButton(UIButtonType.System)
+            {
+                Frame = new CGRect(centerX - (labelWidth / 2), centerY + 50, labelWidth, labelHeight)
+            };
+            cancelButton.SetTitle("Cancel", UIControlState.Normal);
+            cancelButton.TouchUpInside += (sender, e) =>
+            {
+                try
+                {
+                    cts?.Cancel();
+                }
+                catch (ObjectDisposedException oex)     // in case previous search completed
+                {
+                    Console.WriteLine($"\nObjectDisposedException in cancelButton.TouchUpInside with: {oex.Message}");
+                }
+            };
+        }
+
+        public void GetSummaryView(bool IsViewSummary, string SummaryFileName)
+        {
+            var summaryElement = new DynaMultiRootElement(SelectedAppointment.ApptFormName + " - " + SelectedAppointment.ApptPatientName);
+
+            var summaryPaddedView = new PaddedUIView<UILabel>
+            {
+                Enabled = true,
+                Type = "Section",
+                Frame = new CGRect(0, 0, 0, 40),
+                Padding = 5f
+            };
+            summaryPaddedView.NestedView.Text = "SUMMARY";
+            summaryPaddedView.NestedView.TextAlignment = UITextAlignment.Center;
+            summaryPaddedView.NestedView.Font = UIFont.BoldSystemFontOfSize(17);
+            summaryPaddedView.setStyle();
+
+            var summarySection = new DynaSection("SUMMARY")
+            {
+                HeaderView = summaryPaddedView,
+                FooterView = new UIView(new CGRect(0, 0, 0, 0))
+            };
+            summarySection.FooterView.Hidden = true;
+
+            var summaryFileName = "";
+
+            if (!IsViewSummary)
+            {
+                //if (CrossConnectivity.Current.IsConnected)
+                //{
+                //var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
+                var finalJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
+
+                //summaryFileName = dds.GenerateSummary(CommonFunctions.GetUserConfig(), finalJson);
+                summaryFileName = GenerateSummary(finalJson);
+
+                //SFSafariViewController sfViewController = new SFSafariViewController(new NSUrl(summaryFileName));
+                //PresentViewController(sfViewController, true, null);
+                //var PreviewController = UIDocumentInteractionController.FromUrl(NSUrl.FromFilename(summaryFileName));
+                //PreviewController.Delegate = new UIDocumentInteractionControllerDelegateClass(UIApplication.SharedApplication.KeyWindow.RootViewController);
+                //BeginInvokeOnMainThread(() =>
+                //{
+                //PreviewController.PresentPreview(true);
+                //});
+
+                var mas = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[0]).TopViewController;
+                mas.NavigationController.PopViewController(true);
+                //}
+                //else
+                //{
+                //    PresentViewController(CommonFunctions.InternetAlertPrompt(), true, null);
+                //}
+            }
+            else
+            {
+                summaryFileName = SummaryFileName;
+            }
+
+            if (!summaryFileName.StartsWith("Error:", StringComparison.CurrentCulture))
+            {
+                if (IsViewSummary)
+                {
+                    var webView = new WKWebView(View.Bounds, new WKWebViewConfiguration())
+                    {
+                        Frame = new CGRect(View.Bounds.X, 0, View.Bounds.Width, View.Bounds.Height)
+                    };
+                    webView.LoadRequest(new NSUrlRequest(new NSUrl(summaryFileName)));
+
+                    summarySection.Add(webView);
+                    summaryElement.Add(summarySection);
+                }
+                else
+                {
+                    var sucmes = SelectedAppointment.SelectedQForm.IsDoctorForm ? "Doctor form submitted successfully. If not done so already, upload appointment files to generate report." : "Patient form submitted successfully.";
+                    var se = new StringElement(sucmes);
+                    summarySection.Add(se);
+
+                    var directoryname = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaFilesAwaitingUpload/");
+                    var summaryDynaFile = JsonConvert.DeserializeObject<DynaFile>(File.ReadAllText(summaryFileName));
+                    var webView = new UIWebView(new CGRect(View.Bounds.X + 5, View.Bounds.Y + 60, View.Bounds.Width - 5, View.Bounds.Height - 80))
+                    {
+                        ScalesPageToFit = true
+                    };
+                    webView.LoadHtmlString(summaryDynaFile.Html, new NSUrl(directoryname, true));
+                    summarySection.Add(webView);
+
+                    summaryElement.Add(summarySection);
+
+                    var boo = string.IsNullOrEmpty(plist.StringForKey("Upload_On_Submit")) || bool.Parse(plist.StringForKey("Upload_On_Submit"));
+                    if (boo)
+                    {
+                        loadingOverlay.Hide();
+                        if (CrossConnectivity.Current.IsConnected)
+                        {
+                            DoSubmitUpload();
+                        }
+                        else
+                        {
+                            PresentViewController(CommonFunctions.InternetAlertPrompt(), true, null);
+                        }
+                    }
+                }
+
+                Root = summaryElement;
+            }
+            else
+            {
+                summarySection.Add(new StringElement("File unavailable, contact administration"));
+                summaryElement.Add(summarySection);
+                Root = summaryElement;
+                Root.TableView.ScrollEnabled = false;
+            }
+        }
+
+        public DynaMultiRootElement GetMRDownloadView(string context, string valueId)
+        {
+            var DownloadsView = new DynaMultiRootElement("Downloads");
+
+            var downloadHeadPaddedView = new PaddedUIView<UILabel>
+            {
+                Enabled = true,
+                Type = "Section",
+                Frame = new CGRect(0, 0, 0, 40),
+                Padding = 5f
+            };
+            downloadHeadPaddedView.NestedView.Text = "Download Medical Records";
+            downloadHeadPaddedView.NestedView.TextAlignment = UITextAlignment.Center;
+            downloadHeadPaddedView.NestedView.Font = UIFont.BoldSystemFontOfSize(17);
+            downloadHeadPaddedView.setStyle();
+
+            var downloadHeadSection = new DynaSection("MR")
+            {
+                HeaderView = downloadHeadPaddedView,
+                FooterView = new UIView(new CGRect(0, 0, 0, 0))
+            };
+            downloadHeadSection.FooterView.Hidden = true;
+
+            DownloadsView.Add(downloadHeadSection);
+
+            var downloadMainSection = new DynaSection("MR")
+            {
+                HeaderView = new UIView(new CGRect(0, 0, 0, 0)),
+                FooterView = new UIView(new CGRect(0, 0, 0, 0))
+            };
+            downloadMainSection.HeaderView.Hidden = true;
+            downloadMainSection.FooterView.Hidden = true;
+
+            nfloat qWidth = View.Frame.Width;
+
+            progressView = new UIProgressView(new CGRect(0, 0, qWidth, 15))
+            {
+                Progress = 0,
+                Hidden = true,
+                ClipsToBounds = true
+            };
+            progressView.Layer.MasksToBounds = true;
+            //Transform = CGAffineTransform.MakeScale(1, 20)
+
+            //imageView = new UIImageView(new CGRect(0, 0, 100, 150));
+            //imageView.Hidden = true;
+
+            downloadMainSection.Add(progressView);
+            //downloadMainSection.Add(imageView);
+
+            var downloadPaddedView = new PaddedUIView<UILabel>
+            {
+                Frame = new CGRect(0, 0, qWidth, 50),
+                Padding = 5f,
+                Type = "Question"
+            };
+
+            btnDownload = new GlassButton(new RectangleF(0, 0, (float)qWidth, 50))
+            {
+                NormalColor = UIColor.FromRGB(224, 238, 240),
+                Enabled = DownloadButtonGlobalEnabled
+            };
+            btnDownload.TitleLabel.Font = UIFont.BoldSystemFontOfSize(17);
+            btnDownload.SetTitleColor(UIColor.Black, UIControlState.Normal);
+            btnDownload.SetTitle("Download Files", UIControlState.Normal);
+
+            if (context == "MRDownload")
+            {
+                downloadPaddedView.NestedView.Text = "Select a date to download medical records, then tap the download button:";
+                downloadPaddedView.setStyle();
+
+                downloadMainSection.Add(downloadPaddedView);
+
+                var dde = new UIDatePicker(new CGRect(0, 0, qWidth, 180))
+                {
+                    Mode = UIDatePickerMode.Date,
+                    Date = DateTime.Today.AddDays(1).ToNSDate()
+                };
+
+                downloadMainSection.Add(dde);
+
+                btnDownload.TouchUpInside += (sender, e) =>
+                {
+                    //Create Alert
+                    var DownloadMRPrompt = UIAlertController.Create("Download Medical Records", "Chosen medical records will be downloaded in the background", UIAlertControllerStyle.Alert);
+                    //Add Actions
+                    DownloadMRPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => DownloadMRs(valueId, dde.Date.ToDateTime(), false)));
+                    DownloadMRPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
+                    //Present Alert
+                    PresentViewController(DownloadMRPrompt, true, null);
+                };
+            }
+            else if (context == "MRPatientDownload")
+            {
+                downloadPaddedView.NestedView.Text = "Tap the download button to download patient medical records:";
+                downloadPaddedView.setStyle();
+
+                downloadMainSection.Add(downloadPaddedView);
+
+                btnDownload.TouchUpInside += (sender, e) =>
+                {
+                    //Create Alert
+                    var DownloadPatientMRPrompt = UIAlertController.Create("Download Medical Records", "Patient medical records will be downloaded in the background", UIAlertControllerStyle.Alert);
+                    //Add Actions
+                    DownloadPatientMRPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => DownloadMRs(valueId, DateTime.Today, true)));
+                    DownloadPatientMRPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
+                    //Present Alert
+                    PresentViewController(DownloadPatientMRPrompt, true, null);
+                };
+            }
+
+            DownloadsView.Add(downloadMainSection);
+
+            var downloadFooterSection = new Section { HeaderView = null, FooterView = null };
+
+            downloadFooterSection.Add(btnDownload);
+
+            //var btnCrash = new GlassButton(new RectangleF((float)qWidth - 200, 0, 200, 50))
+            //{
+            //    NormalColor = UIColor.Red
+            //};
+            //btnCrash.TitleLabel.Font = UIFont.BoldSystemFontOfSize(17);
+            //btnCrash.SetTitleColor(UIColor.Black, UIControlState.Normal);]
+            //btnCrash.SetTitle("Crash", UIControlState.Normal);
+            //btnCrash.TouchUpInside += delegate {
+            //    // Force the app to crash
+            //    string s = null;
+            //    s.ToString();
+            //};
+            //downloadFooterSection.Add(btnCrash);
+
+            DownloadsView.Add(downloadFooterSection);
+
+            DownloadsView.UnevenRows = true;
+
+            return DownloadsView;
+        }
 
 
         public void DoSubmitUpload()
@@ -979,18 +936,8 @@ namespace DynaPad
                 mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
                 loadingOverlay = new LoadingOverlay(boundsh, true);
                 loadingOverlay.SetText("Uploading...");
-                centerX = new nfloat(loadingOverlay.Frame.Width / 2);
-                centerY = new nfloat(loadingOverlay.Frame.Height / 2);
 
-                cancelButton = new UIButton(UIButtonType.System)
-                {
-                    Frame = new CGRect(centerX - (labelWidth / 2), centerY + 50, labelWidth, labelHeight)
-                };
-                cancelButton.SetTitle("Cancel", UIControlState.Normal);
-                cancelButton.TouchUpInside += (sender, e) =>
-                {
-                    cts.Cancel();
-                };
+                SetCancelLoadingBtn();
 
                 loadingOverlay.AddSubview(cancelButton);
 
@@ -3801,6 +3748,76 @@ namespace DynaPad
 
 
 
+        public DynaMultiRootElement GetPatientInfoElement()
+        {
+            try
+            {
+                var patientInfoElement = new DynaMultiRootElement(SelectedAppointment.ApptPatientName);
+
+                var patientInfoPaddedView = new PaddedUIView<UILabel>
+                {
+                    Enabled = true,
+                    Type = "Section",
+                    Frame = new CGRect(0, 0, 0, 40),
+                    Padding = 5f
+                };
+                patientInfoPaddedView.NestedView.Text = "Patient Info - " + SelectedAppointment.ApptPatientName;
+                patientInfoPaddedView.NestedView.TextAlignment = UITextAlignment.Center;
+                patientInfoPaddedView.NestedView.Font = UIFont.BoldSystemFontOfSize(17);
+                patientInfoPaddedView.setStyle();
+
+                var patientInfoSection = new DynaSection("PatientInfo")
+                {
+                    HeaderView = new UIView(new CGRect(0, 0, 0, 0)),
+                    FooterView = new UIView(new CGRect(0, 0, 0, 0))
+                };
+                patientInfoSection.FooterView.Hidden = true;
+
+                var patientNamePaddedView = new PaddedUIView<UILabel>
+                {
+                    Frame = new CGRect(0, 0, View.Bounds.Width, 30),
+                    Padding = 5f
+                };
+                patientNamePaddedView.NestedView.Text = "Patient Name:";
+                patientNamePaddedView.setStyle();
+                patientInfoSection.Add(patientNamePaddedView);
+                var patientNameLabel = new UILabel(new CGRect(5, 0, View.Bounds.Width, 30)) { Text = SelectedAppointment.ApptPatientName };
+                patientInfoSection.Add(patientNameLabel);
+
+                var patientnotes = string.IsNullOrEmpty(SelectedAppointment.PatientNotes) ? "" : SelectedAppointment.PatientNotes;
+
+                var pww = (decimal)patientnotes.Length / 100;
+                var pwlines = (int)Math.Ceiling(pww);
+                var pfwlines = pwlines == 0 ? 1 : pwlines;
+                var pwheight = 30 * pfwlines;
+
+                var patientNotesPaddedView = new PaddedUIView<UILabel>
+                {
+                    Frame = new CGRect(0, 0, View.Bounds.Width, 30),
+                    Padding = 5f
+                };
+                patientNotesPaddedView.NestedView.Text = "Patient Notes:";
+                patientNotesPaddedView.setStyle();
+                patientInfoSection.Add(patientNotesPaddedView);
+                var patientNotesLabel = new UILabel(new CGRect(5, 0, View.Bounds.Width - 10, pwheight)) { Text = patientnotes, LineBreakMode = UILineBreakMode.WordWrap, Lines = 0 };
+                patientInfoSection.Add(patientNotesLabel);
+
+                patientInfoElement.Add(patientInfoSection);
+
+                return patientInfoElement;
+            }
+            catch (Exception ex)
+            {
+                CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
+                return null;
+            }
+        }
+
+
+
+
+
         public DynaMultiRootElement GetApptInfoElement()
         {
             try
@@ -3847,6 +3864,24 @@ namespace DynaPad
                 apptInfoSection.Add(doctorNamePaddedView);
                 var doctorNameLabel = new UILabel(new CGRect(5, 0, View.Bounds.Width, 30)) { Text = SelectedAppointment.ApptDoctorName };
                 apptInfoSection.Add(doctorNameLabel);
+
+                var patientnotes = string.IsNullOrEmpty(SelectedAppointment.PatientNotes) ? "" : SelectedAppointment.PatientNotes;
+
+                var pww = (decimal)patientnotes.Length / 100;
+                var pwlines = (int)Math.Ceiling(pww);
+                var pfwlines = pwlines == 0 ? 1 : pwlines;
+                var pwheight = 30 * pfwlines;
+
+                var patientNotesPaddedView = new PaddedUIView<UILabel>
+                {
+                    Frame = new CGRect(0, 0, View.Bounds.Width, 30),
+                    Padding = 5f
+                };
+                patientNotesPaddedView.NestedView.Text = "Patient Notes:";
+                patientNotesPaddedView.setStyle();
+                apptInfoSection.Add(patientNotesPaddedView);
+                var patientNotesLabel = new UILabel(new CGRect(5, 0, View.Bounds.Width - 10, pwheight)) { Text = patientnotes, LineBreakMode = UILineBreakMode.WordWrap, Lines = 0 };
+                apptInfoSection.Add(patientNotesLabel);
 
                 var apptnotes = string.IsNullOrEmpty(SelectedAppointment.ApptNotes) ? "" : SelectedAppointment.ApptNotes;
                 //var apptnotes = "Resolved pending breakpoint at 'DetailViewController.cs:4449,1' to DynaPad.DynaMultiRootElement DynaPad.DetailViewController.GetUploadElement (string valueId, string context). Resolved pending breakpoint.";

@@ -8,10 +8,10 @@ using UIKit;
 using System.Diagnostics;
 using LoginScreen;
 using System.IO;
+using System.Threading;
 //using System.IO;
 //using static DynaClassLibrary.DynaClasses;
 //using Syncfusion.SfImageEditor.iOS;
-//using System.Threading;
 //using System.Data;
 
 #if __UNIFIED__
@@ -869,6 +869,11 @@ namespace DynaPad
                     (_nestedView as UILabel).Font = UIFont.SystemFontOfSize(13);
                     BackgroundColor = UIColor.FromRGB(169, 188, 208);
                     break;
+                case "White":
+                    (_nestedView as UILabel).TextColor = UIColor.Black;
+                    (_nestedView as UILabel).Font = UIFont.SystemFontOfSize(13);
+                    BackgroundColor = UIColor.White;
+                    break;
                 default:
                     (_nestedView as UILabel).TextColor = UIColor.DarkGray;
                     (_nestedView as UILabel).Font = UIFont.SystemFontOfSize(13);
@@ -1085,9 +1090,11 @@ namespace DynaPad
         public string DoctorName { get; set; }
         public string LocationID { get; set; }
         public string ApptID { get; set; }
+        public string ApptTime { get; set; }
         public string ReportID { get; set; }
         public string CaseID { get; set; }
         public string ApptNotes { get; set; }
+        public string PatientNotes { get; set; }
         public List<Report> ApptReports { get; set; }
         public Group thisGroup { get; set; }
         public bool ShowLoading { get; set; }
@@ -1100,6 +1107,40 @@ namespace DynaPad
 
         public Boolean isRunning = false;
         Object _lockObject = new object();
+
+        CancellationTokenSource cts;
+
+        nfloat labelHeight = 22;
+        nfloat labelWidth = 70;
+        nfloat centerX;
+        nfloat centerY;
+        UIButton cancelButton;
+
+        public void HandleCancel(DialogViewController dvc, UITableView tableView, NSIndexPath path)
+        {
+            base.Deselected(dvc, tableView, path);
+            tableView.DeselectRow(path, true);
+            var deselected = OnDeSelected;
+            if (deselected != null)
+            {
+                deselected(null, EventArgs.Empty);
+            }
+        }
+
+        public async Task<string> SetSelected(DialogViewController dvc, UITableView tableView, NSIndexPath path, CancellationToken cts)
+        {
+            await Task.Delay(10, cts);
+
+            base.Selected(dvc, tableView, path);
+
+            var selected = OnSelected;
+            if (selected != null)
+            {
+                selected(this, EventArgs.Empty);
+            }
+
+            return "selected";
+        }
 
         public override async void Selected(DialogViewController dvc, UITableView tableView, NSIndexPath path)
         {
@@ -1121,48 +1162,73 @@ namespace DynaPad
                     }
                 }
 
-                //nfloat labelHeight = 22;
-                //nfloat labelWidth = 70;
-                //// derive the center x and y
-                //nfloat centerX = loadingOverlay.Frame.Width / 2;
-                //nfloat centerY = loadingOverlay.Frame.Height / 2;
-                //var cancelButton = new UIButton(UIButtonType.System);
-                //cancelButton.Frame = new CGRect(
-                //    centerX - (labelWidth / 2),
-                //    centerY + 50,
-                //    labelWidth,
-                //    labelHeight);
-                //cancelButton.SetTitle("Retry", UIControlState.Normal);
-                //cancelButton.TouchUpInside += (sender, e) =>
-                //{
-                //    loadingOverlay.Hide();
-                //    //dvc.TableView.DeselectRow(path, true);
-                //    ///dvc.WillDeselectRow(tableView, path);
-                //    //dvc.Deselected(path);
-                //    //dvc.RowDeselected(tableView, path);
-                //    //base.Selected(dvc, tableView, path);
-                //    //dvc.NavigationController.PopViewController(true);
-                //    //dvc.TableView.ReloadData();
-                //};
-                //loadingOverlay.AddSubview(cancelButton);
-
-
                 if (ShowLoading)
                 {
+                    // derive the center x and y
+                    centerX = new nfloat(loadingOverlay.Frame.Width / 2);
+                    centerY = new nfloat(loadingOverlay.Frame.Height / 2);
+
+                    cancelButton = new UIButton(UIButtonType.System)
+                    {
+                        Frame = new CGRect(centerX - (labelWidth / 2), centerY + 50, labelWidth, labelHeight)
+                    };
+                    cancelButton.SetTitle("Cancel", UIControlState.Normal);
+                    cancelButton.TouchUpInside += (sender, e) =>
+                    {
+                        try
+                        {
+                            cts?.Cancel();
+                        }
+                        catch (ObjectDisposedException oex)     // in case previous search completed
+                        {
+                            Console.WriteLine($"\nObjectDisposedException in cancelButton.TouchUpInside with: {oex.Message}");
+                        }
+                    };
+
+                    loadingOverlay.AddSubview(cancelButton);
+
                     dvc.Add(loadingOverlay);
 
                     await Task.Delay(10);
-                }
 
-                base.Selected(dvc, tableView, path);
+                    using (cts = new CancellationTokenSource())
+                    {
+                        try
+                        {
+                            cts.CancelAfter(TimeSpan.FromSeconds(30));
+                            await Task.Delay(TimeSpan.FromSeconds(1), cts.Token);
+
+                            //Console.WriteLine($"\nGot section with: {result}");
+
+                            var task = SetSelected(dvc, tableView, path, cts.Token);
+
+                            var result = await task;
+                        }
+                        catch (TaskCanceledException tex)       // if the operation is cancelled, do nothing
+                        {
+                            Console.WriteLine($"\nCanceled with: {tex.Message}");
+
+                            HandleCancel(dvc, tableView, path);
+
+                            dvc.InvokeOnMainThread(() =>
+                            {
+                                dvc.PresentViewController(CommonFunctions.AlertPrompt("Canceled/Timeout", "Operation was canceled or timed out, please try again", true, null, false, null), true, null);
+                            });
+                        }
+                    }
+                }
+                else
+                {
+                    base.Selected(dvc, tableView, path);
+
+                    var selected = OnSelected;
+                    if (selected != null)
+                    {
+                        selected(this, EventArgs.Empty);
+                    }
+                }
 
                 //loadingOverlay.Hide();
-
-                var selected = OnSelected;
-                if (selected != null)
-                {
-                    selected(this, EventArgs.Empty);
-                }
             }
             catch (Exception ex)
             {
@@ -1180,6 +1246,7 @@ namespace DynaPad
         }
 
         public event EventHandler<EventArgs> OnSelected;
+        public event EventHandler<EventArgs> OnDeSelected;
 
         public DynaFormRootElement(string caption) : base(caption)
         {
