@@ -212,6 +212,12 @@
     <Reference Include="ToastIOS">
       <HintPath>..\..\..\Downloads\ToastIOS-1.6\lib\ios-unified\ToastIOS.dll</HintPath>
     </Reference>
+    <Reference Include="Syncfusion.SfTabView.iOS">
+      <HintPath>packages\Syncfusion.Xamarin.SfTabView.IOS.16.1.0.37\lib\Xamarin.iOS10\Syncfusion.SfTabView.iOS.dll</HintPath>
+    </Reference>
+    <Reference Include="Syncfusion.SfPopupLayout.iOS">
+      <HintPath>packages\Syncfusion.Xamarin.SfPopupLayout.IOS.16.1.0.37\lib\Xamarin.iOS10\Syncfusion.SfPopupLayout.iOS.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ImageAsset Include="Assets.xcassets\AppIcons.appiconset\Contents.json" />
@@ -555,6 +561,8 @@
       <DependentUpon>FingerPaintViewController.cs</DependentUpon>
     </Compile>
     <Compile Include="PickerDataModel.cs" />
+    <Compile Include="GridAppt.cs" />
+    <Compile Include="GridApptRepository.cs" />
     <Compile Include="Web References\DynaPadService\Reference.cs">
       <DependentUpon>Reference.map</DependentUpon>
     </Compile>

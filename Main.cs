@@ -129,15 +129,15 @@ public class MenuItem
     public string DoctorName { get; set; }
 	public string LocationId { get; set; }
     public string ApptId { get; set; }
-    public string ApptTime { get; set; }
+    public DateTime ApptDate { get; set; }
     public string ReportId { get; set; }
     public string Status { get; set; }
     public string CaseId { get; set; }
     public string ApptNotes { get; set; }
     public string PatientNotes { get; set; }
-    public bool IsPatientFormSubmitted { get; set; }
-    public bool IsDoctorFormSubmitted { get; set; }
-    public bool IsReportCreated { get; set; }
+    public DateTime? DatePatientFormSubmitted { get; set; }
+    public DateTime? DateDoctorFormSubmitted { get; set; }
+    public DateTime? DateReportGenerated { get; set; }
 	public List<Menu> Menus { get; set; }
 }
 
@@ -154,11 +154,14 @@ public class Menu
     public string DoctorName { get; set; }
 	public string LocationId { get; set; }
     public string ApptId { get; set; }
-    public string ApptTime { get; set; }
+    public DateTime ApptDate { get; set; }
     public string ReportId { get; set; }
     public string Status { get; set; }
     public string ApptNotes { get; set; }
     public string PatientNotes { get; set; }
+    public DateTime? DatePatientFormSubmitted { get; set; }
+    public DateTime? DateDoctorFormSubmitted { get; set; }
+    public DateTime? DateReportGenerated { get; set; }
 	public List<MenuItem> MenuItems { get; set; }
 }
 

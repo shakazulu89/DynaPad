@@ -39,6 +39,8 @@ using DynaPad.DynaPadService;
 //using iTextSharp.text;
 using FileProvider;
 using Syncfusion.Pdf.Xmp;
+using Syncfusion.iOS.PopupLayout;
+using Syncfusion.iOS.TabView;
 
 namespace DynaPad
 {
@@ -354,6 +356,18 @@ namespace DynaPad
                             //Root.TableView.ScrollEnabled = true;
 
                         //break;
+                        case "ApptGrid":
+                            loadingOverlay = new LoadingOverlay(boundsh, true);
+                            loadingOverlay.SetText("Loading...");
+                            mvc.Add(loadingOverlay);
+
+                            await Task.Delay(10);
+
+                            var apptGridElement = GetApptGridElement(valueId, true);
+
+                            Root = apptGridElement;
+
+                            break;
                         case "PatientInfo":
                             loadingOverlay = new LoadingOverlay(boundsh, true);
                             loadingOverlay.SetText("Loading...");
@@ -1082,11 +1096,13 @@ namespace DynaPad
             return "Uploaded";
         }
 
-
-
-
-
-
+        public void SetSearch()
+        {
+            NavigationItem.RightBarButtonItem = new UIBarButtonItem(UIBarButtonSystemItem.Search, delegate
+            {
+                OpenSearchGrid();
+            });
+        }
 
         const string Identifier = "com.DynaPad.BackgroundSession";
         const string DownloadUrlString = "https://upload.wikimedia.org/wikipedia/commons/9/97/The_Earth_seen_from_Apollo_17.jpg";
@@ -4101,6 +4117,132 @@ namespace DynaPad
         }
 
 
+        async void ApptDataGrid_GridDoubleTapped(object sender, GridDoubleTappedEventsArgs e)
+        {
+            try
+            {
+                var ass = PresentedViewController;
+                if (SearchPresented)
+                {
+                    SearchPresented = false;
+                    NavigationController.DismissViewController(true, null);
+                }
+
+                var boundsh = base.TableView.Frame;
+                mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
+                loadingOverlay = new LoadingOverlay(boundsh, true);// { loadingLabelText = "Loading MR..." };
+                loadingOverlay.SetText("Loading...");
+                mvc.Add(loadingOverlay);
+
+                await Task.Delay(10);
+
+                if (e.RowData.GetType() == typeof(GridAppt))
+                {
+                    var rowIndex = e.RowColumnindex.RowIndex;
+                    var rowData = (GridAppt)e.RowData;
+                    var columnIndex = e.RowColumnindex.ColumnIndex;
+
+                    var master = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
+
+                    var sectionMainMenu = new Section { HeaderView = null, FooterView = null };
+
+                    int ti = 0;
+                    switch (CurrentApptGridType)
+                    {
+                        case "Today":
+                            ti = 0;
+                            break;
+                        case "Week":
+                            ti = 1;
+                            break;
+                        case "Month":
+                            ti = 2;
+                            break;
+                    }
+
+                    var tobuildparent = DynaMenu.MenuItems[0].Menus[0].MenuItems[ti].Menus[0].MenuItems.Find(tbpfp => tbpfp.PatientId == rowData.PatientID).Menus[0].MenuItems.Find(tbpfa => tbpfa.ApptId == rowData.ApptID);
+                    var tobuild = DynaMenu.MenuItems[0].Menus[0].MenuItems[ti].Menus[0].MenuItems.Find(tbfp => tbfp.PatientId == rowData.PatientID).Menus[0].MenuItems.Find(tbfa => tbfa.ApptId == rowData.ApptID).Menus[0].MenuItems.FindAll(x => x.ApptId == rowData.ApptID);
+
+                    if (tobuildparent != null && tobuild.Any())
+                    {
+                        SelectedAppointment.ApptPatientId = tobuildparent.PatientId;
+                        SelectedAppointment.ApptPatientName = tobuildparent.PatientName;
+                        SelectedAppointment.ApptDoctorId = tobuildparent.DoctorId;
+                        SelectedAppointment.ApptDoctorName = tobuildparent.DoctorName;
+                        SelectedAppointment.ApptLocationId = tobuildparent.LocationId;
+                        SelectedAppointment.ApptId = tobuildparent.ApptId;
+                        SelectedAppointment.ApptReportId = tobuildparent.ReportId;
+                        SelectedAppointment.CaseId = tobuildparent.CaseId;
+                        SelectedAppointment.ApptNotes = tobuildparent.ApptNotes;
+                        SelectedAppointment.PatientNotes = tobuildparent.PatientNotes;
+
+                        var rootMainMenu = new DynaFormRootElement(tobuildparent.MenuItemCaption)
+                        {
+                            UnevenRows = true,
+                            Enabled = true
+                        };
+
+                        var m = new Menu() { MenuItems = tobuild };
+
+                        master.BuildMenu(m, sectionMainMenu);
+
+                        //sectionMainMenu.Add(new SectionStringElement("Download Medical Records", delegate
+                        //{
+                        //    SetDetailItem(new Section("Download Medical Records"), "MRDownload", rowData.DoctorName, null, false);
+                        //})
+                        //{ mrdownload = true });
+
+                        //sectionMainMenu.Add(new SectionStringElement("Upload Submitted Forms", delegate
+                        //{
+                        //    SetDetailItem(new Section("Upload Submitted Forms"), "UploadSubmittedForms", rowData.DoctorName, null, false);
+                        //})
+                        //{ fileupload = true });
+
+                        rootMainMenu.Add(sectionMainMenu);
+
+                        var formDVC = new DynaDialogViewController(rootMainMenu, true);
+                        formDVC.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, delegate
+                        {
+                            QuestionsView = null; //.Clear();
+                            Root.Clear();
+                            Root.Caption = "";
+                            ReloadData();
+
+                            master.NavigationController.PopViewController(true);
+
+                            SetDetailItem(new Section("Appointments Grid"), "ApptGrid", CurrentApptGridType, null, false);
+                        });
+
+                        //master.Root = rootMainMenu;
+
+
+                        master.NavigationController.PushViewController(formDVC, true);
+                        //master.NavigationController.PushViewController(master.NavigationController.ViewControllers[0], true);
+
+                        loadingOverlay.Hide();
+                        //SetDetailItem(new Section("Appointments Grid"), "ApptGrid", CurrentApptGridType, null, false);
+                        SetDetailItem(new Section("Appointment Info"), "ApptInfo", null, null, false);
+                    }
+                    else
+                    {
+                        loadingOverlay.Hide();
+                        PresentViewController(CommonFunctions.AlertPrompt("Error", "There was a problem, please try again or contact support", true, null, false, null), true, null);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                loadingOverlay.Hide();
+                CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
+            }
+            //finally
+            //{
+            //    loadingOverlay.Hide();
+            //}
+        }
+
+
         async void DataGrid_GridDoubleTapped(object sender, GridDoubleTappedEventsArgs e)
         {
             try
@@ -4275,6 +4417,37 @@ namespace DynaPad
                 canExecute = parCanExecute;
                 if (CanExecuteChanged != null)
                     CanExecuteChanged(this, new EventArgs());
+            }
+        }
+
+
+        async void ExecutePullToRefreshCommand_ApptGrid(SfDataGrid dataGrid, string valueId)
+        {
+            try
+            {
+                dataGrid.IsBusy = true;
+                //await Task.Delay(new TimeSpan(0, 0, 5));
+                await Task.Delay(10);
+                ItemsSourceRefresh_ApptGrid(dataGrid, valueId);
+                dataGrid.IsBusy = false;
+            }
+            catch (Exception ex)
+            {
+                CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
+            }
+        }
+
+        internal void ItemsSourceRefresh_ApptGrid(SfDataGrid dataGrid, string valueId)
+        {
+            try
+            {
+                var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
+            }
+            catch (Exception ex)
+            {
+                CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
             }
         }
 
@@ -4714,6 +4887,392 @@ namespace DynaPad
             }
         }
 
+
+
+
+        SfTabView tabView;
+        bool SearchPresented;
+
+        public void OpenSearchGrid()
+        {
+            try
+            {
+                SearchPresented = true;
+
+                var dynanroo = new DynaMultiRootElement();
+
+                var ndia = new DialogViewController(dynanroo)
+                {
+                    ModalInPopover = true,
+                    ModalPresentationStyle = UIModalPresentationStyle.PageSheet,
+                };
+
+                var nlab = new UILabel(new CGRect(10, 0, UIScreen.MainScreen.Bounds.Size.Height - 60, 50)) { Text = "Appointment Lookup:" };
+
+                var ncellHeader = new UITableViewCell(UITableViewCellStyle.Default, null) { Frame = new CGRect(0, 0, UIScreen.MainScreen.Bounds.Size.Height, 50) };
+
+                var nheadclosebtn = new UIButton(new CGRect(UIScreen.MainScreen.Bounds.Size.Height - 50, 0, 50, 50));
+                nheadclosebtn.SetImage(UIImage.FromBundle("Close"), UIControlState.Normal);
+
+                ncellHeader.ContentView.Add(nlab);
+                ncellHeader.ContentView.Add(nheadclosebtn);
+
+                var nsec = new Section(ncellHeader) { FooterView = new UIView(new CGRect(0, 0, 0, 0)) };
+                nsec.FooterView.Hidden = true;
+
+                tabView = new SfTabView()
+                {
+                    Frame = new CGRect(0, 0, UIScreen.MainScreen.Bounds.Size.Height, View.Bounds.Height),
+                    VisibleHeaderCount = 3,
+                    EnableSwiping = false 
+                };
+                tabView.SelectionChanged += SfTabView_SelectionChanged;
+
+                var todayView = new UIView();
+                var tvc = new DialogViewController(GetApptGridElement("Today", false, true));
+                todayView.AddSubview(tvc.View);
+
+                var weekView = new UIView();
+                var wvc = new DialogViewController(GetApptGridElement("Week", false, true));
+                weekView.AddSubview(wvc.View);
+
+                var monthView = new UIView();
+                var monthvc = new DialogViewController(GetApptGridElement("Month", false, true));
+                monthView.AddSubview(monthvc.View);
+
+                var tabItems = new TabItemCollection
+                {
+                    new SfTabItem()
+                    {
+                        Title = "Today",
+                        Content =  todayView
+                    },
+                    new SfTabItem()
+                    {
+                        Title = "Week",
+                        Content = weekView
+                    },
+                    new SfTabItem()
+                    {
+                        Title = "Month",
+                        Content = monthView
+                    }
+                };
+
+                tabView.Items = tabItems;
+
+                nsec.Add(tabView);
+
+                dynanroo.Add(nsec);
+
+                nheadclosebtn.TouchUpInside += delegate
+                {
+                    SearchPresented = false;
+                    NavigationController.DismissViewController(true, null);
+                };
+
+                //NavigationController.PreferredContentSize = new CGSize(View.Bounds.Size);
+                NavigationController.PresentViewController(ndia, true, null);
+            }
+            catch (Exception ex)
+            {
+                SearchPresented = false;
+                CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
+            }
+        }
+
+        private void SfTabView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var selectedIndex = e.Index;
+            switch (selectedIndex)
+            {
+                case 0:
+                    CurrentApptGridType = "Today";
+                    break;
+                case 1:
+                    CurrentApptGridType = "Week";
+                    break;
+                case 2:
+                    CurrentApptGridType = "Month";
+                    break;
+            }
+        }
+
+
+
+
+
+
+        public class ApptSwitchCell : GridCell
+        {
+            UISwitch gridswitch;
+            //UILabel label;
+
+            public ApptSwitchCell()
+            {
+                gridswitch = new UISwitch();
+                this.AddSubview(gridswitch);
+                //label = new UILabel();
+                //this.AddSubview(label);
+                CanRenderUnLoad = false;
+            }
+
+            protected override void UnLoad()
+            {
+                RemoveFromSuperview();
+            }
+
+            public override void LayoutSubviews()
+            {
+                base.LayoutSubviews();
+                this.gridswitch.Enabled = false;
+
+                DateTime? thedate = new DateTime();
+                //if (DataColumn.CellValue != null)
+                //{
+                //    thedate = (DateTime)DataColumn.CellValue;
+                //}
+                var theappt = (GridAppt)DataColumn.RowData;
+                switch (DataColumn.ColumnIndex)
+                {
+                    case 3:
+                        thedate = theappt.PatientForm;
+                        break;
+                    case 4:
+                        thedate = theappt.DoctorForm;
+                        break;
+                    case 5:
+                        thedate = theappt.ReportGenerated;
+                        break;
+                }
+
+                var ison = thedate.GetHashCode() != 0;
+                this.gridswitch.On = ison;
+            }
+        }
+
+
+
+        private void OnFilterTextChanged(object sender, UISearchBarTextChangedEventArgs e)
+        {
+            GridApptRepository agridsource = (GridApptRepository)agrid.ItemsSource;
+            agridsource.FilterText = e.SearchText;
+        }
+
+        private void CancelButtonClicked(object sender, EventArgs e)
+        {
+            filterText.ResignFirstResponder();
+            filterText.SetShowsCancelButton(false, true);
+            filterText.ResignFirstResponder();
+        }
+
+        private void OnFilterChanged()
+        {
+            if (agrid.View != null)
+            {
+                GridApptRepository agridsource = (GridApptRepository)agrid.ItemsSource;
+                this.agrid.View.Filter = agridsource.FilerRecords;
+                this.agrid.View.RefreshFilter();
+            }
+        }
+
+        UISearchBar filterText;
+        SfDataGrid agrid;
+        string CurrentApptGridType;
+
+        public DynaMultiRootElement GetApptGridElement(string valueId, bool setCurrent, bool isPopup = false)
+        {
+            try
+            {
+                if (setCurrent)
+                {
+                    CurrentApptGridType = valueId;
+                }
+
+                CGRect theframe;
+                if (isPopup)
+                {
+                    theframe = new CGRect(0, 0, UIScreen.MainScreen.Bounds.Size.Height, UIScreen.MainScreen.Bounds.Size.Width);
+                }
+                else
+                {
+                    theframe = new CGRect(0, 0, View.Frame.Width, View.Frame.Height);
+                }
+
+                var master = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
+
+                List<MenuItem> appts = new List<MenuItem>();
+
+                string gtype = valueId;
+                switch (valueId)
+                {
+                    case "Today":
+                    case "Today's Appointments":
+                        gtype = "Today's";
+                        appts = master.GridSourceToday;
+                        break;
+                    case "Week":
+                        gtype = "This Week's";
+                        appts = master.GridSourceWeek;
+                        break;
+                    case "Month":
+                        gtype = "Last Month's";
+                        appts = master.GridSourceMonth;
+                        break;
+                }
+
+                filterText = new UISearchBar(new CGRect(0, 0, theframe.Width, 50))
+                {
+                    Placeholder = "Search here"
+                };
+                //filterText.TextChanged += OnFilterTextChanged;
+                //filterText.CancelButtonClicked += CancelButtonClicked;
+
+                agrid = new SfDataGrid
+                {
+                    Frame = new CGRect(0, 0, theframe.Width, theframe.Height - filterText.Frame.Height),
+                    AutoGenerateColumns = false,
+                    ColumnSizer = ColumnSizer.Auto,
+                    SelectionMode = SelectionMode.Single,
+                    AllowPullToRefresh = false,
+                    AllowSorting = true,
+                    AllowResizingColumn = true
+                };
+
+                GridApptRepository fds = new GridApptRepository(appts, filterText, agrid);
+                //{
+                //    filterTextChanged = OnFilterChanged
+                //};
+
+                fds.GridApptCollection.Add(new GridAppt("13", "13", "6", "test", "you", new DateTime(2018, 5, 4), new DateTime(), new DateTime(), new DateTime()));
+                fds.GridApptCollection.Add(new GridAppt("13", "13", "6", "test hole", "you", new DateTime(2018, 5, 4), new DateTime(), new DateTime(), new DateTime()));
+                fds.GridApptCollection.Add(new GridAppt("13", "13", "6", "test", "him", new DateTime(2018, 5, 4), new DateTime(), new DateTime(), new DateTime()));
+                fds.GridApptCollection.Add(new GridAppt("13", "13", "6", "why", "not", new DateTime(2018, 5, 4), new DateTime(), new DateTime(), new DateTime()));
+
+                var apptGridElement = new DynaMultiRootElement("Showing " + gtype + " Appointments:");
+
+                //var apptGridPaddedView = new PaddedUIView<UILabel>
+                //{
+                //    Enabled = true,
+                //    Type = "Section",
+                //    Frame = new CGRect(0, 0, 0, 40),
+                //    Padding = 5f
+                //};
+                //apptGridPaddedView.NestedView.Text = "Showing " + gtype + " Appointments:";
+                //apptGridPaddedView.NestedView.TextAlignment = UITextAlignment.Center;
+                //apptGridPaddedView.NestedView.Font = UIFont.BoldSystemFontOfSize(17);
+                //apptGridPaddedView.setStyle();
+
+                var apptGridSection = new DynaSection("Appt Grid")
+                {
+                    //mrSection.HeaderView = mrPaddedView;
+                    HeaderView = new UIView(new CGRect(0, 0, 0, 0)),
+                    FooterView = new UIView(new CGRect(0, 0, 0, 0))
+                };
+                apptGridSection.FooterView.Hidden = true;
+
+                apptGridSection.Add(filterText);
+
+                //agrid = new SfDataGrid
+                //{
+                //    Frame = new CGRect(0, 0, View.Frame.Width, View.Frame.Height - filterText.Frame.Height),
+                //    ItemsSource = fds.GridApptCollection,
+                //    AutoGenerateColumns = false,
+                //    ColumnSizer = ColumnSizer.None,
+                //    SelectionMode = SelectionMode.Single,
+                //    AllowPullToRefresh = true,
+                //    AllowSorting = true
+                //};
+                agrid.GridDoubleTapped += ApptDataGrid_GridDoubleTapped;
+                //agrid.PullToRefreshCommand = new GridCommand(ExecutePullToRefreshCommand_ApptGrid, agrid, valueId);
+
+                var apptPatientColumn = new GridTextColumn
+                {
+                    MappingName = "PatientName",
+                    HeaderText = " Patient (Double tap to view)",
+                    Width = agrid.Frame.Width * 0.27,
+                    HeaderTextAlignment = UITextAlignment.Left,
+                    TextAlignment = UITextAlignment.Left,
+                    LineBreakMode = UILineBreakMode.WordWrap
+                };
+
+                var apptDoctorColumn = new GridTextColumn
+                {
+                    MappingName = "DoctorName",
+                    HeaderText = "Doctor",
+                    Width = agrid.Frame.Width * 0.17,
+                    HeaderTextAlignment = UITextAlignment.Left,
+                    TextAlignment = UITextAlignment.Left,
+                    LineBreakMode = UILineBreakMode.WordWrap
+                };
+
+                var apptDateColumn = new GridDateTimeColumn
+                {
+                    MappingName = "ApptDate",
+                    HeaderText = "Appt Date",
+                    Width = agrid.Frame.Width * 0.17,
+                    HeaderTextAlignment = UITextAlignment.Left,
+                    TextAlignment = UITextAlignment.Left,
+                    LineBreakMode = UILineBreakMode.WordWrap,
+                    Format = "MM/dd/yyyy HH:mm"
+                };
+
+                var apptPatientFormColumn = new GridTextColumn
+                {
+                    UserCellType = typeof(ApptSwitchCell),
+                    MappingName = "DatePatientFormSubmitted",
+                    HeaderText = "Patient Form",
+                    Width = agrid.Frame.Width * 0.13,
+                    HeaderTextAlignment = UITextAlignment.Left,
+                    TextAlignment = UITextAlignment.Center,
+                    AllowEditing = false,
+                    LineBreakMode = UILineBreakMode.WordWrap
+                };
+
+                var apptDoctorFormColumn = new GridTextColumn
+                {
+                    UserCellType = typeof(ApptSwitchCell),
+                    MappingName = "DateDoctorFormSubmitted",
+                    HeaderText = "Doctor Form",
+                    Width = agrid.Frame.Width * 0.13,
+                    HeaderTextAlignment = UITextAlignment.Left,
+                    TextAlignment = UITextAlignment.Center,
+                    AllowEditing = false,
+                    LineBreakMode = UILineBreakMode.WordWrap
+                };
+
+                var apptReportGeneratedColumn = new GridTextColumn
+                {
+                    UserCellType = typeof(ApptSwitchCell),
+                    MappingName = "DateReportGenerated",
+                    HeaderText = "Report Gen.",
+                    Width = agrid.Frame.Width * 0.13,
+                    HeaderTextAlignment = UITextAlignment.Left,
+                    TextAlignment = UITextAlignment.Center,
+                    AllowEditing = false,
+                    LineBreakMode = UILineBreakMode.WordWrap
+                };
+
+                agrid.Columns.Add(apptPatientColumn);
+                agrid.Columns.Add(apptDoctorColumn);
+                agrid.Columns.Add(apptDateColumn);
+                agrid.Columns.Add(apptPatientFormColumn);
+                agrid.Columns.Add(apptDoctorFormColumn);
+                agrid.Columns.Add(apptReportGeneratedColumn);
+
+                apptGridSection.Add(agrid);
+                apptGridElement.Add(apptGridSection);
+
+                return apptGridElement;
+            }
+            catch (Exception ex)
+            {
+                CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
+                return null;
+            }
+        }
 
 
         public DynaMultiRootElement GetMRElement(string valueId)

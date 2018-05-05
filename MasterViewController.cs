@@ -26,6 +26,8 @@ using ToastIOS;
 using MimeKit;
 using System.Diagnostics;
 using System.Threading;
+using Syncfusion.iOS.TabView;
+using Syncfusion.iOS.PopupLayout;
 
 namespace DynaPad
 {
@@ -37,7 +39,7 @@ namespace DynaPad
         LoadingOverlay loadingOverlay;
         Menu myDynaMenu;
         bool needLogin = true;
-        bool didLogin = false;
+        bool didLogin;// = false;
         public string DocLocID { get; set; }
         public string DynaDomain { get; set; }
         public string DynaDeviceUniqueName { get; set; }
@@ -1064,6 +1066,10 @@ namespace DynaPad
                     var bmtimer = new Stopwatch();
                     bmtimer.Start();
 
+                    GridSourceToday = new List<MenuItem>();
+                    GridSourceWeek = new List<MenuItem>();
+                    GridSourceMonth = new List<MenuItem>();
+
                     BuildMenu(myDynaMenu, sectionMainMenu);
 
                     CheckStopwatch(bmtimer, 0, "BuildMenu", "BuildMenu took " + bmtimer.Elapsed.Seconds + " seconds");
@@ -1093,6 +1099,10 @@ namespace DynaPad
                         NavigationController.PopViewController(true);
                     });
 
+                    DetailViewController.SetSearch();
+
+                    DetailViewController.SetDetailItem(new Section("Appointments Grid"), "ApptGrid", "Today", null, false);
+
                     CheckStopwatch(timer, 0, "GetDynaStart", "GetDynaStart took " + timer.Elapsed.Seconds + " seconds");
 
                     return formDVC;
@@ -1115,7 +1125,9 @@ namespace DynaPad
         }
 
 
-
+        public List<MenuItem> GridSourceToday;
+        public List<MenuItem> GridSourceWeek;
+        public List<MenuItem> GridSourceMonth;
 
         public RootElement BuildMenu(Menu myMenu, Section sectionMenu)
         {
@@ -1141,11 +1153,11 @@ namespace DynaPad
                         ApptNotes = mItem.ApptNotes,
                         LocationID = mItem.LocationId,
                         ApptID = mItem.ApptId,
-                        ApptTime = mItem.ApptTime,
+                        ApptDate = mItem.ApptDate,
                         ReportID = mItem.ReportId,
-                        SubmittedPatientForm = mItem.IsPatientFormSubmitted,
-                        SubmittedDoctorForm = mItem.IsDoctorFormSubmitted,
-                        CreatedReport = mItem.IsReportCreated,
+                        DateSubmittedPatientForm = mItem.DatePatientFormSubmitted,
+                        DateSubmittedDoctorForm = mItem.DateDoctorFormSubmitted,
+                        DateGeneratedReport = mItem.DateReportGenerated,
                         IsDoctorForm = mItem.MenuItemAction == "GetDoctorForm"
                     };
 
@@ -1174,6 +1186,24 @@ namespace DynaPad
                             if (Directory.Exists(documentsPath) && Directory.GetFiles(documentsPath, "*.*", SearchOption.AllDirectories).Length > 0)
                             {
                                 rootMenu.PendingUpdate = true;
+                            }
+
+                            DateTime startOfWeek = DateTime.Today;
+                            int delta = DayOfWeek.Monday - startOfWeek.DayOfWeek;
+                            startOfWeek = startOfWeek.AddDays(delta);
+                            DateTime endOfWeek = startOfWeek.AddDays(7);
+
+                            if (rootMenu.ApptDate >= startOfWeek && rootMenu.ApptDate < endOfWeek)
+                            {
+                                GridSourceWeek.Add(mItem);
+                            }
+                            if (rootMenu.ApptDate.Month == mItem.ApptDate.Month && rootMenu.ApptDate.Year == mItem.ApptDate.Year)
+                            {
+                                GridSourceMonth.Add(mItem);
+                            }
+                            if (rootMenu.ApptDate.Date == DateTime.Today.Date)
+                            {
+                                GridSourceToday.Add(mItem);
                             }
                             break;
                         case "GetApptForm":
@@ -1230,10 +1260,18 @@ namespace DynaPad
                         default:
                             rootMenu.OnSelected += delegate
                             {
-                                DetailViewController.QuestionsView = null; //.Clear();
-                                DetailViewController.Root.Clear();
-                                DetailViewController.Root.Caption = "";
-                                DetailViewController.ReloadData();
+                                if (mItem.MenuItemCaption == "Today's Appointments" || mItem.MenuItemCaption == "Week" || mItem.MenuItemCaption == "Month")
+                                {
+                                    CurrentApptGridType = mItem.MenuItemCaption;
+                                    DetailViewController.SetDetailItem(new Section("Appointments Grid"), "ApptGrid", mItem.MenuItemCaption, null, false);
+                                }
+                                else if (mItem.MenuItemCaption != "Find By Patient")
+                                {
+                                    DetailViewController.QuestionsView = null; //.Clear();
+                                    DetailViewController.Root.Clear();
+                                    DetailViewController.Root.Caption = "";
+                                    DetailViewController.ReloadData();
+                                }
                             };
                             break;
 
@@ -1281,6 +1319,7 @@ namespace DynaPad
         }
 
 
+        string CurrentApptGridType;
 
 
         void SaveAutoData()//(string qid)
@@ -1603,7 +1642,7 @@ namespace DynaPad
         //}
 
 
-        List<DynaPreset> GetPresetData(string formid, string doctorid, bool getall = false)
+        List<DynaPreset> GetPresetData(string formid, string doctorid, bool getall)
         {
             var array = new List<DynaPreset>();
 
@@ -1637,7 +1676,7 @@ namespace DynaPad
         public NSObject LastTappedButton { get; set; }
         UIBarButtonItem restorebtn;
 
-        public Boolean isRunning = false;
+        public Boolean isRunning;// = false;
         Object _lockObject = new object();
 
         public UIViewController GetFormService(RootElement rElement)
@@ -1743,7 +1782,7 @@ namespace DynaPad
                 if (IsDoctorForm)
                 {
                     //var FormPresetNames = dds.GetAnswerPresets(CommonFunctions.GetUserConfig(), SelectedAppointment.ApptFormId, null, SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId);
-                    var SectionPresets = GetPresetData(SelectedAppointment.ApptFormId, SelectedAppointment.ApptDoctorId);
+                    var SectionPresets = GetPresetData(SelectedAppointment.ApptFormId, SelectedAppointment.ApptDoctorId, false);
 
                     var formPresetSection = new DynaSection("Form Presets") { Enabled = true };
                     var formPresetGroup = new RadioGroup("FormPresetAnswers", SelectedAppointment.SelectedQForm.FormSelectedTemplateId);
@@ -2226,7 +2265,7 @@ namespace DynaPad
         public Section secforcancel;
         public NSIndexPath oldsel;
 
-        void LoadSectionView(string sectionId, string sectionName, FormSection OrigSection, bool IsDoctorForm, Section sections = null)//, bool IsStartupRestore = false)
+        void LoadSectionView(string sectionId, string sectionName, FormSection OrigSection, bool IsDoctorForm, Section sections = null, bool overrideValidation = false)//, bool IsStartupRestore = false)
         {
             try
             {
@@ -2255,28 +2294,31 @@ namespace DynaPad
                     var qelements = new List<SectionStringElement>();
 
                     object[,] vsecs = new object[SelectedAppointment.SelectedQForm.FormSections.Count, 2];
-                    for (int x = 0; x < SelectedAppointment.SelectedQForm.FormSections.Count; x++)
+                    if (!overrideValidation)
                     {
-                        var vsec = SelectedAppointment.SelectedQForm.FormSections[x];
-                        vsecs[x, 0] = vsec;
-                        //if (ValidateSection(vsec).Count == 0)
-                        var invalidquestions = ValidateSection(vsec);
-                        //if (ValidateSection(vsec))
-                        if (invalidquestions.Count == 0)
+                        for (int x = 0; x < SelectedAppointment.SelectedQForm.FormSections.Count; x++)
                         {
-                            vsecs[x, 1] = true;
-                            vsec.Revalidating = false;
-                        }
-                        else
-                        {
-                            vsecs[x, 1] = false;
-                            CanContinue = false;
-                            qelements.Add(new SectionStringElement(vsec.SectionName + ":") { vsection = true });
-
-                            foreach (InvalidQuestion q in invalidquestions)
+                            var vsec = SelectedAppointment.SelectedQForm.FormSections[x];
+                            vsecs[x, 0] = vsec;
+                            //if (ValidateSection(vsec).Count == 0)
+                            var invalidquestions = ValidateSection(vsec);
+                            //if (ValidateSection(vsec))
+                            if (invalidquestions.Count == 0)
                             {
-                                qelements.Add(new SectionStringElement(" - " + q.QuestionText) { vquestion = true });
-                                qlist = qlist + "\n" + vsec.SectionName + " - " + q.QuestionText;
+                                vsecs[x, 1] = true;
+                                vsec.Revalidating = false;
+                            }
+                            else
+                            {
+                                vsecs[x, 1] = false;
+                                CanContinue = false;
+                                qelements.Add(new SectionStringElement(vsec.SectionName + ":") { vsection = true });
+
+                                foreach (InvalidQuestion q in invalidquestions)
+                                {
+                                    qelements.Add(new SectionStringElement(" - " + q.QuestionText) { vquestion = true });
+                                    qlist = qlist + "\n" + vsec.SectionName + " - " + q.QuestionText;
+                                }
                             }
                         }
                     }
@@ -2982,6 +3024,11 @@ namespace DynaPad
                     DetailViewController.ReloadData();
 
                     NavigationController.PopViewController(true);
+
+                    if (CurrentApptGridType == "Today's Appointments" || CurrentApptGridType == "Week" || CurrentApptGridType == "Month")
+                    {
+                        DetailViewController.SetDetailItem(new Section("Appointments Grid"), "ApptGrid", CurrentApptGridType, null, false);
+                    }
                 });
                 return formDVC;
             }
@@ -3028,6 +3075,8 @@ namespace DynaPad
                     DetailViewController.ReloadData();
 
                     NavigationController.PopViewController(true);
+
+                    DetailViewController.SetDetailItem(new Section("Patient Info"), "PatientInfo", null, null, false);
                 });
                 return formDVC;
             }
@@ -3063,6 +3112,7 @@ namespace DynaPad
                   {
                       DetailViewController.QuestionsView = null;
                       DetailViewController.NavigationItem.RightBarButtonItem = null;
+                      DetailViewController.SetSearch();
                       DetailViewController.Root.Clear();
                       DetailViewController.Root.Caption = "";
                       DetailViewController.ReloadData();
@@ -3671,6 +3721,19 @@ namespace DynaPad
                 };
 
                 sSection.Add(btnDismiss);
+
+                var btnOverride = new UIButton(new CGRect(btnDismiss.Frame.X + 10, btnDismiss.Frame.Y, UIScreen.MainScreen.Bounds.Width - 260, 40));
+                btnOverride.SetTitle("Override", UIControlState.Normal);
+                btnOverride.SetTitleColor(UIColor.Black, UIControlState.Normal);
+                btnOverride.BackgroundColor = UIColor.FromRGB(224, 238, 240);
+                btnOverride.HorizontalAlignment = UIControlContentHorizontalAlignment.Center;
+                btnOverride.TouchUpInside += delegate
+                {
+                    LoadSectionView("", "Finalize", null, isDoctorForm, sections, true);
+                    NavigationController.DismissViewController(true, null);
+                };
+
+                sSection.Add(btnOverride);
 
                 SettingsView.Add(nsec);
                 SettingsView.Add(sSection);

@@ -1090,7 +1090,7 @@ namespace DynaPad
         public string DoctorName { get; set; }
         public string LocationID { get; set; }
         public string ApptID { get; set; }
-        public string ApptTime { get; set; }
+        public DateTime ApptDate { get; set; }
         public string ReportID { get; set; }
         public string CaseID { get; set; }
         public string ApptNotes { get; set; }
@@ -1101,9 +1101,9 @@ namespace DynaPad
         public FileInfo RestoreFile { get; set; }
         public UIColor Color { get; set; }
         public bool PendingUpdate { get; set; }
-        public bool SubmittedPatientForm { get; set; }
-        public bool SubmittedDoctorForm { get; set; }
-        public bool CreatedReport { get; set; }
+        public DateTime? DateSubmittedPatientForm { get; set; }
+        public DateTime? DateSubmittedDoctorForm { get; set; }
+        public DateTime? DateGeneratedReport { get; set; }
 
         public Boolean isRunning = false;
         Object _lockObject = new object();
@@ -1332,17 +1332,17 @@ namespace DynaPad
                 cell.Accessory = UITableViewCellAccessory.DetailDisclosureButton;
             }
 
-            if (SubmittedPatientForm)
+            if (DateSubmittedPatientForm.GetHashCode() != 0)
             {
                 cell.BackgroundColor = UIColor.Yellow;
             }
 
-            if (SubmittedDoctorForm)
+            if (DateSubmittedDoctorForm.GetHashCode() != 0)
             {
                 cell.BackgroundColor = UIColor.Blue;
             }
 
-            if (CreatedReport)
+            if (DateGeneratedReport.GetHashCode() != 0)
             {
                 cell.BackgroundColor = UIColor.Green;
             }
