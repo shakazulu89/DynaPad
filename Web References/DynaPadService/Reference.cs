@@ -26,6 +26,8 @@ namespace DynaPad.DynaPadService {
         
         private System.Threading.SendOrPostCallback HelloDynaOperationCompleted;
         
+        private System.Threading.SendOrPostCallback GetAppointmentsByDateFrameOperationCompleted;
+        
         private System.Threading.SendOrPostCallback BuildDynaMenuOperationCompleted;
         
         private System.Threading.SendOrPostCallback ProcessDynaFilesOperationCompleted;
@@ -97,6 +99,9 @@ namespace DynaPad.DynaPadService {
         
         /// CodeRemarks
         public event HelloDynaCompletedEventHandler HelloDynaCompleted;
+        
+        /// CodeRemarks
+        public event GetAppointmentsByDateFrameCompletedEventHandler GetAppointmentsByDateFrameCompleted;
         
         /// CodeRemarks
         public event BuildDynaMenuCompletedEventHandler BuildDynaMenuCompleted;
@@ -212,6 +217,39 @@ namespace DynaPad.DynaPadService {
             if ((this.HelloDynaCompleted != null)) {
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
                 this.HelloDynaCompleted(this, new HelloDynaCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// CodeRemarks
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://dynadox.pro/service/GetAppointmentsByDateFrame", RequestNamespace="http://dynadox.pro/service", ResponseNamespace="http://dynadox.pro/service", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public string GetAppointmentsByDateFrame(ConfigurationObjects domainConfig, string locationId, string dateFrame) {
+            object[] results = this.Invoke("GetAppointmentsByDateFrame", new object[] {
+                        domainConfig,
+                        locationId,
+                        dateFrame});
+            return ((string)(results[0]));
+        }
+        
+        /// CodeRemarks
+        public void GetAppointmentsByDateFrameAsync(ConfigurationObjects domainConfig, string locationId, string dateFrame) {
+            this.GetAppointmentsByDateFrameAsync(domainConfig, locationId, dateFrame, null);
+        }
+        
+        /// CodeRemarks
+        public void GetAppointmentsByDateFrameAsync(ConfigurationObjects domainConfig, string locationId, string dateFrame, object userState) {
+            if ((this.GetAppointmentsByDateFrameOperationCompleted == null)) {
+                this.GetAppointmentsByDateFrameOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGetAppointmentsByDateFrameOperationCompleted);
+            }
+            this.InvokeAsync("GetAppointmentsByDateFrame", new object[] {
+                        domainConfig,
+                        locationId,
+                        dateFrame}, this.GetAppointmentsByDateFrameOperationCompleted, userState);
+        }
+        
+        private void OnGetAppointmentsByDateFrameOperationCompleted(object arg) {
+            if ((this.GetAppointmentsByDateFrameCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.GetAppointmentsByDateFrameCompleted(this, new GetAppointmentsByDateFrameCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
         }
         
@@ -1387,6 +1425,32 @@ namespace DynaPad.DynaPadService {
         private object[] results;
         
         internal HelloDynaCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// CodeRemarks
+        public string Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string)(this.results[0]));
+            }
+        }
+    }
+    
+    /// CodeRemarks
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
+    public delegate void GetAppointmentsByDateFrameCompletedEventHandler(object sender, GetAppointmentsByDateFrameCompletedEventArgs e);
+    
+    /// CodeRemarks
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("XamarinStudio", "7.4.3.10")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class GetAppointmentsByDateFrameCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal GetAppointmentsByDateFrameCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
                 base(exception, cancelled, userState) {
             this.results = results;
         }

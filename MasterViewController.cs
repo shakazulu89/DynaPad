@@ -1067,6 +1067,7 @@ namespace DynaPad
                     bmtimer.Start();
 
                     GridSourceToday = new List<MenuItem>();
+                    GridSourceToday = myDynaMenu.MenuItems.Find(x => x.MenuItemCaption == "Find By Patient").Menus[0].MenuItems.Find(y => y.MenuItemCaption == "Today").Menus[0].MenuItems;
                     GridSourceWeek = new List<MenuItem>();
                     GridSourceMonth = new List<MenuItem>();
 
@@ -1094,6 +1095,9 @@ namespace DynaPad
                         DetailViewController.QuestionsView = null; //.Clear();
                         DetailViewController.Root.Clear();
                         DetailViewController.Root.Caption = "";
+
+                        DetailViewController.NavigationItem.RightBarButtonItems = null;
+
                         DetailViewController.ReloadData();
 
                         NavigationController.PopViewController(true);
@@ -1163,6 +1167,63 @@ namespace DynaPad
 
                     switch (mItem.MenuItemAction)
                     {
+
+                        case "GetApptsUpcoming":
+                        case "GetApptsYesterday":
+                        case "GetApptsWeek":
+                        case "GetApptsMonth":
+                        case "GetApptsOlder":
+
+                            rootMenu.ShowLoading = true;
+                            rootMenu.createOnSelected = GetApptDatesService;
+                            //rootMenu.OnSelected += delegate {
+                            
+                            //    var dds = new DynaPadService.DynaPadService { Timeout = 60000, AllowAutoRedirect = true };
+                            //    var locid = string.IsNullOrEmpty(DynaClassLibrary.DynaClasses.LoginContainer.User.SelectedLocation.LocationId) ? null : DynaClassLibrary.DynaClasses.LoginContainer.User.SelectedLocation.LocationId;
+
+                            //    var menujson = dds.GetAppointmentsByDateFrame(CommonFunctions.GetUserConfig().ConnectionString, locid, mItem.MenuItemAction);
+                            //    myDynaMenu = JsonConvert.DeserializeObject<Menu>(menujson);
+                            //    DetailViewController.DynaMenu = myDynaMenu;
+
+                            //    if (mItem.MenuItemAction == "GetApptsWeek")
+                            //    {
+                            //        GridSourceWeek = new List<MenuItem>();
+                            //        GridSourceWeek = myDynaMenu.MenuItems.FindAll(x => x.GetType().ToString() == "MenuItem");
+                            //    }
+                            //    else if (mItem.MenuItemAction == "GetApptsMonth")
+                            //    {
+                            //        GridSourceMonth = new List<MenuItem>();
+                            //        GridSourceMonth = myDynaMenu.MenuItems.FindAll(x => x.GetType().ToString() == "MenuItem");
+                            //    }
+
+                            //    var rootMainMenu = new DynaFormRootElement(myDynaMenu.MenuCaption)
+                            //    {
+                            //        UnevenRows = true,
+                            //        Enabled = true
+                            //    };
+
+                            //    var sectionMainMenu = new Section { HeaderView = null, FooterView = null };
+
+                            //    BuildMenu(myDynaMenu, sectionMainMenu);
+
+                            //    var formDVC = new DynaDialogViewController(rootMainMenu, true);
+                            //    formDVC.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, delegate
+                            //    {
+                            //        DetailViewController.QuestionsView = null; //.Clear();
+                            //        DetailViewController.Root.Clear();
+                            //        DetailViewController.Root.Caption = "";
+                            //        DetailViewController.ReloadData();
+
+                            //        NavigationController.PopViewController(true);
+                            //    });
+
+                            //    NavigationController.PushViewController(formDVC, true);
+
+                            //    DetailViewController.SetDetailItem(new Section("Appointments Grid"), "ApptGrid", "Today", null, false);
+                            //};
+
+
+                            break;
                         case "GetPatientForm":
                         case "GetDoctorForm":
                             rootMenu.ShowLoading = true;
@@ -1188,23 +1249,23 @@ namespace DynaPad
                                 rootMenu.PendingUpdate = true;
                             }
 
-                            DateTime startOfWeek = DateTime.Today;
-                            int delta = DayOfWeek.Monday - startOfWeek.DayOfWeek;
-                            startOfWeek = startOfWeek.AddDays(delta);
-                            DateTime endOfWeek = startOfWeek.AddDays(7);
+                            //DateTime startOfWeek = DateTime.Today;
+                            //int delta = DayOfWeek.Monday - startOfWeek.DayOfWeek;
+                            //startOfWeek = startOfWeek.AddDays(delta);
+                            //DateTime endOfWeek = startOfWeek.AddDays(7);
 
-                            if (rootMenu.ApptDate >= startOfWeek && rootMenu.ApptDate < endOfWeek)
-                            {
-                                GridSourceWeek.Add(mItem);
-                            }
-                            if (rootMenu.ApptDate.Month == mItem.ApptDate.Month && rootMenu.ApptDate.Year == mItem.ApptDate.Year)
-                            {
-                                GridSourceMonth.Add(mItem);
-                            }
-                            if (rootMenu.ApptDate.Date == DateTime.Today.Date)
-                            {
-                                GridSourceToday.Add(mItem);
-                            }
+                            //if (rootMenu.ApptDate >= startOfWeek && rootMenu.ApptDate < endOfWeek)
+                            //{
+                            //    GridSourceWeek.Add(mItem);
+                            //}
+                            //if (rootMenu.ApptDate.Month == mItem.ApptDate.Month && rootMenu.ApptDate.Year == mItem.ApptDate.Year)
+                            //{
+                            //    GridSourceMonth.Add(mItem);
+                            //}
+                            //if (rootMenu.ApptDate.Date == DateTime.Today.Date)
+                            //{
+                            //    GridSourceToday.Add(mItem);
+                            //}
                             break;
                         case "GetApptForm":
                             rootMenu.createOnSelected = GetApptFormService;
@@ -1260,7 +1321,7 @@ namespace DynaPad
                         default:
                             rootMenu.OnSelected += delegate
                             {
-                                if (mItem.MenuItemCaption == "Today's Appointments" || mItem.MenuItemCaption == "Week" || mItem.MenuItemCaption == "Month")
+                                if (mItem.MenuItemCaption == "Today" || mItem.MenuItemCaption == "Week" || mItem.MenuItemCaption == "Month")
                                 {
                                     CurrentApptGridType = mItem.MenuItemCaption;
                                     DetailViewController.SetDetailItem(new Section("Appointments Grid"), "ApptGrid", mItem.MenuItemCaption, null, false);
@@ -1317,7 +1378,6 @@ namespace DynaPad
                 return null;
             }
         }
-
 
         string CurrentApptGridType;
 
@@ -1652,11 +1712,19 @@ namespace DynaPad
             if (getall)
             {
                 documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaPresets/");
+                if (!Directory.Exists(documentsPath))
+                {
+                    Directory.CreateDirectory(documentsPath);
+                }
                 files = Directory.GetFiles(documentsPath, "*.*", SearchOption.AllDirectories);
             }
             else
             {
                 documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaPresets/" + formid + "/" + doctorid);
+                if (!Directory.Exists(documentsPath))
+                {
+                    Directory.CreateDirectory(documentsPath);
+                }
                 files = Directory.GetFiles(documentsPath);
             }
 
@@ -1686,6 +1754,8 @@ namespace DynaPad
             try
             {
                 timer.Start();
+
+                DetailViewController.NavigationItem.RightBarButtonItem = null;
 
                 //if (DetailViewController.QuestionsView != null)
                 //{
@@ -2883,7 +2953,11 @@ namespace DynaPad
                     DetailViewController.NavigationItem.RightBarButtonItems = null;
                     DetailViewController.NavigationController.PopToRootViewController(true);
 
+                    DetailViewController.SetSearch();
+
                     DetailViewController.ReloadData();
+
+                    DetailViewController.SetDetailItem(new Section("Patient Info"), "PatientInfo", null, null, false);
 
                     //loadingOverlay.Hide();
 
@@ -3003,6 +3077,81 @@ namespace DynaPad
 
 
 
+        public UIViewController GetApptDatesService(RootElement rElement)
+        {
+            try
+            {
+                var dfElemet = (DynaFormRootElement)rElement;
+                //SelectedAppointment.ApptPatientId = dfElemet.PatientID;
+                //SelectedAppointment.ApptPatientName = dfElemet.PatientName;
+                //SelectedAppointment.ApptLocationId = dfElemet.LocationID;
+                //SelectedAppointment.PatientNotes = dfElemet.PatientNotes;
+
+                var dds = new DynaPadService.DynaPadService { Timeout = 60000, AllowAutoRedirect = true };
+                var locid = string.IsNullOrEmpty(DynaClassLibrary.DynaClasses.LoginContainer.User.SelectedLocation.LocationId) ? null : DynaClassLibrary.DynaClasses.LoginContainer.User.SelectedLocation.LocationId;
+
+                var menujson = dds.GetAppointmentsByDateFrame(CommonFunctions.GetUserConfig(), locid, dfElemet.MenuAction);
+                myDynaMenu = JsonConvert.DeserializeObject<Menu>(menujson);
+                DetailViewController.DynaMenu = myDynaMenu;
+
+                if (dfElemet.MenuAction == "GetApptsWeek")
+                {
+                    CurrentApptGridType = "Week";
+                    //GridSourceWeek = new List<MenuItem>();
+                    GridSourceWeek = myDynaMenu.MenuItems.FindAll(x => x.GetType().ToString() == "MenuItem");
+                }
+                else if (dfElemet.MenuAction == "GetApptsMonth")
+                {
+                    CurrentApptGridType = "Month";
+                    //GridSourceMonth = new List<MenuItem>();
+                    GridSourceMonth = myDynaMenu.MenuItems.FindAll(x => x.GetType().ToString() == "MenuItem");
+                }
+
+                var rootMainMenu = new DynaFormRootElement(myDynaMenu.MenuCaption)
+                {
+                    UnevenRows = true,
+                    Enabled = true
+                };
+
+                var sectionMainMenu = new Section { HeaderView = null, FooterView = null };
+
+                BuildMenu(myDynaMenu, sectionMainMenu);
+
+                rootMainMenu.Add(sectionMainMenu);
+
+                var formDVC = new DynaDialogViewController(rootMainMenu, true);
+                formDVC.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, delegate
+                {
+                    DetailViewController.QuestionsView = null; //.Clear();
+                    DetailViewController.Root.Clear();
+                    DetailViewController.Root.Caption = "";
+                    DetailViewController.ReloadData();
+
+                    DetailViewController.SetDetailItem(new Section("Appointments Grid"), "ApptGrid", "Today", null, false);
+
+                    NavigationController.PopViewController(true);
+                });
+
+                //NavigationController.PushViewController(formDVC, true);
+
+                DetailViewController.SetDetailItem(new Section("Appointments Grid"), "ApptGrid", dfElemet.MenuAction, null, false);
+
+                return formDVC;
+            }
+            catch (Exception ex)
+            {
+                CommonFunctions.sendErrorEmail(ex);
+                PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
+                return new DynaDialogViewController(CommonFunctions.ErrorRootElement(), true);
+            }
+        }
+
+
+
+
+
+
+
         public UIViewController GetPatientService(RootElement rElement)
         {
             try
@@ -3025,7 +3174,7 @@ namespace DynaPad
 
                     NavigationController.PopViewController(true);
 
-                    if (CurrentApptGridType == "Today's Appointments" || CurrentApptGridType == "Week" || CurrentApptGridType == "Month")
+                    if (CurrentApptGridType == "Today" || CurrentApptGridType == "Week" || CurrentApptGridType == "Month")
                     {
                         DetailViewController.SetDetailItem(new Section("Appointments Grid"), "ApptGrid", CurrentApptGridType, null, false);
                     }
@@ -3111,8 +3260,8 @@ namespace DynaPad
                 formDVC.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, delegate
                   {
                       DetailViewController.QuestionsView = null;
-                      DetailViewController.NavigationItem.RightBarButtonItem = null;
-                      DetailViewController.SetSearch();
+                      //DetailViewController.NavigationItem.RightBarButtonItem = null;
+                      //DetailViewController.SetSearch();
                       DetailViewController.Root.Clear();
                       DetailViewController.Root.Caption = "";
                       DetailViewController.ReloadData();
@@ -3336,6 +3485,8 @@ namespace DynaPad
                         DetailViewController.ReloadData();
 
                         NavigationController.PopViewController(true);
+
+                        DetailViewController.SetSearch();
 
                         DetailViewController.SetDetailItem(new Section("Appointment Info"), "ApptInfo", null, null, false);
                     });

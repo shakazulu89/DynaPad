@@ -4146,22 +4146,22 @@ namespace DynaPad
 
                     var sectionMainMenu = new Section { HeaderView = null, FooterView = null };
 
-                    int ti = 0;
-                    switch (CurrentApptGridType)
-                    {
-                        case "Today":
-                            ti = 0;
-                            break;
-                        case "Week":
-                            ti = 1;
-                            break;
-                        case "Month":
-                            ti = 2;
-                            break;
-                    }
+                    //int ti = 0;
+                    //switch (CurrentApptGridType)
+                    //{
+                    //    case "Today":
+                    //        ti = 0;
+                    //        break;
+                    //    case "Week":
+                    //        ti = 1;
+                    //        break;
+                    //    case "Month":
+                    //        ti = 2;
+                    //        break;
+                    //}
 
-                    var tobuildparent = DynaMenu.MenuItems[0].Menus[0].MenuItems[ti].Menus[0].MenuItems.Find(tbpfp => tbpfp.PatientId == rowData.PatientID).Menus[0].MenuItems.Find(tbpfa => tbpfa.ApptId == rowData.ApptID);
-                    var tobuild = DynaMenu.MenuItems[0].Menus[0].MenuItems[ti].Menus[0].MenuItems.Find(tbfp => tbfp.PatientId == rowData.PatientID).Menus[0].MenuItems.Find(tbfa => tbfa.ApptId == rowData.ApptID).Menus[0].MenuItems.FindAll(x => x.ApptId == rowData.ApptID);
+                    var tobuildparent = DynaMenu.MenuItems.Find(x => x.MenuItemCaption == "Find By Patient").Menus[0].MenuItems.Find(x => x.MenuItemCaption == CurrentApptGridType).Menus[0].MenuItems.Find(tbpfp => tbpfp.PatientId == rowData.PatientID).Menus[0].MenuItems.Find(tbpfa => tbpfa.ApptId == rowData.ApptID);
+                    var tobuild = DynaMenu.MenuItems.Find(x => x.MenuItemCaption == "Find By Patient").Menus[0].MenuItems.Find(x => x.MenuItemCaption == CurrentApptGridType).Menus[0].MenuItems.Find(tbfp => tbfp.PatientId == rowData.PatientID).Menus[0].MenuItems.Find(tbfa => tbfa.ApptId == rowData.ApptID).Menus[0].MenuItems.FindAll(x => x.ApptId == rowData.ApptID);
 
                     if (tobuildparent != null && tobuild.Any())
                     {
@@ -4920,6 +4920,8 @@ namespace DynaPad
                 var nsec = new Section(ncellHeader) { FooterView = new UIView(new CGRect(0, 0, 0, 0)) };
                 nsec.FooterView.Hidden = true;
 
+                var master = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
+
                 tabView = new SfTabView()
                 {
                     Frame = new CGRect(0, 0, UIScreen.MainScreen.Bounds.Size.Height, View.Bounds.Height),
@@ -4927,6 +4929,9 @@ namespace DynaPad
                     EnableSwiping = false 
                 };
                 tabView.SelectionChanged += SfTabView_SelectionChanged;
+
+                bool wEnabled = master.GridSourceWeek.Any() ? true : false;
+                bool mEnabled = master.GridSourceMonth.Any() ? true : false;
 
                 var todayView = new UIView();
                 var tvc = new DialogViewController(GetApptGridElement("Today", false, true));
@@ -4939,6 +4944,45 @@ namespace DynaPad
                 var monthView = new UIView();
                 var monthvc = new DialogViewController(GetApptGridElement("Month", false, true));
                 monthView.AddSubview(monthvc.View);
+
+                //var todayButton = new UIButton();
+                //todayButton.SetTitle("Today", UIControlState.Normal);
+                ////todayButton.BackgroundColor = UIColor.FromRGB(240, 240, 240);
+                //todayButton.TouchUpInside += TodayButton_Clicked;
+                //var weekButton = new UIButton();
+                //weekButton.SetTitle("Week", UIControlState.Normal);
+                ////weekButton.BackgroundColor = UIColor.FromRGB(240, 240, 240);
+                //weekButton.TouchUpInside += WeekButton_Clicked;
+                //weekButton.Enabled = wEnabled;
+                //var monthButton = new UIButton();
+                //monthButton.SetTitle("Month", UIControlState.Normal);
+                ////monthButton.BackgroundColor = UIColor.FromRGB(240, 240, 240);
+                //monthButton.TouchUpInside += MonthButton_Clicked;
+                //monthButton.Enabled = mEnabled;
+
+                //var todayTab = new SfTabItem()
+                //{
+                //    Title = "Today",
+                //    Content = todayView,
+                //    HeaderContent = todayButton
+                //};
+                //var weekTab = new SfTabItem()
+                //{
+                //    Title = "Week",
+                //    Content = weekView,
+                //    HeaderContent = weekButton
+                //};
+                //var monthTab = new SfTabItem()
+                //{
+                //    Title = "Month",
+                //    Content = monthView,
+                //    HeaderContent = monthButton
+                //};
+
+                //var tabItems = new TabItemCollection();
+                //tabItems.Add(todayTab);
+                //tabItems.Add(weekTab);
+                //tabItems.Add(monthTab);
 
                 var tabItems = new TabItemCollection
                 {
@@ -4980,6 +5024,21 @@ namespace DynaPad
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
             }
+        }
+
+        private void TodayButton_Clicked(object sender, EventArgs e)
+        {
+            tabView.SelectedIndex = 0;
+        }
+
+        private void WeekButton_Clicked(object sender, EventArgs e)
+        {
+            tabView.SelectedIndex = 1;
+        }
+
+        private void MonthButton_Clicked(object sender, EventArgs e)
+        {
+            tabView.SelectedIndex = 2;
         }
 
         private void SfTabView_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -5047,7 +5106,7 @@ namespace DynaPad
                         break;
                 }
 
-                var ison = thedate.GetHashCode() != 0;
+                var ison = thedate.HasValue;
                 this.gridswitch.On = ison;
             }
         }
@@ -5108,15 +5167,16 @@ namespace DynaPad
                 switch (valueId)
                 {
                     case "Today":
-                    case "Today's Appointments":
                         gtype = "Today's";
                         appts = master.GridSourceToday;
                         break;
                     case "Week":
+                    case "GetApptsWeek":
                         gtype = "This Week's";
                         appts = master.GridSourceWeek;
                         break;
                     case "Month":
+                    case "GetApptsMonth":
                         gtype = "Last Month's";
                         appts = master.GridSourceMonth;
                         break;
@@ -5145,10 +5205,10 @@ namespace DynaPad
                 //    filterTextChanged = OnFilterChanged
                 //};
 
-                fds.GridApptCollection.Add(new GridAppt("13", "13", "6", "test", "you", new DateTime(2018, 5, 4), new DateTime(), new DateTime(), new DateTime()));
-                fds.GridApptCollection.Add(new GridAppt("13", "13", "6", "test hole", "you", new DateTime(2018, 5, 4), new DateTime(), new DateTime(), new DateTime()));
-                fds.GridApptCollection.Add(new GridAppt("13", "13", "6", "test", "him", new DateTime(2018, 5, 4), new DateTime(), new DateTime(), new DateTime()));
-                fds.GridApptCollection.Add(new GridAppt("13", "13", "6", "why", "not", new DateTime(2018, 5, 4), new DateTime(), new DateTime(), new DateTime()));
+                //fds.GridApptCollection.Add(new GridAppt("13", "13", "6", "test", "you", new DateTime(2018, 5, 4), new DateTime(), new DateTime(), new DateTime()));
+                //fds.GridApptCollection.Add(new GridAppt("13", "13", "6", "test hole", "you", new DateTime(2018, 5, 4), new DateTime(), new DateTime(), new DateTime()));
+                //fds.GridApptCollection.Add(new GridAppt("13", "13", "6", "test", "him", new DateTime(2018, 5, 4), new DateTime(), new DateTime(), new DateTime()));
+                //fds.GridApptCollection.Add(new GridAppt("13", "13", "6", "why", "not", new DateTime(2018, 5, 4), new DateTime(), new DateTime(), new DateTime()));
 
                 var apptGridElement = new DynaMultiRootElement("Showing " + gtype + " Appointments:");
 
