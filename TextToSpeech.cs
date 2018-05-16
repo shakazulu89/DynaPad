@@ -99,5 +99,10 @@ namespace DynaPad
         {
             throw new NotImplementedException();
         }
-    }
+
+		public Task Speak(string text, CrossLocale? crossLocale = null, float? pitch = null, float? speakRate = null, float? volume = null, CancellationToken cancelToken = default(CancellationToken))
+		{
+			throw new NotImplementedException();
+		}
+	}
 }

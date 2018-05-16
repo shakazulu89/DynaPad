@@ -62,6 +62,7 @@ namespace DynaClassLibrary
 			public string LoginStatus { get; set; }
 			public string DynaPassword { get; set; }
 			public ConfigurationObjects DynaConfig { get; set; }
+            public string LogFileName { get; set; }
 		}
 
 		public class Location

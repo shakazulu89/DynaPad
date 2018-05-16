@@ -10,6 +10,9 @@ using MimeKit;
 using CoreGraphics;
 using System.Diagnostics;
 using Foundation;
+using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace DynaPad
 {
@@ -66,16 +69,35 @@ namespace DynaPad
 				//{
 				//	UserConfig.DomainPaths.Add(item);
 				//}
-
+                
 				return UserConfig;
 			}
 			catch (Exception ex)
 			{
+				var eventItems = new List<NSDictionary>
+				{
+					getDictionary("Exception Message", ex.Message),
+					getDictionary("Exception Stacktrace", ex.StackTrace)
+				};
+				AddLogEvent(DateTime.Now, "GetUserConfig", true, eventItems, "catch block");
+
                 sendErrorEmail(ex);
                 return null;
 				//throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
 			}
 		}
+
+        public static NSDictionary getDictionary(string text, string value)
+        {
+            object[] objects = new object[2];
+            object[] keys = new object[2];
+            keys.SetValue("Text", 0);
+            keys.SetValue("Value", 1);
+            objects.SetValue((NSString)text, 0);
+            objects.SetValue((NSString)value, 1);
+
+            return NSDictionary.FromObjectsAndKeys(objects, keys);
+        }
 
 		public static UIAlertController AlertPrompt(string alertTitle, string alertMessage, bool OKButton, Action<UIAlertAction> OKAction, bool CancelButton, Action<UIAlertAction> CancelAction)
 		{
@@ -180,7 +202,14 @@ namespace DynaPad
                 }
             }
             catch (Exception ex)
-            {
+			{
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                AddLogEvent(DateTime.Now, "sendAlertEmail", true, eventItems, "catch block");
+
                 //Console.WriteLine(ex.Message);
             }
         }
@@ -223,6 +252,13 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                AddLogEvent(DateTime.Now, "sendNSErrorEmail", true, eventItems, "catch block");
+
 				//Console.WriteLine(ex.Message);
             }
         }
@@ -286,9 +322,47 @@ namespace DynaPad
 			}
 			catch (Exception ex)
 			{
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                AddLogEvent(DateTime.Now, "sendErrorEmail", true, eventItems, "catch block");
+
                 //Console.WriteLine(ex.Message);
             }
+            
+		}
 
+		public static void AddLogEvent(DateTime Timestamp, string EventName, bool IsError, List<NSDictionary> EventItems, string EventDescription)
+		{
+			var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+			var logDirectoryPath = Path.Combine(documents, "DynaLog");
+			var logFilePath = Path.Combine(logDirectoryPath, DynaClassLibrary.DynaClasses.LoginContainer.User.LogFileName);
+
+			var itemsJson = new StringBuilder();
+			foreach (var item in EventItems)
+			{
+				itemsJson.Append("'" + item.Values[1] + "': '" + item.Values[0] + "',");
+			}
+			itemsJson.Remove(itemsJson.Length - 1, 1);
+
+			string json = "{" +
+				"'Event': [{" +
+				"'Timestamp': '" + Timestamp.ToString() + "'," +
+				"'Event Name': '" + EventName + "'," +
+                "'Is Error': '" + IsError + "'," +
+				"'Event Description': '" + EventDescription + "'," +
+                "'Event Items': [{" + itemsJson.ToString() + "}]" +
+				"}]" +
+			"}";
+
+			// The using statement automatically flushes AND CLOSES the stream and calls 
+            // IDisposable.Dispose on the stream object.
+			using (StreamWriter file = new StreamWriter(logFilePath, true))
+            {
+                file.WriteLine(json);
+            }
 		}
 	}
 }

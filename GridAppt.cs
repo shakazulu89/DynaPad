@@ -6,15 +6,15 @@ namespace DynaPad
 {
     public class GridAppt : INotifyPropertyChanged
     {
-        private string apptId;
-        private string locationId;
-        private string patientId;
-        private string patientName;
-        private string doctorName;
-        private DateTime apptDate;
-        private DateTime? patientForm;
-        private DateTime? doctorForm;
-        private DateTime? reportGenerated;
+        string apptId;
+        string locationId;
+        string patientId;
+        string patientName;
+        string doctorName;
+        DateTime apptDate;
+        DateTime? patientForm;
+        DateTime? doctorForm;
+        DateTime? reportGenerated;
 
         public GridAppt(string aId, string lId, string pId, string pName, string dName, DateTime aDate, DateTime? pForm, DateTime? dForm, DateTime? rGenerated)
         {

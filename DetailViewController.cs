@@ -41,6 +41,8 @@ using FileProvider;
 using Syncfusion.Pdf.Xmp;
 using Syncfusion.iOS.PopupLayout;
 using Syncfusion.iOS.TabView;
+using System.util;
+using Syncfusion.Data.Extensions;
 
 namespace DynaPad
 {
@@ -119,31 +121,31 @@ namespace DynaPad
             ////var drawNavBtn = GetDrawNavBtn("1");
             //var ass = new UIBarButtonItem("edit", UIBarButtonItemStyle.Plain ,delegate
             //{
-            //	//var dcanvas = new CanvasMainViewController { MREditing = false };
-            //	//var dcanvas = new FingerPaintViewController(); 
-            //	//var dcanvas = new FingerPaintViewController() { MREditing = true, MREditPath = "https://amato.dynadox.pro/data/amato.dynadox.pro/claimantfiles/18/130.gif", MREditId = "130", MREditName = "John_Doe_True_sig_2017-05-09T10_59_08.gif", apptId = "41", patientId = "18", doctorId = "14", locationId = "12", IsDoctorForm = true };
-            //	//var dcanvas = new FingerPaintViewController() { MREditing = true, MREditPath = "https://amato.dynadox.pro/data/testpng.png", MREditId = "130", MREditName = "testpng.png", apptId = "41", patientId = "18", doctorId = "14", locationId = "12", IsDoctorForm = true };
-            //	var dcanvas = new FingerPaintViewController() { MREditing = true, MREditPath = "https://amato.dynadox.pro/data/testjpg.jpg", MREditId = "130", MREditName = "testjpg.jpg", apptId = "41", patientId = "18", doctorId = "14", locationId = "12", IsDoctorForm = true };
-            //	//PreferredContentSize = new CGSize(View.Bounds.Size);
-            //	//PresentViewController(dcanvas, true, null);
+            //    //var dcanvas = new CanvasMainViewController { MREditing = false };
+            //    //var dcanvas = new FingerPaintViewController(); 
+            //    //var dcanvas = new FingerPaintViewController() { MREditing = true, MREditPath = "https://amato.dynadox.pro/data/amato.dynadox.pro/claimantfiles/18/130.gif", MREditId = "130", MREditName = "John_Doe_True_sig_2017-05-09T10_59_08.gif", apptId = "41", patientId = "18", doctorId = "14", locationId = "12", IsDoctorForm = true };
+            //    //var dcanvas = new FingerPaintViewController() { MREditing = true, MREditPath = "https://amato.dynadox.pro/data/testpng.png", MREditId = "130", MREditName = "testpng.png", apptId = "41", patientId = "18", doctorId = "14", locationId = "12", IsDoctorForm = true };
+            //    var dcanvas = new FingerPaintViewController() { MREditing = true, MREditPath = "https://amato.dynadox.pro/data/testjpg.jpg", MREditId = "130", MREditName = "testjpg.jpg", apptId = "41", patientId = "18", doctorId = "14", locationId = "12", IsDoctorForm = true };
+            //    //PreferredContentSize = new CGSize(View.Bounds.Size);
+            //    //PresentViewController(dcanvas, true, null);
 
-            //	var asss = new Section();
+            //    var asss = new Section();
             //             asss.Add(dcanvas.View);
             //             var rr = new RootElement("edit");
             //             rr.Add(asss);
             //             var ndia = new DialogViewController(rr);
-            //	ndia.ModalInPopover = true;
+            //    ndia.ModalInPopover = true;
             //             ndia.ModalPresentationStyle = UIModalPresentationStyle.FullScreen;
-            //	ndia.PreferredContentSize = new CGSize(View.Bounds.Size); 
-            //	PreferredContentSize = new CGSize(View.Bounds.Size);
+            //    ndia.PreferredContentSize = new CGSize(View.Bounds.Size); 
+            //    PreferredContentSize = new CGSize(View.Bounds.Size);
             //             PresentViewController(dcanvas, true, null);
 
             // //            Root.Clear();
-            //	//var asss = new Section();
-            //	//asss.Add(dcanvas.View);
+            //    //var asss = new Section();
+            //    //asss.Add(dcanvas.View);
             // //            var rr = new RootElement("ass");
             // //            rr.Add(asss);
-            //	//Root = rr;
+            //    //Root = rr;
             //});
             //NavigationItem.SetRightBarButtonItem(ass, true);
 
@@ -153,14 +155,14 @@ namespace DynaPad
 
             //var ass = new UIBarButtonItem("edit", UIBarButtonItemStyle.Plain ,delegate
             //{
-            //	PreferredContentSize = new CGSize(View.Bounds.Size);
-            //	SfImageEditor imageEditor = new SfImageEditor();
+            //    PreferredContentSize = new CGSize(View.Bounds.Size);
+            //    SfImageEditor imageEditor = new SfImageEditor();
             //             //imageEditor.Frame = new CGRect(0, 0, 500, 500);
             //             imageEditor.Frame = View.Frame;
-            //	var downloadPath = Path.Combine(Path.GetTempPath(), "testjpg.jpg");
-            //	var url = "https://amato.dynadox.pro/data/testjpg.jpg";
-            //	var webClient = new WebClient();
-            //	webClient.DownloadFile(url, downloadPath);
+            //    var downloadPath = Path.Combine(Path.GetTempPath(), "testjpg.jpg");
+            //    var url = "https://amato.dynadox.pro/data/testjpg.jpg";
+            //    var webClient = new WebClient();
+            //    webClient.DownloadFile(url, downloadPath);
             //             UIImage img = UIImage.LoadFromData(UIImage.FromFile(downloadPath).AsJPEG(), 1);
             //             imageEditor.Image = img;
             //             var sec = new Section();
@@ -181,9 +183,9 @@ namespace DynaPad
             //var pdfViewerControl = new SfPdfViewer();
             //using (MemoryStream memoryStream = new MemoryStream())
             //{
-            //	ConvertToStream(URL, memoryStream);
-            //	memoryStream.Seek(0, SeekOrigin.Begin);
-            //	pdfViewerControl.LoadDocument(memoryStream);
+            //    ConvertToStream(URL, memoryStream);
+            //    memoryStream.Seek(0, SeekOrigin.Begin);
+            //    pdfViewerControl.LoadDocument(memoryStream);
             //}
             //pdfViewerControl.Frame = new CGRect(0, 0, View.Bounds.Width, View.Bounds.Height);
             //base.View.AddSubview(pdfViewerControl);
@@ -460,6 +462,12 @@ namespace DynaPad
                             catch (ObjectDisposedException oex)     // in case previous search completed
                             {
                                 Console.WriteLine($"\nObjectDisposedException in Report with: {oex.Message}");
+                                var eventItems = new List<NSDictionary>
+                                {
+                                    getDictionary("Exception Message", oex.Message),
+                                    getDictionary("Exception Stacktrace", oex.StackTrace)
+                                };
+                                CommonFunctions.AddLogEvent(DateTime.Now, "SetDetailItem", true, eventItems, "Report catch block");
                             }
 
                             using (cts = new CancellationTokenSource())
@@ -477,6 +485,12 @@ namespace DynaPad
                                 catch (TaskCanceledException tex)       // if the operation is cancelled, do nothing
                                 {
                                     Console.WriteLine($"\nCanceled with: {tex.Message}");
+                                    var eventItems = new List<NSDictionary>
+                                    {
+                                        getDictionary("Exception Message", tex.Message),
+                                        getDictionary("Exception Stacktrace", tex.StackTrace)
+                                    };
+                                    CommonFunctions.AddLogEvent(DateTime.Now, "SetDetailItem", true, eventItems, "Report cts catch block");
 
                                     //CommonFunctions.sendErrorEmail((Exception)tex);
 
@@ -503,6 +517,12 @@ namespace DynaPad
                             catch (ObjectDisposedException oex)     // in case previous search completed
                             {
                                 Console.WriteLine($"\nObjectDisposedException in Finalize with: {oex.Message}");
+                                var eventItems = new List<NSDictionary>
+                                {
+                                    getDictionary("Exception Message", oex.Message),
+                                    getDictionary("Exception Stacktrace", oex.StackTrace)
+                                };
+                                CommonFunctions.AddLogEvent(DateTime.Now, "SetDetailItem", true, eventItems, "Finalize catch block");
                             }
 
                             using (cts = new CancellationTokenSource())
@@ -519,6 +539,12 @@ namespace DynaPad
                                 catch (TaskCanceledException tex)       // if the operation is cancelled, do nothing
                                 {
                                     Console.WriteLine($"\nCanceled with: {tex.Message}");
+                                    var eventItems = new List<NSDictionary>
+                                    {
+                                        getDictionary("Exception Message", tex.Message),
+                                        getDictionary("Exception Stacktrace", tex.StackTrace)
+                                    };
+                                    CommonFunctions.AddLogEvent(DateTime.Now, "SetDetailItem", true, eventItems, "Finalize cts catch block");
 
                                     //CommonFunctions.sendErrorEmail((Exception)tex);
 
@@ -547,6 +573,12 @@ namespace DynaPad
                             }
                             catch (ObjectDisposedException oex)     // in case previous search completed
                             {
+                                var eventItems = new List<NSDictionary>
+                                {
+                                    getDictionary("Exception Message", oex.Message),
+                                    getDictionary("Exception Stacktrace", oex.StackTrace)
+                                };
+                                CommonFunctions.AddLogEvent(DateTime.Now, "SetDetailItem", true, eventItems, "default catch block");
                                 Console.WriteLine($"\nObjectDisposedException with: {oex.Message}");
                             }
 
@@ -565,6 +597,12 @@ namespace DynaPad
                                 }
                                 catch (TaskCanceledException tex)       // if the operation is cancelled, do nothing
                                 {
+                                    var eventItems = new List<NSDictionary>
+                                    {
+                                        getDictionary("Exception Message", tex.Message),
+                                        getDictionary("Exception Stacktrace", tex.StackTrace)
+                                    };
+                                    CommonFunctions.AddLogEvent(DateTime.Now, "SetDetailItem", true, eventItems, "default cts catch block");
                                     Console.WriteLine($"\nCanceled with: {tex.Message}");
 
                                     //CommonFunctions.sendErrorEmail((Exception)tex);
@@ -583,6 +621,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "SetDetailItem", true, eventItems, "catch block");
+                
                 Root.Clear();
                 Root.Add(CommonFunctions.ErrorDetailSection());
                 ReloadData();
@@ -643,6 +688,13 @@ namespace DynaPad
                 }
                 catch (ObjectDisposedException oex)     // in case previous search completed
                 {
+                    var eventItems = new List<NSDictionary>
+                    {
+                        getDictionary("Exception Message", oex.Message),
+                        getDictionary("Exception Stacktrace", oex.StackTrace)
+                    };
+                    CommonFunctions.AddLogEvent(DateTime.Now, "SetCancelLoadingBtn", true, eventItems, "catch block");
+                    
                     Console.WriteLine($"\nObjectDisposedException in cancelButton.TouchUpInside with: {oex.Message}");
                 }
             };
@@ -904,9 +956,7 @@ namespace DynaPad
         {
             try
             {
-                string documentsPath;
-
-                documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaFilesAwaitingUpload/" + SelectedAppointment.ApptPatientId + "/" + SelectedAppointment.ApptId);
+                var documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaFilesAwaitingUpload/" + SelectedAppointment.ApptPatientId + "/" + SelectedAppointment.ApptId);
 
                 var array = new List<DynaFile>();
                 string[] files;
@@ -917,7 +967,7 @@ namespace DynaPad
 
                     foreach (string file in files)
                     {
-                        string contents = File.ReadAllText(file);
+                        var contents = File.ReadAllText(file);
                         var userconfig = CommonFunctions.GetUserConfig();
 
                         var filename = Path.GetFileName(file);
@@ -933,6 +983,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "DoSubmitUpload", true, eventItems, "catch block");
+                
                 //loadingOverlay.Hide();
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
@@ -963,6 +1020,13 @@ namespace DynaPad
                 }
                 catch (ObjectDisposedException oex)     // in case previous search completed
                 {
+                    var eventItems = new List<NSDictionary>
+                    {
+                        getDictionary("Exception Message", oex.Message),
+                        getDictionary("Exception Stacktrace", oex.StackTrace)
+                    };
+                    CommonFunctions.AddLogEvent(DateTime.Now, "UploadSubmittedForms", true, eventItems, "set catch block");
+                    
                     Console.WriteLine($"\nObjectDisposedException with: {oex.Message}");
                 }
 
@@ -979,6 +1043,13 @@ namespace DynaPad
                     }
                     catch (TaskCanceledException tex)       // if the operation is cancelled, do nothing
                     {
+                        var eventItems = new List<NSDictionary>
+                        {
+                            getDictionary("Exception Message", tex.Message),
+                            getDictionary("Exception Stacktrace", tex.StackTrace)
+                        };
+                        CommonFunctions.AddLogEvent(DateTime.Now, "UploadSubmittedForms", true, eventItems, "cts catch block");
+                        
                         Console.WriteLine($"\nCanceled with: {tex.Message}");
                         loadingOverlay.Hide();
                         PresentViewController(CommonFunctions.AlertPrompt("Canceled/Timeout", "Operation was canceled or timed out, please try again", true, null, false, null), true, null);
@@ -987,6 +1058,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "UploadSubmittedForms", true, eventItems, "catch block");
+                
                 loadingOverlay.Hide();
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
@@ -1003,6 +1081,8 @@ namespace DynaPad
 
             try
             {
+                CommonFunctions.AddLogEvent(DateTime.Now, "DoUpload", false, null, "start");
+                
                 if (CrossConnectivity.Current.IsConnected)
                 {
                     var array = new List<DynaFile>();
@@ -1028,8 +1108,25 @@ namespace DynaPad
                     starttoast.SetGravity(ToastGravity.Bottom);
                     starttoast.Show();
 
+                    CommonFunctions.AddLogEvent(DateTime.Now, "DoUpload", false, null, "new DynaPadService.DynaPadService");
+
                     var dds = new DynaPadService.DynaPadService { Timeout = 180000 };
                     var result = dds.ProcessDynaFiles(CommonFunctions.GetUserConfig(), JsonConvert.SerializeObject(array));
+
+                    var eventItems_ProcessDynaFiles = new List<NSDictionary>
+                    {
+                        getDictionary("# of Files", array.Count.ToString())
+                    };
+                    
+                    int ac = 1;
+                    foreach (var a in array)
+                    {
+                        eventItems_ProcessDynaFiles.Add(getDictionary("File #" + ac.ToString() + "Appt ID" , a.ApptId));
+                        eventItems_ProcessDynaFiles.Add(getDictionary("File #" + ac.ToString() + "File Name", a.FileName));
+                        eventItems_ProcessDynaFiles.Add(getDictionary("File #" + ac.ToString() + "File URL", a.FileUrl));
+                        ac++;
+                    }
+                    CommonFunctions.AddLogEvent(DateTime.Now, "DoUpload", false, eventItems_ProcessDynaFiles, "after dds.ProcessDynaFiles");
 
                     if (!result.StartsWith("Error", StringComparison.CurrentCulture))
                     {
@@ -1079,6 +1176,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "DoUpload", true, eventItems, "catch block");
+                
                 //loadingOverlay.Hide();
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
@@ -1087,6 +1191,9 @@ namespace DynaPad
             finally
             {
                 loadingOverlay.Hide();
+
+                CommonFunctions.AddLogEvent(DateTime.Now, "DoUpload", false, null, "end");
+                
                 if (returnToGrid)
                 {
                     SetDetailItem(new Section("Upload Submitted Forms"), context, DynaClassLibrary.DynaClasses.LoginContainer.User.SelectedLocation.LocationId, null, false);
@@ -1127,16 +1234,35 @@ namespace DynaPad
 
             if (downloadTask != null)
                 return;
+            
+            CommonFunctions.AddLogEvent(DateTime.Now, "DownloadMRs", false, null, "start");
+
+            CommonFunctions.AddLogEvent(DateTime.Now, "DownloadMRs", false, null, "new DynaPadService.DynaPadService");
 
             var dds = new DynaPadService.DynaPadService { Timeout = 180000 };
             string filesJson;
             if (appt)
             {
                 filesJson = dds.GetFiles(CommonFunctions.GetUserConfig(), SelectedAppointment.ApptId, SelectedAppointment.ApptPatientId, SelectedAppointment.ApptPatientName, SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId);
+                                             var eventItems_GetFiles = new List<NSDictionary>                 {
+                    getDictionary("Appointment ID", SelectedAppointment.ApptId),
+                    getDictionary("Patient ID", SelectedAppointment.ApptPatientId),
+                    getDictionary("Patient Name", SelectedAppointment.ApptPatientName),
+                    getDictionary("Doctor ID", SelectedAppointment.ApptDoctorId),
+                    getDictionary("Location ID", SelectedAppointment.ApptLocationId)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "DownloadMRs", false, eventItems_GetFiles, "after dds.GetFiles");
             }
             else
             {
                 filesJson = dds.GetFilesByDate(CommonFunctions.GetUserConfig(), valueId, dt.ToShortDateString());
+                
+                var eventItems_GetFilesByDate = new List<NSDictionary>
+                {
+                    getDictionary("Location ID", valueId),
+                    getDictionary("Date To Download", dt.ToShortDateString())
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "DownloadMRs", false, eventItems_GetFilesByDate, "after dds.GetFilesByDate");
             }
 
             if (!filesJson.StartsWith("error", StringComparison.CurrentCulture))
@@ -1203,6 +1329,8 @@ namespace DynaPad
                 //imageView.Hidden = true;
                 progressView.Hidden = false;
             }
+
+            CommonFunctions.AddLogEvent(DateTime.Now, "DownloadMRs", false, null, "end");
         }
 
         //void DownloadPatientMRs()
@@ -1514,6 +1642,8 @@ namespace DynaPad
         {
             //await Task.Delay(TimeSpan.FromSeconds(2), cts);
             await Task.Delay(10, cts);
+            
+            CommonFunctions.AddLogEvent(DateTime.Now, "ConfigureReportView", false, null, "start");
 
             try
             {
@@ -1542,9 +1672,21 @@ namespace DynaPad
 
                 var reportUrl = "";
                 if (CrossConnectivity.Current.IsConnected)
-                {
+                {               
+                    CommonFunctions.AddLogEvent(DateTime.Now, "ConfigureReportView", false, null, "new DynaPadService.DynaPadService");
+                    
                     var dps = new DynaPadService.DynaPadService();
                     reportUrl = dps.GenerateReport(CommonFunctions.GetUserConfig(), SelectedAppointment.ApptId, SelectedAppointment.ApptFormId, DateTime.Today.ToShortDateString(), "file", valueId);
+
+                    var eventItems_GenerateReport = new List<NSDictionary>                     {
+                        getDictionary("Appointment ID", SelectedAppointment.ApptId),
+                        getDictionary("Form ID", SelectedAppointment.ApptFormId),
+                        getDictionary("Date Completed", DateTime.Today.ToShortDateString()),
+                        getDictionary("File Name", "file"),
+                        getDictionary("Report ID", valueId)
+                    };
+                    CommonFunctions.AddLogEvent(DateTime.Now, "ConfigureReportView", false, eventItems_GenerateReport, "after dds.GenerateReport");
+                    
                     //string report = dps.GenerateReport("123", SelectedQForm.ApptPatientID, DateTime.Today.ToShortDateString(), "file", SelectedQForm.ApptPatientFormID);
                 }
 
@@ -1589,6 +1731,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "ConfigureReportView", true, eventItems, "catch block");
+                
                 Root.Clear();
                 Root.Add(CommonFunctions.ErrorDetailSection());
                 ReloadData();
@@ -1596,6 +1745,8 @@ namespace DynaPad
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
             }
+
+            CommonFunctions.AddLogEvent(DateTime.Now, "ConfigureReportView", false, null, "end");
 
             //Console.WriteLine($"\nFinished ConfigureView");
             return context;
@@ -1683,6 +1834,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "ConfigureFinalizeView", true, eventItems, "catch block");
+                
                 Root.Clear();
                 Root.Add(CommonFunctions.ErrorDetailSection());
                 ReloadData();
@@ -1733,6 +1891,13 @@ namespace DynaPad
                 }
                 catch (ObjectDisposedException oex)     // in case previous search completed
                 {
+                    var eventItems = new List<NSDictionary>
+                    {
+                        getDictionary("Exception Message", oex.Message),
+                        getDictionary("Exception Stacktrace", oex.StackTrace)
+                    };
+                    CommonFunctions.AddLogEvent(DateTime.Now, "DoSubmitForm", true, eventItems, "set catch block");
+                    
                     Console.WriteLine($"\nObjectDisposedException in Submit with: {oex.Message}");
                 }
 
@@ -1752,6 +1917,13 @@ namespace DynaPad
                     }
                     catch (TaskCanceledException tex)       // if the operation is cancelled, do nothing
                     {
+                        var eventItems = new List<NSDictionary>
+                        {
+                            getDictionary("Exception Message", tex.Message),
+                            getDictionary("Exception Stacktrace", tex.StackTrace)
+                        };
+                        CommonFunctions.AddLogEvent(DateTime.Now, "DoSubmitForm", true, eventItems, "cts catch block");
+                        
                         Console.WriteLine($"\nCanceled with: {tex.Message}");
 
                         //CommonFunctions.sendErrorEmail((Exception)tex);
@@ -1783,6 +1955,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "DoSubmitForm", true, eventItems, "catch block");
+                
                 //Root.Clear();
                 //Root.Add(CommonFunctions.ErrorDetailSection());
                 //ReloadData();
@@ -1963,6 +2142,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "SubmitForm", true, eventItems, "catch block");
+                
                 //loadingOverlay.Hide();
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
@@ -2516,10 +2702,10 @@ namespace DynaPad
 
                                 GetAutoData(question.QuestionId);
 
-                                var entryAutoComplete = new DynaAuto(new SFControlAutoCompleteDelegate(question, qSection))
+                                //var entryAutoComplete = new DynaAuto(new SFControlAutoCompleteDelegate(question, qSection))
+                                var entryAutoComplete = new DynaAuto
                                 {
-                                    Text = atidval,
-                                    //entryAutoComplete.AutoCompleteSource = answerList;
+                                    Text = (NSString)atidval,
                                     DataSource = AutoDetails,
                                     ShowSuggestionsOnFocus = false,
                                     QuestionId = question.QuestionId,
@@ -2537,15 +2723,43 @@ namespace DynaPad
                                     parentSec = qSection,
                                     Required = question.IsRequired,
                                     Invalid = question.IsInvalid,
-                                    DisplayMemberPath = "Text",
-                                    SelectedValuePath = "Value",
-                                    MinimumPrefixCharacters = 2
+                                    DisplayMemberPath = (NSString)"Text",
+                                    SelectedValuePath = (NSString)"Value",
+                                    MinimumPrefixCharacters = 2,
+                                    ShowClearButton = false
                                 };
+
+                                entryAutoComplete.SelectionChanged += (object sender, SelectionEventArgs e) => 
+                                {
+                                    if (e.Value.GetType() == typeof(AutoDetailsItem))
+                                    {
+                                        question.AnswerText = ((AutoDetailsItem)e.Value).Value;
+                                    }                                     entryAutoComplete.Invalid = ValidateAuto(question);                                     if (qSection.GetContainerTableView() != null)                                     {                                         qSection.GetContainerTableView().ReloadData();                                     }
+                                };
+                                
+                                entryAutoComplete.TextChanged += (object sender, TextEventArgs e) => 
+                                {
+                                    question.AnswerText = e.Value;
+                                    entryAutoComplete.Invalid = ValidateAuto(question);      
+                                };
+
+                                entryAutoComplete.ValueChanged +=  (object sender, EventArgs e) =>  
+                                {
+                                    question.AnswerText = e.ToString();
+                                    entryAutoComplete.Invalid = ValidateAuto(question);                          
+                                };
+                                
                                 entryAutoComplete.TextField.BorderStyle = UITextBorderStyle.None;
                                 entryAutoComplete.TextField.Bounds = new CGRect(0, 0, View.Frame.Width - 10, 30);
                                 entryAutoComplete.Layer.BorderWidth = 0;
-                                entryAutoComplete.TextField.ClearButtonMode = UITextFieldViewMode.Always;
-
+                                //entryAutoComplete.TextField.ClearButtonMode = UITextFieldViewMode.Always;
+                                
+                                //entryAutoComplete.TextField.ShouldClear += delegate {
+                                //    question.AnswerText = "";
+                                //    entryAutoComplete.Invalid = ValidateAuto(question);
+                                //    return true;
+                                //};
+                                
                                 entryAutoComplete.TextField.EditingDidEnd += (sender, e) =>
                                 {
                                     //entryAutoComplete.Invalid = ValidateQuestion(question);
@@ -2777,7 +2991,7 @@ namespace DynaPad
                                 grid.CellRenderers.Remove("TextView");
                                 grid.CellRenderers.Add("TextView", new GridCellTextViewRendererExt());
 
-                                grid.GridTapped += (object sender, GridTappedEventsArgs e) => { viewModel.RefreshGroup(columns[0].Header); };
+                                grid.GridTapped += (object sender, GridTappedEventArgs e) => { viewModel.RefreshGroup(columns[0].Header); };
                                 grid.GridLoaded += (sender, e) => { grid.View.LiveDataUpdateMode = Syncfusion.Data.LiveDataUpdateMode.AllowDataShaping; };
 
                                 //grid.CurrentCellEndEdit += (object sender, GridCurrentCellEndEditEventArgs args) =>
@@ -2873,6 +3087,8 @@ namespace DynaPad
                                             }
                                             grid.Columns.Add(cPicker);
                                             break;
+                                        default: // do nothing;
+                                            break;
                                     }
                                 }
 
@@ -2902,6 +3118,8 @@ namespace DynaPad
                                 qSection.Add(grid);
                                 qSection.Add(addRowButton);
                                 QuestionsView.Add(qSection);
+                                break;
+                            default: // do nothing;
                                 break;
                         }
                         //question.ScrollY = qSection.HeaderView.Frame.Y;
@@ -2936,6 +3154,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "ConfigureView", true, eventItems, "catch block");
+                
                 Root.Clear();
                 Root.Add(CommonFunctions.ErrorDetailSection());
                 ReloadData();
@@ -2965,6 +3190,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "Chk_Tapped", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
@@ -2986,6 +3218,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "Radio_Tapped", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
@@ -3006,6 +3245,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "Radio_UnTapped", true, eventItems, "catch block");
+                
                 throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
             }
         }
@@ -3032,6 +3278,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "Boolean_Changed", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
@@ -3064,6 +3317,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "ConditionalCheck", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
@@ -3102,6 +3362,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "MultiConditionalCheck", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
@@ -3291,12 +3558,12 @@ namespace DynaPad
                                                     //peui.PlaceholderColor = UIColor.GroupTableViewBackgroundColor;
                                                     apeui.TextColor = UIColor.LightGray;
                                                     apeui.BackgroundColor = UIColor.GroupTableViewBackgroundColor;
-                                                    apeui.Watermark = "Not applicable";
+                                                    apeui.Watermark = (NSString)"Not applicable";
                                                 }
                                                 else
                                                 {
                                                     //peui.PlaceholderColor = UIColor.Clear;
-                                                    apeui.Watermark = "Enter your answer here";
+                                                    apeui.Watermark = (NSString)"Enter your answer here";
                                                     apeui.TextColor = UIColor.Black;
                                                     apeui.BackgroundColor = UIColor.White;
                                                 }
@@ -3320,6 +3587,8 @@ namespace DynaPad
                                                     gpeui.GridStyle = new EnabledGrid();
                                                 }
                                                 break;
+                                            default: // do nothing;
+                                                break;
                                         }
                                     }
 
@@ -3339,6 +3608,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "TriggerCheck", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
@@ -3351,6 +3627,8 @@ namespace DynaPad
         {
             try
             {
+                CommonFunctions.AddLogEvent(DateTime.Now, "SaveSectionPreset", false, null, "start");
+                
                 // doctorid = 123 / 321
                 // locationid = 321 / 123
 
@@ -3360,9 +3638,23 @@ namespace DynaPad
                     var fs = SelectedAppointment.SelectedQForm.FormSections.IndexOf(sectionQuestions);
 
                     var presetJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm.FormSections[fs]);
+
+                    CommonFunctions.AddLogEvent(DateTime.Now, "SaveSectionPreset", false, null, "new DynaPadService.DynaPadService");
+                    
                     var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
                     dds.SaveAnswerPreset(CommonFunctions.GetUserConfig(), SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, true, presetName, presetJson, SelectedAppointment.ApptLocationId, presetId);
-
+                                                        var eventItems_SaveAnswerPreset = new List<NSDictionary>                     {
+                        getDictionary("Form ID", SelectedAppointment.SelectedQForm.FormId),
+                        getDictionary("Section ID", sectionId),
+                        getDictionary("Doctor ID", SelectedAppointment.ApptDoctorId),
+                        getDictionary("Is Doctor Form", "true"),
+                        getDictionary("Preset Name", presetName),
+                        getDictionary("Preset JSON", presetJson),
+                        getDictionary("Location ID", SelectedAppointment.ApptLocationId),
+                        getDictionary("Existing Preset ID", presetId)
+                    };
+                    CommonFunctions.AddLogEvent(DateTime.Now, "SaveSectionPreset", false, eventItems_SaveAnswerPreset, "after dds.SaveAnswerPreset");
+                    
                     var master = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
                     master.SavePresetData();
 
@@ -3392,6 +3684,9 @@ namespace DynaPad
                     //presetSection.GetContainerTableView().RemoveFromSuperview();
                     //QuestionsView.TableView.ReloadData();
                     //SetDetailItem(new Section(sectionQuestions.SectionName), "", sectionId, origS, isDoctorInput, nextbtn);
+
+                    CommonFunctions.AddLogEvent(DateTime.Now, "SaveSectionPreset", false, null, "end");
+                    
                     NavigationController.PopViewController(true);
                 }
                 else
@@ -3401,6 +3696,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "SaveSectionPreset", true, eventItems, "catch block");
+                
                 NavigationController.PopViewController(true);
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
@@ -3414,15 +3716,27 @@ namespace DynaPad
         {
             try
             {
+                CommonFunctions.AddLogEvent(DateTime.Now, "DeleteSectionPreset", false, null, "start");
+                
                 if (CrossConnectivity.Current.IsConnected)
                 {
                     var sectionQuestions = SelectedAppointment.SelectedQForm.FormSections.Find((FormSection obj) => obj.SectionId == sectionId);
                     var fs = SelectedAppointment.SelectedQForm.FormSections.IndexOf(sectionQuestions);
 
                     var presetJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm.FormSections[fs]);
+
+                    CommonFunctions.AddLogEvent(DateTime.Now, "DeleteSectionPreset", false, null, "new DynaPadService.DynaPadService");
+                    
                     var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
                     dds.DeleteAnswerPreset(CommonFunctions.GetUserConfig(), SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, presetId);
-
+                                         var eventItems_DeleteAnswerPreset = new List<NSDictionary>                     {
+                        getDictionary("Form ID", SelectedAppointment.SelectedQForm.FormId),
+                        getDictionary("Section ID", sectionId),
+                        getDictionary("Doctor ID", SelectedAppointment.ApptDoctorId),
+                        getDictionary("Preset ID", presetId)
+                    };
+                    CommonFunctions.AddLogEvent(DateTime.Now, "DeleteSectionPreset", false, eventItems_DeleteAnswerPreset, "after dds.DeleteAnswerPreset");
+                    
                     var presetPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaPresets/" + SelectedAppointment.SelectedQForm.FormId + "/" + SelectedAppointment.ApptDoctorId + "/" + sectionId + "/" + presetId + ".txt");
                     if (File.Exists(presetPath))
                     {
@@ -3455,9 +3769,18 @@ namespace DynaPad
                 {
                     PresentViewController(CommonFunctions.InternetAlertPrompt(), true, null);
                 }
+
+                CommonFunctions.AddLogEvent(DateTime.Now, "DeleteSectionPreset", false, null, "end");
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "DeleteSectionPreset", true, eventItems, "catch block");
+                
                 NavigationController.PopViewController(true);
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
@@ -3518,6 +3841,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "GetPreset", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 return null;
@@ -3567,8 +3897,15 @@ namespace DynaPad
             {
                 webRequest.GetResponse();
             }
-            catch
+            catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "URLExists", true, eventItems, "catch block");
+                
                 result = false;
             }
 
@@ -3578,62 +3915,62 @@ namespace DynaPad
 
 
 
-        public class SFControlAutoCompleteDelegate : AutoCompleteDelegate
-        {
-            public SectionQuestion question;
-            public DynaSection qSection;
-            public SFControlAutoCompleteDelegate(SectionQuestion inq, DynaSection ds)
-            {
-                question = inq;
-                qSection = ds;
-            }
-            public override void DidSelectionChange(SFAutoComplete SFAutoComplete, NSObject value)
-            {
-                question.AnswerText = value.ValueForKey((NSString)"Value").ToString();
-                //var truequestion = SelectedAppointment.SelectedQForm.FormSections[0].SectionQuestions.Find((SectionQuestion obj) => obj.QuestionId == question.QuestionId);
-                //truequestion.AnswerText = value.ToString();
-                (SFAutoComplete as DynaAuto).Invalid = ValidateAuto(question);
-                if (qSection.GetContainerTableView() != null)
-                {
-                    qSection.GetContainerTableView().ReloadData();
-                }
-            }
-            public override void DidTextChange(SFAutoComplete SFAutoComplete, string value)
-            {
-                question.AnswerText = value;
-                (SFAutoComplete as DynaAuto).Invalid = ValidateAuto(question);
-                //if (string.IsNullOrEmpty(value) && qSection.GetContainerTableView() != null)
-                //{
-                //  question.AnswerText = "";
-                //  (SFAutoComplete as DynaAuto).Text = "";
-                //  qSection.GetContainerTableView().ReloadData();
-                //}
-            }
-            public bool ValidateAuto(SectionQuestion question)
-            {
-                try
-                {
-                    var valid = true;
-                    if (question.IsRequired && question.IsEnabled)
-                    {
-                        if (string.IsNullOrEmpty(question.AnswerText))
-                        {
-                            valid = false;
-                            question.IsInvalid = true;
-                        }
-                        else question.IsInvalid = false;
-                    }
-                    return !valid;
-                }
-                catch (Exception ex)
-                {
-                    CommonFunctions.sendErrorEmail(ex);
-                    //PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
-                    return false;
-                    //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
-                }
-            }
-        }
+        //public class SFControlAutoCompleteDelegate : AutoCompleteDelegate
+        //{
+        //    public SectionQuestion question;
+        //    public DynaSection qSection;
+        //    public SFControlAutoCompleteDelegate(SectionQuestion inq, DynaSection ds)
+        //    {
+        //        question = inq;
+        //        qSection = ds;
+        //    }
+        //    public override void DidSelectionChange(SFAutoComplete SFAutoComplete, NSObject value)
+        //    {
+        //        question.AnswerText = value.ValueForKey((NSString)"Value").ToString();
+        //        //var truequestion = SelectedAppointment.SelectedQForm.FormSections[0].SectionQuestions.Find((SectionQuestion obj) => obj.QuestionId == question.QuestionId);
+        //        //truequestion.AnswerText = value.ToString();
+        //        (SFAutoComplete as DynaAuto).Invalid = ValidateAuto(question);
+        //        if (qSection.GetContainerTableView() != null)
+        //        {
+        //            qSection.GetContainerTableView().ReloadData();
+        //        }
+        //    }
+        //    public override void DidTextChange(SFAutoComplete SFAutoComplete, string value)
+        //    {
+        //        question.AnswerText = value;
+        //        (SFAutoComplete as DynaAuto).Invalid = ValidateAuto(question);
+        //        //if (string.IsNullOrEmpty(value) && qSection.GetContainerTableView() != null)
+        //        //{
+        //        //  question.AnswerText = "";
+        //        //  (SFAutoComplete as DynaAuto).Text = "";
+        //        //  qSection.GetContainerTableView().ReloadData();
+        //        //}
+        //    }
+        //    public bool ValidateAuto(SectionQuestion question)
+        //    {
+        //        try
+        //        {
+        //            var valid = true;
+        //            if (question.IsRequired && question.IsEnabled)
+        //            {
+        //                if (string.IsNullOrEmpty(question.AnswerText))
+        //                {
+        //                    valid = false;
+        //                    question.IsInvalid = true;
+        //                }
+        //                else question.IsInvalid = false;
+        //            }
+        //            return !valid;
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            CommonFunctions.sendErrorEmail(ex);
+        //            //PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
+        //            return false;
+        //            //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
+        //        }
+        //    }
+        //}
 
         //public class AutoData
         //{
@@ -3654,42 +3991,76 @@ namespace DynaPad
         //  }
         //}
 
-        public NSMutableArray AutoDetails
+
+
+
+  //      public NSMutableArray AutoDetails
+  //      {
+  //          get;
+  //          set;
+        //}
+
+        public List<AutoDetailsItem> AutoDetails
         {
             get;
             set;
         }
+        
+        public class AutoDetailsItem
+        {
+            public int Id { get; set; }
+            public string Text { get; set; }
+            public string Value { get; set; }
+        }
 
 
+        public bool ValidateAuto(SectionQuestion question)         {             try             {                 var valid = true;                 if (question.IsRequired && question.IsEnabled)                 {                     if (string.IsNullOrEmpty(question.AnswerText))                     {                         valid = false;                         question.IsInvalid = true;                     }                     else question.IsInvalid = false;                 }                 return !valid;             }             catch (Exception ex)             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "ValidateAuto", true, eventItems, "catch block");
+                                 CommonFunctions.sendErrorEmail(ex);                 //PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);                 return false;                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);             }         }
+
+        
         void GetAutoData(string qid)
         {
             try
             {
-                var array = new NSMutableArray();
+                var array = new List<AutoDetailsItem>();
                 //array.Add(getDictionary("John", "24"));
                 //array.Add(getDictionary("James", "37"));
 
                 var documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaAutoBoxes");
                 string localFilename = qid + ".txt";
                 var localPath = Path.Combine(documentsPath, localFilename);
-
+                
                 if (File.Exists(localPath))
                 {
                     var listxml = new XmlDocument();
                     listxml.Load(localPath);
                     XmlElement root = listxml.DocumentElement;
                     var nodes = root.SelectNodes("/Items/Item");
-
+                    var nindex = 0;
                     foreach (XmlNode node in nodes)
                     {
-                        array.Add(getDictionary(node.Attributes[0].Value, node.Attributes[1].Value));
+                        //array.Add(getDictionary(node.Attributes[0].Value, node.Attributes[1].Value));
+                        array.Add(new AutoDetailsItem { Id = nindex, Text = node.Attributes[0].Value, Value = node.Attributes[1].Value } );
                     }
                 }
-
+                
                 AutoDetails = array;
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "GetAutoData", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
             }
@@ -3754,6 +4125,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "Print", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
@@ -3824,6 +4202,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "GetPatientInfoElement", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 return null;
@@ -3924,6 +4309,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "GetApptInfoElement", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 return null;
@@ -3937,6 +4329,8 @@ namespace DynaPad
         {
             try
             {
+                CommonFunctions.AddLogEvent(DateTime.Now, "GetMRNavBtn", false, null, "start");
+                
                 var navmr = new UIBarButtonItem(UIBarButtonSystemItem.Organize, (sender, args) =>
                 {
                     var nlab = new UILabel(new CGRect(10, 0, View.Bounds.Width, 50)) { Text = "Medical Records: " + SelectedAppointment.ApptPatientName };
@@ -3954,8 +4348,19 @@ namespace DynaPad
 
                     var dynanroo = new DynaMultiRootElement();
 
+                    CommonFunctions.AddLogEvent(DateTime.Now, "GetMRNavBtn", false, null, "new DynaPadService.DynaPadService");
+
                     var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
                     var origJson = dds.GetFiles(CommonFunctions.GetUserConfig(), SelectedAppointment.ApptId, SelectedAppointment.ApptPatientId, SelectedAppointment.ApptPatientName, SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId);
+                                                        var eventItems_GetFiles = new List<NSDictionary>                     {
+                        getDictionary("Appointment ID", SelectedAppointment.ApptId),
+                        getDictionary("Patient ID", SelectedAppointment.ApptPatientId),
+                        getDictionary("Patient Name", SelectedAppointment.ApptPatientName),
+                        getDictionary("Doctor ID", SelectedAppointment.ApptDoctorId),
+                        getDictionary("Location ID", SelectedAppointment.ApptLocationId)
+                    };
+                    CommonFunctions.AddLogEvent(DateTime.Now, "GetMRNavBtn", false, eventItems_GetFiles, "after dds.GetFiles");
+                    
                     JsonHandler.OriginalFormJsonString = origJson;
                     SelectedAppointment.ApptMRFolders = JsonConvert.DeserializeObject<List<MRFolder>>(origJson);
 
@@ -4087,7 +4492,7 @@ namespace DynaPad
                     var ndia = new DialogViewController(dynanroo)
                     {
                         ModalInPopover = true,
-                        ModalPresentationStyle = UIModalPresentationStyle.PageSheet,
+                        ModalPresentationStyle = UIModalPresentationStyle.PageSheet
                         //PreferredContentSize = new CGSize(View.Bounds.Size)
                     };
 
@@ -4105,10 +4510,19 @@ namespace DynaPad
 
                 });
 
+                CommonFunctions.AddLogEvent(DateTime.Now, "GetMRNavBtn", false, null, "end");
+
                 return navmr;
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "GetMRNavBtn", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 return null;
@@ -4117,11 +4531,10 @@ namespace DynaPad
         }
 
 
-        async void ApptDataGrid_GridDoubleTapped(object sender, GridDoubleTappedEventsArgs e)
+        async void ApptDataGrid_GridDoubleTapped(object sender, GridDoubleTappedEventArgs e)
         {
             try
             {
-                var ass = PresentedViewController;
                 if (SearchPresented)
                 {
                     SearchPresented = false;
@@ -4138,10 +4551,10 @@ namespace DynaPad
 
                 if (e.RowData.GetType() == typeof(GridAppt))
                 {
-                    var rowIndex = e.RowColumnindex.RowIndex;
+                    var rowIndex = e.RowColumnIndex.RowIndex;
                     var rowData = (GridAppt)e.RowData;
-                    var columnIndex = e.RowColumnindex.ColumnIndex;
-
+                    var columnIndex = e.RowColumnIndex.ColumnIndex;
+                    
                     var master = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
 
                     var sectionMainMenu = new Section { HeaderView = null, FooterView = null };
@@ -4160,8 +4573,60 @@ namespace DynaPad
                     //        break;
                     //}
 
-                    var tobuildparent = DynaMenu.MenuItems.Find(x => x.MenuItemCaption == "Find By Patient").Menus[0].MenuItems.Find(x => x.MenuItemCaption == CurrentApptGridType).Menus[0].MenuItems.Find(tbpfp => tbpfp.PatientId == rowData.PatientID).Menus[0].MenuItems.Find(tbpfa => tbpfa.ApptId == rowData.ApptID);
-                    var tobuild = DynaMenu.MenuItems.Find(x => x.MenuItemCaption == "Find By Patient").Menus[0].MenuItems.Find(x => x.MenuItemCaption == CurrentApptGridType).Menus[0].MenuItems.Find(tbfp => tbfp.PatientId == rowData.PatientID).Menus[0].MenuItems.Find(tbfa => tbfa.ApptId == rowData.ApptID).Menus[0].MenuItems.FindAll(x => x.ApptId == rowData.ApptID);
+                    MenuItem tobuildparent;
+                    List<MenuItem> tobuild;
+                    string lookupType = "Today";
+                    if (CurrentApptGridType == "Week" || CurrentApptGridType == "Month" || CurrentApptGridType == "Upcoming" || CurrentApptGridType == "Yesterday" || CurrentApptGridType == "Older")
+                    {
+                        bool IsGridSet = false;
+                        var GridMenu = new Menu();
+                        switch (CurrentApptGridType)
+                        {
+                            case "Week":
+                                IsGridSet = master.IsGridSourceWeekSet;
+                                lookupType = "Last Week";
+                                GridMenu = weekMenu;
+                                break;
+                            case "Month":
+                                IsGridSet = master.IsGridSourceMonthSet;
+                                lookupType = "Last Month";
+                                GridMenu = monthMenu;
+                                break;
+                            case "Upcoming":
+                                IsGridSet = master.IsGridSourceUpcomingSet;
+                                lookupType = "Upcoming";
+                                GridMenu = upcomingMenu;
+                                break;
+                            case "Yesterday":
+                                IsGridSet = master.IsGridSourceYesterdaySet;
+                                lookupType = "Yesterday";
+                                GridMenu = yesterdayMenu;
+                                break;
+                            case "Older":
+                                IsGridSet = master.IsGridSourceOlderSet;
+                                lookupType = "Older";
+                                GridMenu = olderMenu;
+                                break;
+                            default: // do nothing;
+                                break;
+                        }
+
+                        if (IsGridSet)
+                        {
+                            tobuildparent = GridMenu.MenuItems.Find(tbpfp => tbpfp.PatientId == rowData.PatientID).Menus[0].MenuItems.Find(tbpfa => tbpfa.ApptId == rowData.ApptID);
+                            tobuild = GridMenu.MenuItems.Find(tbfp => tbfp.PatientId == rowData.PatientID).Menus[0].MenuItems.Find(tbfa => tbfa.ApptId == rowData.ApptID).Menus[0].MenuItems.FindAll(x => x.ApptId == rowData.ApptID);
+                        }
+                        else
+                        {
+                            tobuildparent = GridMenu.MenuItems.Find(x => x.MenuItemCaption == "Find By Patient").Menus[0].MenuItems.Find(x => x.MenuItemCaption == lookupType).Menus[0].MenuItems.Find(tbpfp => tbpfp.PatientId == rowData.PatientID).Menus[0].MenuItems.Find(tbpfa => tbpfa.ApptId == rowData.ApptID);
+                            tobuild = GridMenu.MenuItems.Find(x => x.MenuItemCaption == "Find By Patient").Menus[0].MenuItems.Find(x => x.MenuItemCaption == lookupType).Menus[0].MenuItems.Find(tbfp => tbfp.PatientId == rowData.PatientID).Menus[0].MenuItems.Find(tbfa => tbfa.ApptId == rowData.ApptID).Menus[0].MenuItems.FindAll(x => x.ApptId == rowData.ApptID);
+                        }
+                    }
+                    else
+                    {
+                        tobuildparent = DynaMenu.MenuItems.Find(x => x.MenuItemCaption == "Find By Patient").Menus[0].MenuItems.Find(x => x.MenuItemCaption == lookupType).Menus[0].MenuItems.Find(tbpfp => tbpfp.PatientId == rowData.PatientID).Menus[0].MenuItems.Find(tbpfa => tbpfa.ApptId == rowData.ApptID);
+                        tobuild = DynaMenu.MenuItems.Find(x => x.MenuItemCaption == "Find By Patient").Menus[0].MenuItems.Find(x => x.MenuItemCaption == lookupType).Menus[0].MenuItems.Find(tbfp => tbfp.PatientId == rowData.PatientID).Menus[0].MenuItems.Find(tbfa => tbfa.ApptId == rowData.ApptID).Menus[0].MenuItems.FindAll(x => x.ApptId == rowData.ApptID);
+                    }
 
                     if (tobuildparent != null && tobuild.Any())
                     {
@@ -4182,7 +4647,7 @@ namespace DynaPad
                             Enabled = true
                         };
 
-                        var m = new Menu() { MenuItems = tobuild };
+                        var m = new Menu { MenuItems = tobuild };
 
                         master.BuildMenu(m, sectionMainMenu);
 
@@ -4232,6 +4697,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "ApptDataGrid_GridDoubleTapped", true, eventItems, "catch block");
+                
                 loadingOverlay.Hide();
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
@@ -4243,7 +4715,7 @@ namespace DynaPad
         }
 
 
-        async void DataGrid_GridDoubleTapped(object sender, GridDoubleTappedEventsArgs e)
+        async void DataGrid_GridDoubleTapped(object sender, GridDoubleTappedEventArgs e)
         {
             try
             {
@@ -4254,12 +4726,12 @@ namespace DynaPad
                 mvc.Add(loadingOverlay);
 
                 await Task.Delay(10);
-
+                
                 if (e.RowData.GetType() == typeof(MR))
                 {
-                    var rowIndex = e.RowColumnindex.RowIndex;
+                    var rowIndex = e.RowColumnIndex.RowIndex;
                     var rowData = (MR)e.RowData;
-                    var columnIndex = e.RowColumnindex.ColumnIndex;
+                    var columnIndex = e.RowColumnIndex.ColumnIndex;
                     var filepath = rowData.MRPath;
                     var filetype = rowData.MRFileType;
 
@@ -4305,6 +4777,15 @@ namespace DynaPad
             {
                 var errordata = (MR)e.RowData;
                 var errorfile = "<br/><br/><br/>FILE PATH:<br/><br/>" + errordata.MRPath;
+                
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace),
+                    getDictionary("File Path", errorfile)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "DataGrid_GridDoubleTapped", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex, errorfile);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
             }
@@ -4339,7 +4820,7 @@ namespace DynaPad
 
 
 
-        void GridAutoGeneratingColumns(object sender, AutoGeneratingColumnArgs e)
+        void GridAutoGeneratingColumns(object sender, AutoGeneratingColumnEventArgs e)
         {
             switch (e.Column.MappingName)
             {
@@ -4433,6 +4914,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "ExecutePullToRefreshCommand_ApptGrid", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
             }
@@ -4446,6 +4934,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "ItemsSourceRefresh_ApptGrid", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
             }
@@ -4464,6 +4959,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "ExecutePullToRefreshCommand", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
@@ -4475,20 +4977,43 @@ namespace DynaPad
         {
             try
             {
+                CommonFunctions.AddLogEvent(DateTime.Now, "ItemsSourceRefresh", false, null, "start");
+                
                 //var bounds = base.TableView.Frame;
                 //loadingOverlay = new LoadingOverlay(bounds);
                 //mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
                 //mvc.Add(loadingOverlay);
 
+                CommonFunctions.AddLogEvent(DateTime.Now, "ItemsSourceRefresh", false, null, "new DynaPadService.DynaPadService");
+
                 var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
                 var origJson = dds.GetFiles(CommonFunctions.GetUserConfig(), SelectedAppointment.ApptId, SelectedAppointment.ApptPatientId, SelectedAppointment.ApptPatientName, SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId);
+                
+                var eventItems_GetFiles_Refresh = new List<NSDictionary>                 {
+                    getDictionary("Appointment ID", SelectedAppointment.ApptId),
+                        getDictionary("Patient ID", SelectedAppointment.ApptPatientId),
+                        getDictionary("Patient Name", SelectedAppointment.ApptPatientName),
+                        getDictionary("Doctor ID", SelectedAppointment.ApptDoctorId),
+                        getDictionary("Location ID", SelectedAppointment.ApptLocationId)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "ItemsSourceRefresh", false, eventItems_GetFiles_Refresh, "after dds.GetFiles");
+                
                 JsonHandler.OriginalFormJsonString = origJson;
                 SelectedAppointment.ApptMRFolders = JsonConvert.DeserializeObject<List<MRFolder>>(origJson);
                 var mrs = SelectedAppointment.ApptMRFolders.Find(mr => mr.MRFolderId == valueId).MrFolderMRs;
                 dataGrid.ItemsSource = mrs;
+
+                CommonFunctions.AddLogEvent(DateTime.Now, "ItemsSourceRefresh", false, null, "end");
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "ItemsSourceRefresh", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
@@ -4545,7 +5070,7 @@ namespace DynaPad
 
                     foreach (string file in files)
                     {
-                        string contents = File.ReadAllText(file);
+                        var contents = File.ReadAllText(file);
                         var userconfig = CommonFunctions.GetUserConfig();
 
                         var filename = Path.GetFileName(file);
@@ -4702,6 +5227,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "GetUploadElement", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 return null;
@@ -4720,7 +5252,7 @@ namespace DynaPad
                 this.AddSubview(button);
                 //label = new UILabel();
                 //this.AddSubview(label);
-                CanRenderUnLoad = false;
+                CanRendererUnload = false;
             }
 
             protected override void UnLoad()
@@ -4737,9 +5269,7 @@ namespace DynaPad
                 //this.label.Frame = new CGRect(Bounds.Left, Bounds.Top, Bounds.Width, Bounds.Height);
                 //this.label.Text = DataColumn.CellValue.ToString();
                 this.button.TouchUpInside += delegate {
-
-                    var ass = DataColumn.CellValue.ToString();
-                    var hole = DataColumn;
+                    
                     string documentsPath;
 
                     documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaFilesAwaitingUpload/" + SelectedAppointment.ApptPatientId + "/" + SelectedAppointment.ApptId);
@@ -4753,7 +5283,7 @@ namespace DynaPad
 
                         foreach (string file in files)
                         {
-                            string contents = File.ReadAllText(file);
+                            var contents = File.ReadAllText(file);
                             var userconfig = CommonFunctions.GetUserConfig();
 
                             var filename = Path.GetFileName(file);
@@ -4770,7 +5300,7 @@ namespace DynaPad
             }
         }
 
-        async void UploadGrid_GridDoubleTapped(object sender, GridDoubleTappedEventsArgs e)
+        async void UploadGrid_GridDoubleTapped(object sender, GridDoubleTappedEventArgs e)
         {
             try
             {
@@ -4779,14 +5309,14 @@ namespace DynaPad
                 loadingOverlay = new LoadingOverlay(boundsh, true);// { loadingLabelText = "Loading MR..." };
                 loadingOverlay.SetText("Loading...");
                 mvc.Add(loadingOverlay);
-
+                
                 await Task.Delay(10);
 
                 if (e.RowData.GetType() == typeof(DynaFile))
                 {
-                    var rowIndex = e.RowColumnindex.RowIndex;
+                    var rowIndex = e.RowColumnIndex.RowIndex;
                     var rowData = (DynaFile)e.RowData;
-                    var columnIndex = e.RowColumnindex.ColumnIndex;
+                    var columnIndex = e.RowColumnIndex.ColumnIndex;
                     var filepath = rowData.FileUrl;
                     var filetype = rowData.Type;
 
@@ -4805,7 +5335,7 @@ namespace DynaPad
                     {
                         var file = JsonConvert.DeserializeObject<DynaFile>(File.ReadAllText(fileidentity));
 
-                        UIWebView webView = new UIWebView(new CGRect(View.Bounds.X + 5, View.Bounds.Y + 60, View.Bounds.Width - 5, View.Bounds.Height - 80))
+                        var webView = new UIWebView(new CGRect(View.Bounds.X + 5, View.Bounds.Y + 60, View.Bounds.Width - 5, View.Bounds.Height - 80))
                         {
                             ScalesPageToFit = true
                         };
@@ -4820,6 +5350,8 @@ namespace DynaPad
                                 break;
                             case "Summary":
                                 webView.LoadHtmlString(file.Html, new NSUrl(documentsPath, true));
+                                break;
+                            default: // do nothing;
                                 break;
                         }
                     }
@@ -4840,6 +5372,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "UploadGrid_GridDoubleTapped", true, eventItems, "catch block");
+                
                 var errordata = (MR)e.RowData;
                 var errorfile = "<br/><br/><br/>FILE PATH:<br/><br/>" + errordata.MRPath;
                 CommonFunctions.sendErrorEmail(ex, errorfile);
@@ -4867,7 +5406,7 @@ namespace DynaPad
                 this.AddSubview(gridswitch);
                 //label = new UILabel();
                 //this.AddSubview(label);
-                CanRenderUnLoad = false;
+                CanRendererUnload = false;
             }
 
             protected override void UnLoad()
@@ -4888,6 +5427,299 @@ namespace DynaPad
         }
 
 
+        public Menu todayMenu;
+        public Menu weekMenu;
+        public Menu monthMenu;
+        public Menu upcomingMenu;
+        public Menu yesterdayMenu;
+        public Menu olderMenu;
+        public DialogViewController GetTabInitView(int type)
+        {
+            CommonFunctions.AddLogEvent(DateTime.Now, "GetTabInitView", false, null, "start");
+            
+            var locid = string.IsNullOrEmpty(DynaClassLibrary.DynaClasses.LoginContainer.User.SelectedLocation.LocationId) ? null : DynaClassLibrary.DynaClasses.LoginContainer.User.SelectedLocation.LocationId;
+
+            string typeString = "";
+            string typeMessage = "";
+            string typeService = "";
+            int typeTabIndex = 0;
+
+            switch (type)
+            {
+                case 0:
+                    typeString = "Today";
+                    typeMessage = " Today's appointments grid was not loaded yet.";
+                    typeService = "GetApptsToday";
+                    typeTabIndex = 0;
+                    break;
+                case 1:
+                    typeString = "Week";
+                    typeMessage = " Last week's appointments grid was not loaded yet.";
+                    typeService = "GetApptsWeek";
+                    typeTabIndex = 3;
+                    break;
+                case 2:
+                    typeString = "Month";
+                    typeMessage = " Last month's appointments grid was not loaded yet.";
+                    typeService = "GetApptsMonth";
+                    typeTabIndex = 4;
+                    break;
+                case 3:
+                    typeString = "Upcoming";
+                    typeMessage = " Upcoming appointments grid was not loaded yet.";
+                    typeService = "GetApptsUpcoming";
+                    typeTabIndex = 1;
+                    break;
+                case 4:
+                    typeString = "Yesterday";
+                    typeMessage = " Yesterday's appointments grid was not loaded yet.";
+                    typeService = "GetApptsYesterday";
+                    typeTabIndex = 2;
+                    break;
+                case 5:
+                    typeString = "Older";
+                    typeMessage = " Older appointments grid was not loaded yet.";
+                    typeService = "GetApptsOlder";
+                    typeTabIndex = 5;
+                    break;
+                default: // do nothing;
+                    break;
+            }
+
+            DialogViewController viewvc;
+            var viewRoot = new DynaMultiRootElement();
+            var viewSection = new DynaSection(typeString)
+            {
+                HeaderView = new UIView(new CGRect(0, 0, 0, 0)),
+                FooterView = new UIView(new CGRect(0, 0, 0, 0))
+            };
+            var viewLabel = new UILabel(new CGRect(0, 0, tabView.Bounds.Width, 50)) { Text = typeMessage };
+
+            viewSection.Add(viewLabel);
+
+            var btnLoadGrid = new UIButton(UIButtonType.System)
+            {
+                Frame = new CGRect(5, 0, tabView.Bounds.Width, 50),
+                HorizontalAlignment = UIControlContentHorizontalAlignment.Center
+            };
+            btnLoadGrid.SetTitle("Load Grid", UIControlState.Normal);
+            btnLoadGrid.TouchUpInside += delegate
+            {
+                try
+                {
+                    var boundsh = base.TableView.Frame;
+                    loadingOverlay = new LoadingOverlay(boundsh, true);// { loadingLabelText = "Loading MR..." };
+                    loadingOverlay.SetText("Loading...");
+                    tabView.Add(loadingOverlay);
+
+                    var master = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
+
+                    CommonFunctions.AddLogEvent(DateTime.Now, "GetTabInitView", false, null, "new DynaPadService.DynaPadService");
+
+                    var dds = new DynaPadService.DynaPadService { Timeout = 60000, AllowAutoRedirect = true };
+                    var tDynaMenu = JsonConvert.DeserializeObject<Menu>(dds.GetAppointmentsByDateFrame(CommonFunctions.GetUserConfig(), locid, typeService));
+
+                    var eventItems_GetAppointmentsByDateFrame_TabInit = new List<NSDictionary>                     {
+                        getDictionary("Location ID", locid),
+                        getDictionary("Date Frame", typeService)
+                    };
+                    CommonFunctions.AddLogEvent(DateTime.Now, "GetTabInitView", false, eventItems_GetAppointmentsByDateFrame_TabInit, "after dds.GetAppointmentsByDateFrame");
+
+                    switch (type)
+                    {
+                        case 0:
+                            master.IsGridSourceTodaySet = true;
+                            master.GridSourceToday = tDynaMenu.MenuItems.FindAll(x => x.GetType().ToString() == "MenuItem");
+                            todayMenu = tDynaMenu;
+
+                            if (master.GridSourceToday.Any())
+                            {
+                                viewvc = new DialogViewController(GetApptGridElement(typeString, false, true));
+                            }
+                            else
+                            {
+                                viewvc = GetTabEmptyView(0);
+                            }
+
+                            tabView.Items[typeTabIndex].Content = viewvc.View;
+                            tabView.SetNeedsLayout();
+                            break;
+                        case 1:
+                            master.IsGridSourceWeekSet = true;
+                            master.GridSourceWeek = tDynaMenu.MenuItems.FindAll(x => x.GetType().ToString() == "MenuItem");
+                            weekMenu = tDynaMenu;
+
+                            if (master.GridSourceWeek.Any())
+                            {
+                                viewvc = new DialogViewController(GetApptGridElement(typeString, false, true));
+                            }
+                            else
+                            {
+                                viewvc = GetTabEmptyView(1);
+                            }
+
+                            tabView.Items[typeTabIndex].Content = viewvc.View;
+                            tabView.SetNeedsLayout();
+                            break;
+                        case 2:
+                            master.IsGridSourceMonthSet = true;
+                            master.GridSourceMonth = tDynaMenu.MenuItems.FindAll(x => x.GetType().ToString() == "MenuItem");
+                            monthMenu = tDynaMenu;
+
+                            if (master.GridSourceMonth.Any())
+                            {
+                                viewvc = new DialogViewController(GetApptGridElement(typeString, false, true));
+                            }
+                            else
+                            {
+                                viewvc = GetTabEmptyView(2);
+                            }
+
+                            tabView.Items[typeTabIndex].Content = viewvc.View;
+                            tabView.SetNeedsLayout();
+                            break;
+                        case 3:
+                            master.IsGridSourceUpcomingSet = true;
+                            master.GridSourceUpcoming = tDynaMenu.MenuItems.FindAll(x => x.GetType().ToString() == "MenuItem");
+                            upcomingMenu = tDynaMenu;
+
+                            if (master.GridSourceUpcoming.Any())
+                            {
+                                viewvc = new DialogViewController(GetApptGridElement(typeString, false, true));
+                            }
+                            else
+                            {
+                                viewvc = GetTabEmptyView(3);
+                            }
+
+                            tabView.Items[typeTabIndex].Content = viewvc.View;
+                            tabView.SetNeedsLayout();
+                            break;
+                        case 4:
+                            master.IsGridSourceYesterdaySet = true;
+                            master.GridSourceYesterday = tDynaMenu.MenuItems.FindAll(x => x.GetType().ToString() == "MenuItem");
+                            yesterdayMenu = tDynaMenu;
+
+                            if (master.GridSourceYesterday.Any())
+                            {
+                                viewvc = new DialogViewController(GetApptGridElement(typeString, false, true));
+                            }
+                            else
+                            {
+                                viewvc = GetTabEmptyView(4);
+                            }
+
+                            tabView.Items[typeTabIndex].Content = viewvc.View;
+                            tabView.SetNeedsLayout();
+                            break;
+                        case 5:
+                            master.IsGridSourceOlderSet = true;
+                            master.GridSourceOlder = tDynaMenu.MenuItems.FindAll(x => x.GetType().ToString() == "MenuItem");
+                            olderMenu = tDynaMenu;
+
+                            if (master.GridSourceOlder.Any())
+                            {
+                                viewvc = new DialogViewController(GetApptGridElement(typeString, false, true));
+                            }
+                            else
+                            {
+                                viewvc = GetTabEmptyView(5);
+                            }
+
+                            tabView.Items[typeTabIndex].Content = viewvc.View;
+                            tabView.SetNeedsLayout();
+                            break;
+                        default: // do nothing;
+                            break;
+                    }
+
+                    //master.GridSourceWeek = tDynaMenu.MenuItems.FindAll(x => x.GetType().ToString() == "MenuItem");
+                    //viewvc = new DialogViewController(GetApptGridElement(typeString, false, true));
+                    //tabView.SelectedIndex = typeTabIndex;
+                    //viewvc.ReloadData();
+                    //tabView.Items[typeTabIndex].Content = viewvc.View;
+                    //tabView.SetNeedsLayout();
+                }
+                catch (Exception ex)
+                {
+                    var eventItems = new List<NSDictionary>
+                    {
+                        getDictionary("Exception Message", ex.Message),
+                        getDictionary("Exception Stacktrace", ex.StackTrace)
+                    };
+                    CommonFunctions.AddLogEvent(DateTime.Now, "GetTabInitView", true, eventItems, "catch block");
+                    
+                    CommonFunctions.sendErrorEmail(ex);
+                    PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
+                }
+                finally
+                {               
+                    CommonFunctions.AddLogEvent(DateTime.Now, "GetTabInitView", false, null, "end");
+                    
+                    loadingOverlay.Hide();
+                }
+            };
+
+            viewSection.Add(btnLoadGrid);
+
+            viewRoot.Add(viewSection);
+
+            viewvc = new DialogViewController(viewRoot);
+
+            return viewvc;
+        }
+
+
+
+        public DialogViewController GetTabEmptyView(int type)
+        {
+            var locid = string.IsNullOrEmpty(DynaClassLibrary.DynaClasses.LoginContainer.User.SelectedLocation.LocationId) ? null : DynaClassLibrary.DynaClasses.LoginContainer.User.SelectedLocation.LocationId;
+
+            string typeMessage = "";
+
+            switch (type)
+            {
+                case 0:
+                    typeMessage = " No appointments scheduled today.";
+                    break;
+                case 1:
+                    typeMessage = " No appointments scheduled last week.";
+                    break;
+                case 2:
+                    typeMessage = " No appointments scheduled last month.";
+                    break;
+                case 3:
+                    typeMessage = " No upcoming appointments scheduled.";
+                    break;
+                case 4:
+                    typeMessage = " No appointments scheduled yesterday.";
+                    break;
+                case 5:
+                    typeMessage = " No older appointments scheduled.";
+                    break;
+                default: // do nothing;
+                    break;
+            }
+
+            var viewRoot = new DynaMultiRootElement();
+            var viewSection = new DynaSection("Week")
+            {
+                HeaderView = new UIView(new CGRect(0, 0, 0, 0)),
+                FooterView = new UIView(new CGRect(0, 0, 0, 0))
+            };
+            var viewLabel = new UILabel(new CGRect(0, 0, tabView.Bounds.Width, 50))
+            {
+                Text = typeMessage
+            };
+            viewSection.Add(viewLabel);
+            viewRoot.Add(viewSection);
+
+            return new DialogViewController(viewRoot);
+        }
+
+
+
+
 
 
         SfTabView tabView;
@@ -4904,7 +5736,7 @@ namespace DynaPad
                 var ndia = new DialogViewController(dynanroo)
                 {
                     ModalInPopover = true,
-                    ModalPresentationStyle = UIModalPresentationStyle.PageSheet,
+                    ModalPresentationStyle = UIModalPresentationStyle.PageSheet
                 };
 
                 var nlab = new UILabel(new CGRect(10, 0, UIScreen.MainScreen.Bounds.Size.Height - 60, 50)) { Text = "Appointment Lookup:" };
@@ -4922,28 +5754,172 @@ namespace DynaPad
 
                 var master = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
 
-                tabView = new SfTabView()
+                tabView = new SfTabView
                 {
                     Frame = new CGRect(0, 0, UIScreen.MainScreen.Bounds.Size.Height, View.Bounds.Height),
-                    VisibleHeaderCount = 3,
+                    VisibleHeaderCount = 6,
                     EnableSwiping = false 
                 };
                 tabView.SelectionChanged += SfTabView_SelectionChanged;
 
-                bool wEnabled = master.GridSourceWeek.Any() ? true : false;
-                bool mEnabled = master.GridSourceMonth.Any() ? true : false;
+                //bool wEnabled = master.GridSourceWeek.Any() ? true : false;
+                //bool mEnabled = master.GridSourceMonth.Any() ? true : false;
 
                 var todayView = new UIView();
-                var tvc = new DialogViewController(GetApptGridElement("Today", false, true));
+                DialogViewController tvc;
+                if (master.IsGridSourceTodaySet)
+                {
+                    if (master.GridSourceToday.Any())
+                    {
+                        tvc = new DialogViewController(GetApptGridElement("Today", false, true));
+                    }
+                    else
+                    {
+                        tvc = GetTabEmptyView(0);
+                    }
+                }
+                else
+                {
+                    if (master.GridSourceToday.Any())
+                    {
+                        tvc = new DialogViewController(GetApptGridElement("Today", false, true));
+                    }
+                    else
+                    {
+                        tvc = GetTabInitView(0);//
+                    }
+                }
                 todayView.AddSubview(tvc.View);
 
                 var weekView = new UIView();
-                var wvc = new DialogViewController(GetApptGridElement("Week", false, true));
+                DialogViewController wvc;
+                if (master.IsGridSourceWeekSet)
+                {
+                    if (master.GridSourceWeek.Any())
+                    {
+                        wvc = new DialogViewController(GetApptGridElement("Week", false, true));
+                    }
+                    else
+                    {
+                        wvc = GetTabEmptyView(1); //new DialogViewController(weekRoot);
+                    }
+                }
+                else
+                {
+                    if (master.GridSourceWeek.Any())
+                    {
+                        wvc = new DialogViewController(GetApptGridElement("Week", false, true));
+                    }
+                    else
+                    {
+                        wvc = GetTabInitView(1);// new DialogViewController(weekRoot);
+                    }
+                }
                 weekView.AddSubview(wvc.View);
 
                 var monthView = new UIView();
-                var monthvc = new DialogViewController(GetApptGridElement("Month", false, true));
+                DialogViewController monthvc;
+                if (master.IsGridSourceMonthSet)
+                {
+                    if (master.GridSourceMonth.Any())
+                    {
+                        monthvc = new DialogViewController(GetApptGridElement("Month", false, true));
+                    }
+                    else
+                    {
+                        monthvc = GetTabEmptyView(2);
+                    }
+                }
+                else
+                {
+                    if (master.GridSourceMonth.Any())
+                    {
+                        monthvc = new DialogViewController(GetApptGridElement("Month", false, true));
+                    }
+                    else
+                    {
+                        monthvc = GetTabInitView(2);//
+                    }
+                }
                 monthView.AddSubview(monthvc.View);
+
+                var upcomingView = new UIView();
+                DialogViewController upcomingvc;
+                if (master.IsGridSourceUpcomingSet)
+                {
+                    if (master.GridSourceUpcoming.Any())
+                    {
+                        upcomingvc = new DialogViewController(GetApptGridElement("Upcoming", false, true));
+                    }
+                    else
+                    {
+                        upcomingvc = GetTabEmptyView(3);
+                    }
+                }
+                else
+                {
+                    if (master.GridSourceUpcoming.Any())
+                    {
+                        upcomingvc = new DialogViewController(GetApptGridElement("Upcoming", false, true));
+                    }
+                    else
+                    {
+                        upcomingvc = GetTabInitView(3);//
+                    }
+                }
+                upcomingView.AddSubview(upcomingvc.View);
+
+                var yesterdayView = new UIView();
+                DialogViewController yesterdayvc;
+                if (master.IsGridSourceYesterdaySet)
+                {
+                    if (master.GridSourceYesterday.Any())
+                    {
+                        yesterdayvc = new DialogViewController(GetApptGridElement("Yesterday", false, true));
+                    }
+                    else
+                    {
+                        yesterdayvc = GetTabEmptyView(4);
+                    }
+                }
+                else
+                {
+                    if (master.GridSourceYesterday.Any())
+                    {
+                        yesterdayvc = new DialogViewController(GetApptGridElement("Yesterday", false, true));
+                    }
+                    else
+                    {
+                        yesterdayvc = GetTabInitView(4);//
+                    }
+                }
+                yesterdayView.AddSubview(yesterdayvc.View);
+
+                var olderView = new UIView();
+                DialogViewController oldervc;
+                if (master.IsGridSourceOlderSet)
+                {
+                    if (master.GridSourceOlder.Any())
+                    {
+                        oldervc = new DialogViewController(GetApptGridElement("Older", false, true));
+                    }
+                    else
+                    {
+                        oldervc = GetTabEmptyView(5);
+                    }
+                }
+                else
+                {
+                    if (master.GridSourceOlder.Any())
+                    {
+                        oldervc = new DialogViewController(GetApptGridElement("Older", false, true));
+                    }
+                    else
+                    {
+                        oldervc = GetTabInitView(5);//
+                    }
+                }
+                olderView.AddSubview(oldervc.View);
 
                 //var todayButton = new UIButton();
                 //todayButton.SetTitle("Today", UIControlState.Normal);
@@ -4986,20 +5962,35 @@ namespace DynaPad
 
                 var tabItems = new TabItemCollection
                 {
-                    new SfTabItem()
+                    new SfTabItem
                     {
                         Title = "Today",
                         Content =  todayView
                     },
-                    new SfTabItem()
+                    new SfTabItem
                     {
-                        Title = "Week",
+                        Title = "Upcoming",
+                        Content = upcomingView
+                    },
+                    new SfTabItem
+                    {
+                        Title = "Yesterday",
+                        Content = yesterdayView
+                    },
+                    new SfTabItem
+                    {
+                        Title = "Last Week",
                         Content = weekView
                     },
-                    new SfTabItem()
+                    new SfTabItem
                     {
-                        Title = "Month",
+                        Title = "Last Month",
                         Content = monthView
+                    },
+                    new SfTabItem
+                    {
+                        Title = "Older",
+                        Content = olderView
                     }
                 };
 
@@ -5020,28 +6011,20 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "OpenSearchGrid", true, eventItems, "catch block");
+                
                 SearchPresented = false;
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
             }
         }
 
-        private void TodayButton_Clicked(object sender, EventArgs e)
-        {
-            tabView.SelectedIndex = 0;
-        }
-
-        private void WeekButton_Clicked(object sender, EventArgs e)
-        {
-            tabView.SelectedIndex = 1;
-        }
-
-        private void MonthButton_Clicked(object sender, EventArgs e)
-        {
-            tabView.SelectedIndex = 2;
-        }
-
-        private void SfTabView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        void SfTabView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var selectedIndex = e.Index;
             switch (selectedIndex)
@@ -5050,10 +6033,21 @@ namespace DynaPad
                     CurrentApptGridType = "Today";
                     break;
                 case 1:
-                    CurrentApptGridType = "Week";
+                    CurrentApptGridType = "Upcoming";
                     break;
                 case 2:
+                    CurrentApptGridType = "Yesterday";
+                    break;
+                case 3:
+                    CurrentApptGridType = "Week";
+                    break;
+                case 4:
                     CurrentApptGridType = "Month";
+                    break;
+                case 5:
+                    CurrentApptGridType = "Older";
+                    break;
+                default: // do nothing;
                     break;
             }
         }
@@ -5074,7 +6068,7 @@ namespace DynaPad
                 this.AddSubview(gridswitch);
                 //label = new UILabel();
                 //this.AddSubview(label);
-                CanRenderUnLoad = false;
+                CanRendererUnload = false;
             }
 
             protected override void UnLoad()
@@ -5104,6 +6098,8 @@ namespace DynaPad
                     case 5:
                         thedate = theappt.ReportGenerated;
                         break;
+                    default: // do nothing;
+                        break;
                 }
 
                 var ison = thedate.HasValue;
@@ -5113,26 +6109,26 @@ namespace DynaPad
 
 
 
-        private void OnFilterTextChanged(object sender, UISearchBarTextChangedEventArgs e)
+        void OnFilterTextChanged(object sender, UISearchBarTextChangedEventArgs e)
         {
-            GridApptRepository agridsource = (GridApptRepository)agrid.ItemsSource;
+            var agridsource = (GridApptRepository)agrid.ItemsSource;
             agridsource.FilterText = e.SearchText;
         }
 
-        private void CancelButtonClicked(object sender, EventArgs e)
+        void CancelButtonClicked(object sender, EventArgs e)
         {
             filterText.ResignFirstResponder();
             filterText.SetShowsCancelButton(false, true);
             filterText.ResignFirstResponder();
         }
 
-        private void OnFilterChanged()
+        void OnFilterChanged()
         {
             if (agrid.View != null)
             {
-                GridApptRepository agridsource = (GridApptRepository)agrid.ItemsSource;
-                this.agrid.View.Filter = agridsource.FilerRecords;
-                this.agrid.View.RefreshFilter();
+                var agridsource = (GridApptRepository)agrid.ItemsSource;
+                agrid.View.Filter = agridsource.FilerRecords;
+                agrid.View.RefreshFilter();
             }
         }
 
@@ -5147,6 +6143,32 @@ namespace DynaPad
                 if (setCurrent)
                 {
                     CurrentApptGridType = valueId;
+                    switch (valueId)
+                    {
+                        case "Week":
+                        case "GetApptsWeek":
+                            CurrentApptGridType = "Week";
+                            break;
+                        case "Month":
+                        case "GetApptsMonth":
+                            CurrentApptGridType = "Month";
+                            break;
+                        case "Upcoming":
+                        case "GetApptsUpcoming":
+                            CurrentApptGridType = "Upcoming";
+                            break;
+                        case "Yesterday":
+                        case "GetApptsYesterday":
+                            CurrentApptGridType = "Yesterday";
+                            break;
+                        case "Older":
+                        case "GetApptsOlder":
+                            CurrentApptGridType = "Older";
+                            break;
+                        default:
+                            CurrentApptGridType = "Today";
+                            break;
+                    }
                 }
 
                 CGRect theframe;
@@ -5161,7 +6183,7 @@ namespace DynaPad
 
                 var master = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
 
-                List<MenuItem> appts = new List<MenuItem>();
+                var appts = new List<MenuItem>();
 
                 string gtype = valueId;
                 switch (valueId)
@@ -5179,6 +6201,23 @@ namespace DynaPad
                     case "GetApptsMonth":
                         gtype = "Last Month's";
                         appts = master.GridSourceMonth;
+                        break;
+                    case "Upcoming":
+                    case "GetApptsUpcoming":
+                        gtype = "Upcoming";
+                        appts = master.GridSourceUpcoming;
+                        break;
+                    case "Yesterday":
+                    case "GetApptsYesterday":
+                        gtype = "Yesterday's";
+                        appts = master.GridSourceYesterday;
+                        break;
+                    case "Older":
+                    case "GetApptsOlder":
+                        gtype = "Older";
+                        appts = master.GridSourceOlder;
+                        break;
+                    default: // do nothing;
                         break;
                 }
 
@@ -5200,7 +6239,7 @@ namespace DynaPad
                     AllowResizingColumn = true
                 };
 
-                GridApptRepository fds = new GridApptRepository(appts, filterText, agrid);
+                var fds = new GridApptRepository(appts, filterText, agrid);
                 //{
                 //    filterTextChanged = OnFilterChanged
                 //};
@@ -5328,6 +6367,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "GetApptGridElement", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 return null;
@@ -5479,6 +6525,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "GetMRElement", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 return null;
@@ -5778,6 +6831,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "GenerateSummary", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 return "error: " + ex.Message;
@@ -5874,6 +6934,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "ExecuteSpeechCommand", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
             }
@@ -5989,6 +7056,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "ValidateQuestion", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 return false;
@@ -6003,6 +7077,8 @@ namespace DynaPad
         {
             try
             {
+                CommonFunctions.AddLogEvent(DateTime.Now, "GetPhotoNavBtn", false, null, "start");
+                
                 var cameraButton = new UIBarButtonItem(UIBarButtonSystemItem.Camera, (sender, args) =>
                 {
                     var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
@@ -6038,49 +7114,66 @@ namespace DynaPad
                     {
                         // Dismiss the UI yourself
                         controller.DismissViewController(true, () =>
+                        {
+                            if (!t.IsCanceled)
                             {
-                                if (!t.IsCanceled)
+                                MediaFile file = t.Result;
+                                var testByte = ByteArrayFromStream(file.Path);
+                                var testLength = testByte.Length;
+                                var filename = patientName.Replace(" ", "_") + "_" + sectionName + "_" + DateTime.Now.ToString("s").Replace(":", "_") + ".jpg";
+
+                                //var dps = new DynaPadService.DynaPadService();
+                                //var savefile = dps.SaveFile(apptId, patientId, doctorId, locationId, filename, "DynaPad", testByte, IsDoctorForm, false);
+
+                                //if (CrossConnectivity.Current.IsConnected)
+                                //{
+
+                                var bw = new BackgroundWorker
                                 {
-                                    MediaFile file = t.Result;
-                                    var testByte = ByteArrayFromStream(file.Path);
-                                    var testLength = testByte.Length;
-                                    var filename = patientName.Replace(" ", "_") + "_" + sectionName + "_" + DateTime.Now.ToString("s").Replace(":", "_") + ".jpg";
+                                    // this allows our worker to report progress during work
+                                    WorkerReportsProgress = true
+                                };
 
-                                    //var dps = new DynaPadService.DynaPadService();
-                                    //var savefile = dps.SaveFile(apptId, patientId, doctorId, locationId, filename, "DynaPad", testByte, IsDoctorForm, false);
+                                // what to do in the background thread
+                                bw.DoWork += delegate (object o, DoWorkEventArgs argss)
+                                {
+                                var b = o as BackgroundWorker;
 
-                                    //if (CrossConnectivity.Current.IsConnected)
-                                    //{
+                                    CommonFunctions.AddLogEvent(DateTime.Now, "GetPhotoNavBtn", false, null, "new DynaPadService.DynaPadService");
 
-                                    var bw = new BackgroundWorker
-                                    {
-                                        // this allows our worker to report progress during work
-                                        WorkerReportsProgress = true
+                                    var dps = new DynaPadService.DynaPadService();
+                                    var savefile = dps.SaveFile(CommonFunctions.GetUserConfig(), apptId, patientId, doctorId, locationId, filename, "DynaPad Photo", "DynaPad", "", "", testByte, IsDoctorForm, false);
+                                
+                                    var eventItems_SaveFile_Photo = new List<NSDictionary>                                     {
+                                        getDictionary("Appointment ID", apptId),
+                                        getDictionary("Patient iD", patientId),
+                                        getDictionary("Doctor ID", doctorId),
+                                        getDictionary("Location ID", locationId),
+                                        getDictionary("File Name", filename),
+                                        getDictionary("File Type", "DynaPad Photo"),
+                                        getDictionary("Folder Name", "DynaPad"),
+                                        getDictionary("Path Physical", ""),
+                                        getDictionary("Path Virtual", ""),
+                                        getDictionary("Is Doctor Form", IsDoctorForm.ToString()),
+                                        getDictionary("Is Signature", "false")
                                     };
+                                    CommonFunctions.AddLogEvent(DateTime.Now, "GetPhotoNavBtn", false, eventItems_SaveFile_Photo, "after dps.SaveFile");
+                                };
 
-                                    // what to do in the background thread
-                                    bw.DoWork += delegate (object o, DoWorkEventArgs argss)
-                                    {
-                                        var b = o as BackgroundWorker;
+                                // what to do when worker completes its task (notify the user)
+                                bw.RunWorkerCompleted += delegate
+                                {
+                                    PresentViewController(CommonFunctions.AlertPrompt("Photo Saved", "A new photo has been saved to medical records", true, null, false, null), true, null);
+                                };
 
-                                        var dps = new DynaPadService.DynaPadService();
-                                        var savefile = dps.SaveFile(CommonFunctions.GetUserConfig(), apptId, patientId, doctorId, locationId, filename, "DynaPad Photo", "DynaPad", "", "", testByte, IsDoctorForm, false);
-                                    };
-
-                                    // what to do when worker completes its task (notify the user)
-                                    bw.RunWorkerCompleted += delegate
-                                    {
-                                        PresentViewController(CommonFunctions.AlertPrompt("Photo Saved", "A new photo has been saved to medical records", true, null, false, null), true, null);
-                                    };
-
-                                    bw.RunWorkerAsync();
-                                    //}
-                                    //else
-                                    //{
-                                    //	PresentViewController(CommonFunctions.InternetAlertPrompt(), true, null);
-                                    //}
-                                }
-                            });
+                                bw.RunWorkerAsync();
+                                //}
+                                //else
+                                //{
+                                //    PresentViewController(CommonFunctions.InternetAlertPrompt(), true, null);
+                                //}
+                            }
+                        });
 
                     }, TaskScheduler.FromCurrentSynchronizationContext());
                 });
@@ -6092,10 +7185,19 @@ namespace DynaPad
                     cameraButton.Enabled = false;
                 }
 
+                CommonFunctions.AddLogEvent(DateTime.Now, "GetPhotoNavBtn", false, null, "end");
+
                 return cameraButton;
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "GetPhotoNavBtn", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 return null;
@@ -6139,6 +7241,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "ByteArrayFromStream", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 return null;
@@ -6235,6 +7344,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "GetDrawNavBtn", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 return null;
@@ -6321,6 +7437,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "GetDynaDrawNavBtn", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 return null;
@@ -6335,6 +7458,8 @@ namespace DynaPad
             {
                 var navdic = new UIBarButtonItem(UIImage.FromBundle("Dictation"), UIBarButtonItemStyle.Plain, (sender, args) =>
                 {
+                    CommonFunctions.AddLogEvent(DateTime.Now, "GetDicNavBtn", false, null, "start");
+                    
                     audioFilePath = null;
 
                     CancelRecording.Frame = new CGRect(0, 0, 350, 50);
@@ -6439,9 +7564,20 @@ namespace DynaPad
 
                     string[][] dictations = { };
                     if (CrossConnectivity.Current.IsConnected)
-                    {
+                    {                  
+                        CommonFunctions.AddLogEvent(DateTime.Now, "GetDicNavBtn", false, null, "new DynaPadService.DynaPadService");
+                        
                         var dps = new DynaPadService.DynaPadService();
                         dictations = dps.GetFormDictations(CommonFunctions.GetUserConfig(), SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, true, SelectedAppointment.SelectedQForm.LocationId);
+                    
+                        var eventItems_GetFormDictations = new List<NSDictionary>                         {
+                            getDictionary("Form ID", SelectedAppointment.SelectedQForm.FormId),
+                            getDictionary("Section ID", sectionId),
+                            getDictionary("Doctor ID", SelectedAppointment.ApptDoctorId),
+                            getDictionary("Is Doctor Form", "true"),
+                            getDictionary("Location ID", SelectedAppointment.SelectedQForm.LocationId)
+                        };
+                        CommonFunctions.AddLogEvent(DateTime.Now, "GetDicNavBtn", false, eventItems_GetFormDictations, "after dps.GetFormDictations");
                     }
                     else
                     {
@@ -6552,10 +7688,10 @@ namespace DynaPad
 
                     //segDict.ValueChanged += (s, e) =>
                     //{
-                    //	if (segDict.SelectedSegment == 0)
-                    //	{
-                    //		pop.Dismiss(true);
-                    //	}
+                    //    if (segDict.SelectedSegment == 0)
+                    //    {
+                    //        pop.Dismiss(true);
+                    //    }
                     //};
 
                     SaveRecordedSound.TouchUpInside += delegate
@@ -6576,12 +7712,21 @@ namespace DynaPad
                     };
 
                     //pop.PresentFromBarButtonItem(NavigationItem.RightBarButtonItems[0], UIPopoverArrowDirection.Unknown, true);
+
+                    CommonFunctions.AddLogEvent(DateTime.Now, "GetDicNavBtn", false, null, "end");
                 });
 
                 return navdic;
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "GetDicNavBtn", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 return null;
@@ -6595,15 +7740,17 @@ namespace DynaPad
         {
             try
             {
+                CommonFunctions.AddLogEvent(DateTime.Now, "DeleteSavedDictation", false, null, "start");
+                
                 //bool isValid = password == Constants.Password;
                 bool isValid = false;
 
                 //for (int i = 0; i < Constants.Logins.GetLength(0); i++)
                 //{
-                //	if (SelectedAppointment.ApptLocationId == Constants.Logins[i, 2])
-                //	{
-                //		isValid |= password == Constants.Logins[i, 1];
-                //	}
+                //    if (SelectedAppointment.ApptLocationId == Constants.Logins[i, 2])
+                //    {
+                //        isValid |= password == Constants.Logins[i, 1];
+                //    }
                 //}
 
                 if (SelectedAppointment.ApptLocationId == DynaClassLibrary.DynaClasses.LoginContainer.User.SelectedLocation.LocationId)
@@ -6614,9 +7761,20 @@ namespace DynaPad
                 if (CrossConnectivity.Current.IsConnected)
                 {
                     if (isValid)
-                    {
+                    {                  
+                        CommonFunctions.AddLogEvent(DateTime.Now, "DeleteSavedDictation", false, null, "new DynaPadService.DynaPadService");
+                        
                         var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
                         var deletedDictation = dds.DeleteDicatation(CommonFunctions.GetUserConfig(), dictation[3], formId, sectionId, SelectedAppointment.SelectedQForm.DoctorId);
+
+                        var eventItems_DeleteDicatation = new List<NSDictionary>                         {
+                            getDictionary("Dictation ID", dictation[3]),
+                            getDictionary("Form ID", formId),
+                            getDictionary("Section ID", sectionId),
+                            getDictionary("Doctor ID", SelectedAppointment.SelectedQForm.DoctorId)
+                        };
+                        CommonFunctions.AddLogEvent(DateTime.Now, "DeleteSavedDictation", false, eventItems_DeleteDicatation, "after dds.DeleteDicatation");
+                        
                         NavigationController.DismissViewController(true, null);
                     }
                     else
@@ -6632,9 +7790,18 @@ namespace DynaPad
                 {
                     PresentViewController(CommonFunctions.InternetAlertPrompt(), true, null);
                 }
+
+                CommonFunctions.AddLogEvent(DateTime.Now, "DeleteSavedDictation", false, null, "end");
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "DeleteSavedDictation", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
@@ -6645,7 +7812,7 @@ namespace DynaPad
         void OnStopRecording(object sender, EventArgs e)
         {
             //if (player.Playing)
-            //	player.Stop();
+            //    player.Stop();
 
             if (recorder == null)
                 return;
@@ -6813,16 +7980,16 @@ namespace DynaPad
 
                 //PlayRecordedSoundButton.TouchUpInside += (sendi, eve) =>
                 //{
-                //	StartRecordingButton.Enabled = true;
-                //	StartRecordingButton.Alpha = 1;
-                //	StopRecordingButton.Enabled = false;
-                //	StopRecordingButton.Alpha = (nfloat)0.5;
-                //	PlayRecordedSoundButton.Enabled = true;
-                //	PlayRecordedSoundButton.Alpha = 1;
-                //	RecordingStatusLabel.Text = "";
-                //	cellPlay.ImageView.Image = UIImage.FromBundle("Play");
-                //	PlayRecordedSoundButton.TouchUpInside += OnPlayRecordedSound;
-                //	player.Stop();
+                //    StartRecordingButton.Enabled = true;
+                //    StartRecordingButton.Alpha = 1;
+                //    StopRecordingButton.Enabled = false;
+                //    StopRecordingButton.Alpha = (nfloat)0.5;
+                //    PlayRecordedSoundButton.Enabled = true;
+                //    PlayRecordedSoundButton.Alpha = 1;
+                //    RecordingStatusLabel.Text = "";
+                //    cellPlay.ImageView.Image = UIImage.FromBundle("Play");
+                //    PlayRecordedSoundButton.TouchUpInside += OnPlayRecordedSound;
+                //    player.Stop();
                 //};
 
                 StopRecordingButton.TouchUpInside += StopRecordingPlayback;
@@ -6834,6 +8001,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "OnPlayRecordedSound", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //System.Console.WriteLine("There was a problem playing back audio: ");
@@ -6886,13 +8060,13 @@ namespace DynaPad
 
                 //PlaySavedDictationButton.TouchUpInside += (sender, e) => 
                 //{ 
-                //	pplayer.Stop();
-                //	//pplayer.Dispose();
-                //	statusLabel.Text = duration;
-                //	cd.ImageView.Image = UIImage.FromBundle("CircledPlay");
-                //	PlaySavedDictationButton.TouchUpInside += delegate
+                //    pplayer.Stop();
+                //    //pplayer.Dispose();
+                //    statusLabel.Text = duration;
+                //    cd.ImageView.Image = UIImage.FromBundle("CircledPlay");
+                //    PlaySavedDictationButton.TouchUpInside += delegate
                 //   {
-                //	   OnPlaySavedDictation(title, dictationBytes, pplayer, statusLabel, cd);
+                //       OnPlaySavedDictation(title, dictationBytes, pplayer, statusLabel, cd);
                 //   };
                 //};
 
@@ -6900,6 +8074,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "OnPlaySavedDictation", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //System.Console.WriteLine("There was a problem playing back audio: ");
@@ -6942,6 +8123,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "PrepareAudioRecording", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //System.Console.WriteLine("record error: " + ex.Message);
@@ -6972,6 +8160,8 @@ namespace DynaPad
         {
             try
             {
+                CommonFunctions.AddLogEvent(DateTime.Now, "OnSaveRecordedSound", false, null, "start");
+                
                 var bounds = pop.PopoverContentSize;
                 loadingOverlay = new LoadingOverlay(new CGRect(new CGPoint(0, 0), bounds));
                 //mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
@@ -6983,9 +8173,23 @@ namespace DynaPad
                     var dictationData = NSData.FromUrl(audioFilePath); //the path here can be a path to a video on the camera roll
                     var dictationArray = dictationData.ToArray();
 
+                    CommonFunctions.AddLogEvent(DateTime.Now, "OnSaveRecordedSound", false, null, "new DynaPadService.DynaPadService");
+
+                    var dicTitle = sectionId + "_" + DateTime.Now.ToShortTimeString();
                     var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
                     //DynaPadService.DynaPadService dds = new DynaPadService.DynaPadService();
-                    var dictationPath = dds.SaveDictation(CommonFunctions.GetUserConfig(), SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, true, SelectedAppointment.SelectedQForm.LocationId, sectionId + "_" + DateTime.Now.ToShortTimeString(), dictationArray);
+                    var dictationPath = dds.SaveDictation(CommonFunctions.GetUserConfig(), SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, true, SelectedAppointment.SelectedQForm.LocationId, dicTitle, dictationArray);
+                    
+                    var eventItems_SaveDictation = new List<NSDictionary>                     {
+                        getDictionary("Form ID", SelectedAppointment.SelectedQForm.FormId),
+                        getDictionary("Section ID", sectionId),
+                        getDictionary("Doctor ID", SelectedAppointment.ApptDoctorId),
+                        getDictionary("Is Doctor Form", "true"),
+                        getDictionary("Location ID", SelectedAppointment.SelectedQForm.LocationId),
+                        getDictionary("Dictation Title", dicTitle)
+                    };
+                    CommonFunctions.AddLogEvent(DateTime.Now, "OnSaveRecordedSound", false, eventItems_SaveDictation, "after dds.SaveDictation");
+                    
                     //System.Console.WriteLine("Saving Recording {0}", audioFilePath);
 
                     //var dps = new DynaPadService.DynaPadService();
@@ -6993,30 +8197,30 @@ namespace DynaPad
                     //dicSec.RemoveRange(4, dicSec.Elements.Count - 4);
                     //foreach (string[] dictation in dictations)
                     //{
-                    //	byte[] bytes = Convert.FromBase64String(dictation[2]);
-                    //	NSData dataDictation = NSData.FromArray(bytes);
-                    //	NSError err;
-                    //	var dicplayer = new AVAudioPlayer(dataDictation, "aac", out err);
-                    //	var duration = TimeSpan.FromSeconds(dicplayer.Duration).ToString(@"hh\:mm\:ss");
-                    //	var statusLabel = new UILabel(new CGRect(210, 0, 120, 50));
-                    //	statusLabel.Text = duration;
-                    //	//var PlaySavedDictationButton = new UIButton();
-                    //	PlaySavedDictationButton.Frame = new CGRect(0, 0, 160, 50);
-                    //	PlaySavedDictationButton.SetTitle(dictation[1], UIControlState.Normal);
-                    //	PlaySavedDictationButton.SetTitleColor(UIColor.Black, UIControlState.Normal);
-                    //	//PlaySavedDictationButton.SetImage(UIImage.FromBundle("CircledPlay"), UIControlState.Normal);
-                    //	cellDict = new UITableViewCell(UITableViewCellStyle.Default, null);
-                    //	cellDict.Frame = new CGRect(0, 0, 350, 50);
-                    //	cellDict.BackgroundColor = UIColor.LightGray;
-                    //	cellDict.ImageView.Image = UIImage.FromBundle("CircledPlay");
-                    //	cellDict.ContentView.Add(PlaySavedDictationButton);
-                    //	cellDict.ContentView.Add(statusLabel);
-                    //	PlaySavedDictationButton.TouchUpInside += delegate
-                    //	{
-                    //		OnPlaySavedDictation(dictation[1], dictation[2], dicplayer, statusLabel, cellDict);
-                    //	};
-                    //	dicSec.Add(cellDict);
-                    //	dicSec.GetImmediateRootElement().Reload(dicSec, UITableViewRowAnimation.Fade);
+                    //    byte[] bytes = Convert.FromBase64String(dictation[2]);
+                    //    NSData dataDictation = NSData.FromArray(bytes);
+                    //    NSError err;
+                    //    var dicplayer = new AVAudioPlayer(dataDictation, "aac", out err);
+                    //    var duration = TimeSpan.FromSeconds(dicplayer.Duration).ToString(@"hh\:mm\:ss");
+                    //    var statusLabel = new UILabel(new CGRect(210, 0, 120, 50));
+                    //    statusLabel.Text = duration;
+                    //    //var PlaySavedDictationButton = new UIButton();
+                    //    PlaySavedDictationButton.Frame = new CGRect(0, 0, 160, 50);
+                    //    PlaySavedDictationButton.SetTitle(dictation[1], UIControlState.Normal);
+                    //    PlaySavedDictationButton.SetTitleColor(UIColor.Black, UIControlState.Normal);
+                    //    //PlaySavedDictationButton.SetImage(UIImage.FromBundle("CircledPlay"), UIControlState.Normal);
+                    //    cellDict = new UITableViewCell(UITableViewCellStyle.Default, null);
+                    //    cellDict.Frame = new CGRect(0, 0, 350, 50);
+                    //    cellDict.BackgroundColor = UIColor.LightGray;
+                    //    cellDict.ImageView.Image = UIImage.FromBundle("CircledPlay");
+                    //    cellDict.ContentView.Add(PlaySavedDictationButton);
+                    //    cellDict.ContentView.Add(statusLabel);
+                    //    PlaySavedDictationButton.TouchUpInside += delegate
+                    //    {
+                    //        OnPlaySavedDictation(dictation[1], dictation[2], dicplayer, statusLabel, cellDict);
+                    //    };
+                    //    dicSec.Add(cellDict);
+                    //    dicSec.GetImmediateRootElement().Reload(dicSec, UITableViewRowAnimation.Fade);
                     //}
                     //loadingOverlay.Hide();
 
@@ -7030,6 +8234,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "OnSaveRecordedSound", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //throw new Exception(ex.Message + Environment.NewLine + ex.StackTrace, ex.InnerException);
@@ -7049,6 +8260,13 @@ namespace DynaPad
             }
             catch (Exception ex)
             {
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "OnCancelRecording", true, eventItems, "catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
                 //Console.WriteLine("There was a problem canceling audio: ");

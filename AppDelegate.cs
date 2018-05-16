@@ -41,6 +41,8 @@ namespace DynaPad
 			manager.StartManager();
 			manager.Authenticator.AuthenticateInstallation(); // This line is obsolete in crash only builds
 
+		    manager.MetricsManager.TrackEvent("GetDynaStart");
+
             // Request notification permissions from the user
             UNUserNotificationCenter.Current.RequestAuthorization(UNAuthorizationOptions.Alert, (approved, err) => {
                 // Handle approval
@@ -96,6 +98,31 @@ namespace DynaPad
             catch(Exception ex)
 			{
 				CommonFunctions.sendErrorEmail(ex);
+                return false;
+            }
+
+            var directoryname_logs = Path.Combine(documents, "DynaLog");
+			try
+            {
+				if (Directory.Exists(directoryname_logs))
+                {
+                    //string[] restorefiles = Directory.GetFiles(directoryname);
+					foreach (var file in Directory.GetFiles(directoryname_logs))
+                    {
+                        if ((File.GetCreationTime(file) - DateTime.Today).TotalDays > 30)
+                        {
+                            File.Delete(file);
+                        }
+                    }
+                }
+                else
+                {
+                    Directory.CreateDirectory(directoryname);
+                }
+            }
+            catch (Exception ex)
+            {
+                CommonFunctions.sendErrorEmail(ex);
                 return false;
             }
 

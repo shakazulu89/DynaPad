@@ -48,6 +48,8 @@ using CGRect = global::System.Drawing.RectangleF;
 namespace DynaPad
 {
 
+
+
     public class CanvasContainerView : UIView
     {
         UIView canvasView;
@@ -105,7 +107,7 @@ namespace DynaPad
 
             return new CanvasContainerView(frame, canvasView);
         }
-    }
+	}
 
 
     public class CredentialsProvider : ICredentialsProvider
@@ -125,7 +127,21 @@ namespace DynaPad
                 // Otherwise you can:
                 // return false;
             }
+		}
+
+
+        public static NSDictionary getDictionary(string text, string value)
+        {
+            object[] objects = new object[2];
+            object[] keys = new object[2];
+            keys.SetValue("Text", 0);
+            keys.SetValue("Value", 1);
+            objects.SetValue((NSString)text, 0);
+            objects.SetValue((NSString)value, 1);
+
+            return NSDictionary.FromObjectsAndKeys(objects, keys);
         }
+
 
         public void Login(string userName, string password, Action successCallback, Action<LoginScreenFaultDetails> failCallback)
         {
@@ -164,9 +180,9 @@ namespace DynaPad
                 //}
 
                 if (CrossConnectivity.Current.IsConnected)
-                {
-                    var dds = new DynaPadService.DynaPadService() { Timeout = 20000 };
-                    var jsonUser = dds.Login(NSUserDefaults.StandardUserDefaults.StringForKey("Domain_Name"), NSUserDefaults.StandardUserDefaults.StringForKey("Dyna_Device_Name"), userName, password);
+                {               
+                    var dds = new DynaPadService.DynaPadService { Timeout = 20000 };
+					var jsonUser = dds.Login(NSUserDefaults.StandardUserDefaults.StringForKey("Domain_Name"), NSUserDefaults.StandardUserDefaults.StringForKey("Dyna_Device_Name"), userName, password);
                     JsonHandler.OriginalFormJsonString = jsonUser;
                     DynaClassLibrary.DynaClasses.LoginContainer.User = new DynaClassLibrary.DynaClasses.User();
                     DynaClassLibrary.DynaClasses.LoginContainer.User = JsonConvert.DeserializeObject<DynaClassLibrary.DynaClasses.User>(jsonUser);
@@ -196,11 +212,63 @@ namespace DynaPad
                             userFault = false;
                             passFault = false;
                             generalFault = true;
+							break;
+                        default: // do nothing;
                             break;
                     }
 
                     if (isValid)
-                    {
+					{
+                        var logFileName = "Log_" + DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DeviceId + "_" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".txt";
+						DynaClassLibrary.DynaClasses.LoginContainer.User.LogFileName = logFileName;
+
+						var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                        var logDirectoryPath = Path.Combine(documents, "DynaLog");
+						var logFilePath = Path.Combine(logDirectoryPath, logFileName);
+
+                        if (!Directory.Exists(logDirectoryPath))
+                        {
+                            Directory.CreateDirectory(logDirectoryPath);
+						}
+
+						if (!File.Exists(logFilePath))
+                        {
+							File.Create(logFilePath);
+						}
+
+						var dynaConfig = CommonFunctions.GetUserConfig();
+
+                        var eventItems_Login = new List<NSDictionary>                         {
+							getDictionary("Email Support", dynaConfig.EmailSupport),
+							getDictionary("Email Postmaster", dynaConfig.EmailPostmaster),
+							getDictionary("Email Roy", dynaConfig.EmailRoy),
+							getDictionary("Email SMTP", dynaConfig.EmailSmtp),
+							getDictionary("Email User", dynaConfig.EmailUser),
+							getDictionary("Email Password", "*"),
+							getDictionary("Email Port", dynaConfig.EmailPort.ToString()),
+							getDictionary("Connection String", "*"),
+							getDictionary("Connection Name", dynaConfig.ConnectionName),
+							getDictionary("Database Name", dynaConfig.DatabaseName),
+							getDictionary("Domain Host", dynaConfig.DomainHost),
+							getDictionary("Domain Root Path Virtual", dynaConfig.DomainRootPathVirtual),
+							getDictionary("Domain Root Path Physical", dynaConfig.DomainRootPathPhysical),
+							getDictionary("Domain Claimants Path Virtual", dynaConfig.DomainClaimantsPathVirtual),
+							getDictionary("Domain Claimants Path Physical", dynaConfig.DomainClaimantsPathPhysical),
+							getDictionary("Device ID", dynaConfig.DeviceId)
+                        };
+
+						int dpc = 1;
+						foreach (var dp in dynaConfig.DomainPaths)
+						{
+							eventItems_Login.Add(getDictionary("Domain Path Name " + dpc, dp.DomainPathName));
+							eventItems_Login.Add(getDictionary("Domain Path Physical " + dpc, dp.DomainPathPhysical));
+							eventItems_Login.Add(getDictionary("Domain Path Virtual " + dpc, dp.DomainPathVirtual));
+
+							dpc++;
+						}
+
+						CommonFunctions.AddLogEvent(DateTime.Now, "Login", false, eventItems_Login, "Dyna Config");
+
                         // If login was successfully completed
                         successCallback();
                     }
@@ -620,7 +688,14 @@ namespace DynaPad
                 tableView.SelectRow(path, true, UITableViewScrollPosition.None);
             }
             catch (Exception ex)
-            {
+			{
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "SectionStringElement", true, eventItems, "Selected catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 dvc.InvokeOnMainThread(() =>
                 {
@@ -632,6 +707,19 @@ namespace DynaPad
         public override bool Matches(string text)
         {
             return (Value != null && Value.IndexOf(text, StringComparison.CurrentCultureIgnoreCase) != -1) || base.Matches(text);
+		}
+
+
+        NSDictionary getDictionary(string text, string value)
+        {
+            object[] objects = new object[2];
+            object[] keys = new object[2];
+            keys.SetValue("Text", 0);
+            keys.SetValue("Value", 1);
+            objects.SetValue((NSString)text, 0);
+            objects.SetValue((NSString)value, 1);
+
+            return NSDictionary.FromObjectsAndKeys(objects, keys);
         }
     }
 
@@ -1180,7 +1268,14 @@ namespace DynaPad
                             cts?.Cancel();
                         }
                         catch (ObjectDisposedException oex)     // in case previous search completed
-                        {
+						{
+                            var eventItems = new List<NSDictionary>
+                            {
+                                getDictionary("Exception Message", oex.Message),
+                                getDictionary("Exception Stacktrace", oex.StackTrace)
+                            };
+                            CommonFunctions.AddLogEvent(DateTime.Now, "DynaFormRootElement", true, eventItems, "Selected cancelButton catch block");
+                            
                             Console.WriteLine($"\nObjectDisposedException in cancelButton.TouchUpInside with: {oex.Message}");
                         }
                     };
@@ -1205,7 +1300,14 @@ namespace DynaPad
                             var result = await task;
                         }
                         catch (TaskCanceledException tex)       // if the operation is cancelled, do nothing
-                        {
+						{
+                            var eventItems = new List<NSDictionary>
+                            {
+                                getDictionary("Exception Message", tex.Message),
+                                getDictionary("Exception Stacktrace", tex.StackTrace)
+                            };
+                            CommonFunctions.AddLogEvent(DateTime.Now, "DynaFormRootElement", true, eventItems, "Selected cts catch block");
+                            
                             Console.WriteLine($"\nCanceled with: {tex.Message}");
 
                             HandleCancel(dvc, tableView, path);
@@ -1231,7 +1333,14 @@ namespace DynaPad
                 //loadingOverlay.Hide();
             }
             catch (Exception ex)
-            {
+			{
+                var eventItems = new List<NSDictionary>
+                {
+                    getDictionary("Exception Message", ex.Message),
+                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "DynaFormRootElement", true, eventItems, "Selected catch block");
+                
                 CommonFunctions.sendErrorEmail(ex);
                 dvc.InvokeOnMainThread(() =>
                 {
@@ -1243,6 +1352,19 @@ namespace DynaPad
                 isRunning = false;
                 loadingOverlay.Hide();
             }
+		}
+
+
+        NSDictionary getDictionary(string text, string value)
+        {
+            object[] objects = new object[2];
+            object[] keys = new object[2];
+            keys.SetValue("Text", 0);
+            keys.SetValue("Value", 1);
+            objects.SetValue((NSString)text, 0);
+            objects.SetValue((NSString)value, 1);
+
+            return NSDictionary.FromObjectsAndKeys(objects, keys);
         }
 
         public event EventHandler<EventArgs> OnSelected;
@@ -1949,6 +2071,8 @@ namespace DynaPad
                         break;
                     case "Picker":
                         obj.Values[ic.Header.Replace(" ", "")] = ic.AnswerText;
+						break;
+                    default: // do nothing;
                         break;
                 }
             }
@@ -1973,13 +2097,15 @@ namespace DynaPad
 
 
 
-    public class DynaAuto : SFAutoComplete
+    public class DynaAuto : SfAutoComplete
     {
-        public DynaAuto(AutoCompleteDelegate ddelegate)
-        {
-            //this.Delegate = new Delegateclass();
-            Delegate = ddelegate;
-        }
+        //public DynaAuto(AutoCompleteDelegate ddelegate)
+        //{
+        //    //this.Delegate = new Delegateclass();
+        //    Delegate = ddelegate;
+        //}
+
+		//public DynaAuto(){}
 
         public bool IsEnabled;
         public string ConditionTriggerId;
