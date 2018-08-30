@@ -210,6 +210,13 @@ namespace DynaPad
         {
             try
             {
+                var eventItems_SetDetailItem = new List<NSDictionary>
+                {
+                    getDictionary("Context", context),
+                    getDictionary("Value ID", valueId)
+                };
+                CommonFunctions.AddLogEvent(DateTime.Now, "SetDetailItem", false, eventItems_SetDetailItem, "event fired");
+
                 var boundsh = base.TableView.Frame;
                 mvc = (DialogViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
 
@@ -729,7 +736,7 @@ namespace DynaPad
             {
                 //if (CrossConnectivity.Current.IsConnected)
                 //{
-                //var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
+                //var dds = new DynaPadService.DynaPadService { Timeout = 30000 };
                 var finalJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
 
                 //summaryFileName = dds.GenerateSummary(CommonFunctions.GetUserConfig(), finalJson);
@@ -2036,7 +2043,7 @@ namespace DynaPad
                         var patientname = SelectedAppointment.ApptPatientName;
                         var isdoctorform = SelectedAppointment.SelectedQForm.IsDoctorForm;
 
-                        //var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
+                        //var dds = new DynaPadService.DynaPadService { Timeout = 30000 };
 
                         cancelButtonF.RemoveFromSuperview();
 
@@ -2239,7 +2246,7 @@ namespace DynaPad
                         //string[][] FormPresetNames = { };
                         //if (CrossConnectivity.Current.IsConnected)
                         //{
-                        //var dds = new DynaPadService.DynaPadService() { Timeout = 60000 };
+                        //var dds = new DynaPadService.DynaPadService() { Timeout = 30000 };
                         //FormPresetNames = dds.GetAnswerPresets(CommonFunctions.GetUserConfig(), SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId);
                         var SectionPresets = GetPresetData(SelectedAppointment.ApptFormId, SelectedAppointment.ApptDoctorId, sectionId);
                         //}
@@ -2260,15 +2267,22 @@ namespace DynaPad
                         };
                         noPresetRadio.OnSelected += delegate
                         {
-                            string presetJson = origS;
-                            SelectedAppointment.SelectedQForm.FormSections[fs] = JsonConvert.DeserializeObject<FormSection>(presetJson);
-                            var selectedSection = SelectedAppointment.SelectedQForm.FormSections.Find((FormSection obj) => obj.SectionId == sectionId);
-                            if (selectedSection != null)
+                            var NoPresetPrompt = UIAlertController.Create("No Preset", "You might lose any unsaved data, continue?", UIAlertControllerStyle.Alert);
+                            NoPresetPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action =>
                             {
-                                selectedSection.SectionSelectedTemplateId = presetGroup.Selected;
-                            }
+                                string presetJson = origS;
+                                SelectedAppointment.SelectedQForm.FormSections[fs] = JsonConvert.DeserializeObject<FormSection>(presetJson);
+                                var selectedSection = SelectedAppointment.SelectedQForm.FormSections.Find((FormSection obj) => obj.SectionId == sectionId);
+                                if (selectedSection != null)
+                                {
+                                    selectedSection.SectionSelectedTemplateId = presetGroup.Selected;
+                                }
 
-                            SetDetailItem(new Section(sectionQuestions.SectionName), "", sectionId, origS, IsDoctorForm, nextbtn);
+                                SetDetailItem(new Section(sectionQuestions.SectionName), "", sectionId, origS, IsDoctorForm, nextbtn);
+                            }));
+                            NoPresetPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
+                            //Present Alert
+                            PresentViewController(NoPresetPrompt, true, null);
                         };
 
                         presetSection.Add(noPresetRadio);
@@ -3641,7 +3655,7 @@ namespace DynaPad
 
                     CommonFunctions.AddLogEvent(DateTime.Now, "SaveSectionPreset", false, null, "new DynaPadService.DynaPadService");
                     
-                    var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
+                    var dds = new DynaPadService.DynaPadService { Timeout = 30000 };
                     dds.SaveAnswerPreset(CommonFunctions.GetUserConfig(), SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, true, presetName, presetJson, SelectedAppointment.ApptLocationId, presetId);
                                                         var eventItems_SaveAnswerPreset = new List<NSDictionary>                     {
                         getDictionary("Form ID", SelectedAppointment.SelectedQForm.FormId),
@@ -3727,7 +3741,7 @@ namespace DynaPad
 
                     CommonFunctions.AddLogEvent(DateTime.Now, "DeleteSectionPreset", false, null, "new DynaPadService.DynaPadService");
                     
-                    var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
+                    var dds = new DynaPadService.DynaPadService { Timeout = 30000 };
                     dds.DeleteAnswerPreset(CommonFunctions.GetUserConfig(), SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, presetId);
                                          var eventItems_DeleteAnswerPreset = new List<NSDictionary>                     {
                         getDictionary("Form ID", SelectedAppointment.SelectedQForm.FormId),
@@ -4333,11 +4347,11 @@ namespace DynaPad
                 
                 var navmr = new UIBarButtonItem(UIBarButtonSystemItem.Organize, (sender, args) =>
                 {
-                    var nlab = new UILabel(new CGRect(10, 0, View.Bounds.Width, 50)) { Text = "Medical Records: " + SelectedAppointment.ApptPatientName };
+                    var nlab = new UILabel(new CGRect(10, 0, UIScreen.MainScreen.Bounds.Size.Height - 60, 50)) { Text = "Medical Records: " + SelectedAppointment.ApptPatientName };
 
-                    var ncellHeader = new UITableViewCell(UITableViewCellStyle.Default, null) { Frame = new CGRect(0, 0, View.Bounds.Width, 50) };
+                    var ncellHeader = new UITableViewCell(UITableViewCellStyle.Default, null) { Frame = new CGRect(0, 0, UIScreen.MainScreen.Bounds.Size.Height, 50) };
 
-                    var nheadclosebtn = new UIButton(new CGRect(View.Bounds.Width, 0, 50, 50));
+                    var nheadclosebtn = new UIButton(new CGRect(UIScreen.MainScreen.Bounds.Size.Height - 50, 0, 50, 50));
                     nheadclosebtn.SetImage(UIImage.FromBundle("Close"), UIControlState.Normal);
 
                     ncellHeader.ContentView.Add(nlab);
@@ -4350,7 +4364,7 @@ namespace DynaPad
 
                     CommonFunctions.AddLogEvent(DateTime.Now, "GetMRNavBtn", false, null, "new DynaPadService.DynaPadService");
 
-                    var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
+                    var dds = new DynaPadService.DynaPadService { Timeout = 30000 };
                     var origJson = dds.GetFiles(CommonFunctions.GetUserConfig(), SelectedAppointment.ApptId, SelectedAppointment.ApptPatientId, SelectedAppointment.ApptPatientName, SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId);
                                                         var eventItems_GetFiles = new List<NSDictionary>                     {
                         getDictionary("Appointment ID", SelectedAppointment.ApptId),
@@ -4390,7 +4404,7 @@ namespace DynaPad
 
                     var fgrid = new SfDataGrid
                     {
-                        Frame = new CGRect(0, 0, View.Bounds.Width, View.Bounds.Height),
+                        Frame = new CGRect(0, 0, UIScreen.MainScreen.Bounds.Size.Height, UIScreen.MainScreen.Bounds.Size.Width),
                         ItemsSource = mrs,
                         AutoGenerateColumns = false,
                         ColumnSizer = ColumnSizer.None,
@@ -4930,7 +4944,7 @@ namespace DynaPad
         {
             try
             {
-                var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
+                var dds = new DynaPadService.DynaPadService { Timeout = 30000 };
             }
             catch (Exception ex)
             {
@@ -4986,7 +5000,7 @@ namespace DynaPad
 
                 CommonFunctions.AddLogEvent(DateTime.Now, "ItemsSourceRefresh", false, null, "new DynaPadService.DynaPadService");
 
-                var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
+                var dds = new DynaPadService.DynaPadService { Timeout = 30000 };
                 var origJson = dds.GetFiles(CommonFunctions.GetUserConfig(), SelectedAppointment.ApptId, SelectedAppointment.ApptPatientId, SelectedAppointment.ApptPatientName, SelectedAppointment.ApptDoctorId, SelectedAppointment.ApptLocationId);
                 
                 var eventItems_GetFiles_Refresh = new List<NSDictionary>                 {
@@ -5516,7 +5530,7 @@ namespace DynaPad
 
                     CommonFunctions.AddLogEvent(DateTime.Now, "GetTabInitView", false, null, "new DynaPadService.DynaPadService");
 
-                    var dds = new DynaPadService.DynaPadService { Timeout = 60000, AllowAutoRedirect = true };
+                    var dds = new DynaPadService.DynaPadService { Timeout = 30000, AllowAutoRedirect = true };
                     var tDynaMenu = JsonConvert.DeserializeObject<Menu>(dds.GetAppointmentsByDateFrame(CommonFunctions.GetUserConfig(), locid, typeService));
 
                     var eventItems_GetAppointmentsByDateFrame_TabInit = new List<NSDictionary>                     {
@@ -7764,7 +7778,7 @@ namespace DynaPad
                     {                  
                         CommonFunctions.AddLogEvent(DateTime.Now, "DeleteSavedDictation", false, null, "new DynaPadService.DynaPadService");
                         
-                        var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
+                        var dds = new DynaPadService.DynaPadService { Timeout = 30000 };
                         var deletedDictation = dds.DeleteDicatation(CommonFunctions.GetUserConfig(), dictation[3], formId, sectionId, SelectedAppointment.SelectedQForm.DoctorId);
 
                         var eventItems_DeleteDicatation = new List<NSDictionary>                         {
@@ -8176,7 +8190,7 @@ namespace DynaPad
                     CommonFunctions.AddLogEvent(DateTime.Now, "OnSaveRecordedSound", false, null, "new DynaPadService.DynaPadService");
 
                     var dicTitle = sectionId + "_" + DateTime.Now.ToShortTimeString();
-                    var dds = new DynaPadService.DynaPadService { Timeout = 60000 };
+                    var dds = new DynaPadService.DynaPadService { Timeout = 30000 };
                     //DynaPadService.DynaPadService dds = new DynaPadService.DynaPadService();
                     var dictationPath = dds.SaveDictation(CommonFunctions.GetUserConfig(), SelectedAppointment.SelectedQForm.FormId, sectionId, SelectedAppointment.ApptDoctorId, true, SelectedAppointment.SelectedQForm.LocationId, dicTitle, dictationArray);
                     

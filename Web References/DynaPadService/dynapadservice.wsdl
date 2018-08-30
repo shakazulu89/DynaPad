@@ -153,6 +153,44 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="SaveLog">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="domainConfig" type="tns:ConfigurationObjects" />
+            <s:element minOccurs="0" maxOccurs="1" name="dynaLogFile" type="tns:DynaFile" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="DynaFile">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="FileName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="UserId" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="UserConfig" type="tns:ConfigurationObjects" />
+          <s:element minOccurs="0" maxOccurs="1" name="ApptId" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="ApptDate" type="s:dateTime" />
+          <s:element minOccurs="0" maxOccurs="1" name="FormId" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="DoctorId" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="LocationId" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="PatientId" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="PatientName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Type" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Json" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Html" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Bytes" type="s:base64Binary" />
+          <s:element minOccurs="0" maxOccurs="1" name="FileUrl" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Status" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="IsDoctorForm" type="s:boolean" />
+          <s:element minOccurs="1" maxOccurs="1" name="DateCreated" type="s:dateTime" />
+          <s:element minOccurs="1" maxOccurs="1" name="DateUploaded" type="s:dateTime" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="SaveLogResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="SaveLogResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="GetAnswerPresets">
         <s:complexType>
           <s:sequence>
@@ -614,6 +652,12 @@
   <wsdl:message name="SaveFileSoapOut">
     <wsdl:part name="parameters" element="tns:SaveFileResponse" />
   </wsdl:message>
+  <wsdl:message name="SaveLogSoapIn">
+    <wsdl:part name="parameters" element="tns:SaveLog" />
+  </wsdl:message>
+  <wsdl:message name="SaveLogSoapOut">
+    <wsdl:part name="parameters" element="tns:SaveLogResponse" />
+  </wsdl:message>
   <wsdl:message name="GetAnswerPresetsSoapIn">
     <wsdl:part name="parameters" element="tns:GetAnswerPresets" />
   </wsdl:message>
@@ -793,6 +837,10 @@
       <wsdl:input message="tns:SaveFileSoapIn" />
       <wsdl:output message="tns:SaveFileSoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="SaveLog">
+      <wsdl:input message="tns:SaveLogSoapIn" />
+      <wsdl:output message="tns:SaveLogSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="GetAnswerPresets">
       <wsdl:input message="tns:GetAnswerPresetsSoapIn" />
       <wsdl:output message="tns:GetAnswerPresetsSoapOut" />
@@ -952,6 +1000,15 @@
     </wsdl:operation>
     <wsdl:operation name="SaveFile">
       <soap:operation soapAction="http://dynadox.pro/service/SaveFile" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SaveLog">
+      <soap:operation soapAction="http://dynadox.pro/service/SaveLog" style="document" />
       <wsdl:input>
         <soap:body use="literal" />
       </wsdl:input>
@@ -1243,6 +1300,15 @@
     </wsdl:operation>
     <wsdl:operation name="SaveFile">
       <soap12:operation soapAction="http://dynadox.pro/service/SaveFile" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="SaveLog">
+      <soap12:operation soapAction="http://dynadox.pro/service/SaveLog" style="document" />
       <wsdl:input>
         <soap12:body use="literal" />
       </wsdl:input>

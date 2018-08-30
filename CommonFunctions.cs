@@ -13,6 +13,8 @@ using Foundation;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace DynaPad
 {
@@ -44,6 +46,7 @@ namespace DynaPad
 					DomainClaimantsPathVirtual = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainClaimantsPathVirtual,
 					DomainClaimantsPathPhysical = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainClaimantsPathPhysical,
                     DomainHost = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainHost,
+                    //DomainName = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainName,
                     DeviceId = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DeviceId
 					//DomainPaths = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainPaths.Select(dPath => new DynaClassLibrary.DynaClasses.DomainPath[]
 					//{
@@ -334,34 +337,52 @@ namespace DynaPad
             
 		}
 
-		public static void AddLogEvent(DateTime Timestamp, string EventName, bool IsError, List<NSDictionary> EventItems, string EventDescription)
+		public static void AddLogEvent(DateTime Timestamp, string EventName, bool IsError, List<NSDictionary> EventItems, string EventDescription, bool IsFirstLog = false)
 		{
-			var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-			var logDirectoryPath = Path.Combine(documents, "DynaLog");
-			var logFilePath = Path.Combine(logDirectoryPath, DynaClassLibrary.DynaClasses.LoginContainer.User.LogFileName);
-
-			var itemsJson = new StringBuilder();
-			foreach (var item in EventItems)
-			{
-				itemsJson.Append("'" + item.Values[1] + "': '" + item.Values[0] + "',");
-			}
-			itemsJson.Remove(itemsJson.Length - 1, 1);
-
-			string json = "{" +
-				"'Event': [{" +
-				"'Timestamp': '" + Timestamp.ToString() + "'," +
-				"'Event Name': '" + EventName + "'," +
-                "'Is Error': '" + IsError + "'," +
-				"'Event Description': '" + EventDescription + "'," +
-                "'Event Items': [{" + itemsJson.ToString() + "}]" +
-				"}]" +
-			"}";
-
-			// The using statement automatically flushes AND CLOSES the stream and calls 
-            // IDisposable.Dispose on the stream object.
-			using (StreamWriter file = new StreamWriter(logFilePath, true))
+            try
             {
-                file.WriteLine(json);
+                var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                var logDirectoryPath = Path.Combine(documents, "DynaLog");
+                var logFilePath = Path.Combine(logDirectoryPath, DynaClassLibrary.DynaClasses.LoginContainer.User.LogFileName);
+
+                var itemsJson = new StringBuilder();
+                if (EventItems != null && EventItems.Any())
+                {
+                    foreach (var item in EventItems)
+                    {
+                        itemsJson.Append("'" + item.Values[1] + "': '" + item.Values[0] + "',");
+                    }
+                    itemsJson.Remove(itemsJson.Length - 1, 1);
+                }
+
+                var seperator = IsFirstLog ? "" : ",";
+
+                string json = seperator + "{" +
+                    "'Event': [{" +
+                    "'Timestamp': '" + Timestamp.ToString() + "'," +
+                    "'Event Name': '" + EventName + "'," +
+                    "'Is Error': '" + IsError + "'," +
+                    "'Event Description': '" + EventDescription + "'," +
+                    "'Event Items': [{" + itemsJson.ToString() + "}]" +
+                    "}]" +
+                "}";
+
+                json = json.Replace(@"\", "/");
+                
+                //json = JToken.Parse(json).ToString();
+
+                // The using statement automatically flushes AND CLOSES the stream and calls 
+                // IDisposable.Dispose on the stream object.
+                using (StreamWriter file = new StreamWriter(logFilePath, true))
+                {
+                    file.WriteLine(json);
+                }
+
+                //var ass = File.ReadAllLines(logFilePath, UTF8Encoding);
+            }
+            catch (Exception ex)
+            {
+                sendErrorEmail(ex);
             }
 		}
 	}

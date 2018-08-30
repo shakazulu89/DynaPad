@@ -117,7 +117,7 @@ namespace DynaPad
                 }
                 else
                 {
-                    Directory.CreateDirectory(directoryname);
+                    Directory.CreateDirectory(directoryname_logs);
                 }
             }
             catch (Exception ex)

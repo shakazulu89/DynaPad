@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">iPhoneSimulator</Platform>
@@ -9,7 +8,7 @@
     <RootNamespace>DynaPad</RootNamespace>
     <AssemblyName>DynaPad</AssemblyName>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
-        <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,10 +29,11 @@
     <PlatformTarget>x86</PlatformTarget>
     <DeviceSpecificBuild>false</DeviceSpecificBuild>
     <MtouchI18n>west</MtouchI18n>
-<CodesignEntitlements></CodesignEntitlements>
-<CodesignProvision></CodesignProvision>
-        <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-<RunCodeAnalysis>true</RunCodeAnalysis>  </PropertyGroup>
+    <CodesignEntitlements></CodesignEntitlements>
+    <CodesignProvision></CodesignProvision>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <Optimize>true</Optimize>
     <OutputPath>bin\iPhone\Release</OutputPath>
@@ -52,9 +52,10 @@
     <CodesignProvision></CodesignProvision>
     <BuildIpa>false</BuildIpa>
     <MtouchDebug>false</MtouchDebug>
-        <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-        <MtouchExtraArgs>--registrar:static</MtouchExtraArgs>
-<RunCodeAnalysis>true</RunCodeAnalysis>  </PropertyGroup>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <MtouchExtraArgs>--registrar:static</MtouchExtraArgs>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
     <Optimize>true</Optimize>
     <OutputPath>bin\iPhoneSimulator\Release</OutputPath>
@@ -68,9 +69,10 @@
     <MtouchHttpClientHandler>HttpClientHandler</MtouchHttpClientHandler>
     <MtouchTlsProvider>Default</MtouchTlsProvider>
     <PlatformTarget>x86</PlatformTarget>
-        <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-        <MtouchExtraArgs>--registrar:static</MtouchExtraArgs>
-<RunCodeAnalysis>true</RunCodeAnalysis>  </PropertyGroup>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <MtouchExtraArgs>--registrar:static</MtouchExtraArgs>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -93,9 +95,10 @@
     <PlatformTarget>x86</PlatformTarget>
     <CodesignProvision></CodesignProvision>
     <MtouchNoSymbolStrip>false</MtouchNoSymbolStrip>
-<IOSDebugOverWiFi>false</IOSDebugOverWiFi>
-        <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-<RunCodeAnalysis>true</RunCodeAnalysis>  </PropertyGroup>
+    <IOSDebugOverWiFi>false</IOSDebugOverWiFi>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AdHoc|AnyCPU' ">
     <Optimize>true</Optimize>
     <OutputPath>bin\AdHoc</OutputPath>
@@ -105,8 +108,9 @@
     <MtouchArch>ARMv7, ARMv7s, ARM64</MtouchArch>
     <CodesignProvision></CodesignProvision>
     <MtouchLink>SdkOnly</MtouchLink>
-        <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-<RunCodeAnalysis>true</RunCodeAnalysis>  </PropertyGroup>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
@@ -515,6 +519,7 @@
     <Folder Include="Settings.bundle\" />
     <Folder Include="Media.xcassets\Email.imageset\" />
     <Folder Include="Media.xcassets\Close32.imageset\" />
+    <Folder Include="Assets\" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="LaunchScreen.storyboard" />
@@ -605,6 +610,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="EmptyTextFile.txt" />
+    <EmbeddedResource Include="Resources\QuickSheetSample.pdf" />
   </ItemGroup>
   <ItemGroup>
     <WebReferences Include="Web References" />
@@ -615,6 +621,9 @@
       <RelPath>Web References\DynaPadService</RelPath>
       <UpdateFromURL>http://www.dynadox.pro/dynawcfservice/dynapadservice.asmx</UpdateFromURL>
     </WebReferenceUrl>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="GISSuccinctly.pdf" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
   <Import Project="..\packages\NETStandard.Library.2.0.0\build\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.0\build\NETStandard.Library.targets')" />

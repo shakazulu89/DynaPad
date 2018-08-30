@@ -181,7 +181,7 @@ namespace DynaPad
 
                 if (CrossConnectivity.Current.IsConnected)
                 {               
-                    var dds = new DynaPadService.DynaPadService { Timeout = 20000 };
+                    var dds = new DynaPadService.DynaPadService { Timeout = 30000 };
 					var jsonUser = dds.Login(NSUserDefaults.StandardUserDefaults.StringForKey("Domain_Name"), NSUserDefaults.StandardUserDefaults.StringForKey("Dyna_Device_Name"), userName, password);
                     JsonHandler.OriginalFormJsonString = jsonUser;
                     DynaClassLibrary.DynaClasses.LoginContainer.User = new DynaClassLibrary.DynaClasses.User();
@@ -233,10 +233,13 @@ namespace DynaPad
 
 						if (!File.Exists(logFilePath))
                         {
-							File.Create(logFilePath);
+                            using (File.Create(logFilePath)) ;
 						}
 
 						var dynaConfig = CommonFunctions.GetUserConfig();
+
+                        var drpp = string.IsNullOrEmpty(dynaConfig.DomainRootPathPhysical) ? "" : dynaConfig.DomainRootPathPhysical.Replace(@"\", "/");
+                        var dcpp = string.IsNullOrEmpty(dynaConfig.DomainClaimantsPathPhysical) ? "" : dynaConfig.DomainClaimantsPathPhysical.Replace(@"\", "/");
 
                         var eventItems_Login = new List<NSDictionary>                         {
 							getDictionary("Email Support", dynaConfig.EmailSupport),
@@ -249,25 +252,28 @@ namespace DynaPad
 							getDictionary("Connection String", "*"),
 							getDictionary("Connection Name", dynaConfig.ConnectionName),
 							getDictionary("Database Name", dynaConfig.DatabaseName),
-							getDictionary("Domain Host", dynaConfig.DomainHost),
+                            getDictionary("Domain Host", dynaConfig.DomainHost),
 							getDictionary("Domain Root Path Virtual", dynaConfig.DomainRootPathVirtual),
-							getDictionary("Domain Root Path Physical", dynaConfig.DomainRootPathPhysical),
+                            getDictionary("Domain Root Path Physical", drpp),
 							getDictionary("Domain Claimants Path Virtual", dynaConfig.DomainClaimantsPathVirtual),
-							getDictionary("Domain Claimants Path Physical", dynaConfig.DomainClaimantsPathPhysical),
+                            getDictionary("Domain Claimants Path Physical", dcpp),
 							getDictionary("Device ID", dynaConfig.DeviceId)
                         };
 
 						int dpc = 1;
 						foreach (var dp in dynaConfig.DomainPaths)
-						{
-							eventItems_Login.Add(getDictionary("Domain Path Name " + dpc, dp.DomainPathName));
-							eventItems_Login.Add(getDictionary("Domain Path Physical " + dpc, dp.DomainPathPhysical));
+                        {
+                            var dpn = string.IsNullOrEmpty(dp.DomainPathName) ? "" : dp.DomainPathName.Replace(@"\", "/");
+                            var dpp = string.IsNullOrEmpty(dp.DomainPathPhysical) ? "" : dp.DomainPathPhysical.Replace(@"\", "/");
+
+							eventItems_Login.Add(getDictionary("Domain Path Name " + dpc, dpn));
+							eventItems_Login.Add(getDictionary("Domain Path Physical " + dpc, dpp));
 							eventItems_Login.Add(getDictionary("Domain Path Virtual " + dpc, dp.DomainPathVirtual));
 
 							dpc++;
 						}
 
-						CommonFunctions.AddLogEvent(DateTime.Now, "Login", false, eventItems_Login, "Dyna Config");
+						CommonFunctions.AddLogEvent(DateTime.Now, "Login", false, eventItems_Login, "Dyna Config", true);
 
                         // If login was successfully completed
                         successCallback();

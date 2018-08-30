@@ -84,7 +84,8 @@ namespace DynaClassLibrary
 			public string ConnectionString { get; set; }
 			public string ConnectionName { get; set; }
 			public string DatabaseName { get; set; }
-			public string DomainHost { get; set; }
+            public string DomainHost { get; set; }
+            public string DomainName { get; set; }
 			public string DomainRootPathVirtual { get; set; }
 			public string DomainRootPathPhysical { get; set; }
 			public string DomainClaimantsPathVirtual { get; set; }
