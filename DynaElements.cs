@@ -27,6 +27,8 @@ using System.Threading.Tasks;
 using Syncfusion.SfDataGrid;
 using System.Collections.ObjectModel;
 //using DynaClassLibrary;
+using System.Net.Http;
+using System.Text;
 #else
 using MonoTouch.UIKit;
 using MonoTouch.CoreGraphics;
@@ -180,142 +182,171 @@ namespace DynaPad
                 //}
 
                 if (CrossConnectivity.Current.IsConnected)
-                {               
-                    var dds = new DynaPadService.DynaPadService { Timeout = 30000 };
-					var jsonUser = dds.Login(NSUserDefaults.StandardUserDefaults.StringForKey("Domain_Name"), NSUserDefaults.StandardUserDefaults.StringForKey("Dyna_Device_Name"), userName, password);
-                    JsonHandler.OriginalFormJsonString = jsonUser;
-                    DynaClassLibrary.DynaClasses.LoginContainer.User = new DynaClassLibrary.DynaClasses.User();
-                    DynaClassLibrary.DynaClasses.LoginContainer.User = JsonConvert.DeserializeObject<DynaClassLibrary.DynaClasses.User>(jsonUser);
+                {
+                    var domain = NSUserDefaults.StandardUserDefaults.StringForKey("Domain_Name");
+                    var device = NSUserDefaults.StandardUserDefaults.StringForKey("Dyna_Device_Name");
 
-                    switch (DynaClassLibrary.DynaClasses.LoginContainer.User.LoginStatus)
+                    var loginRequest = new DynaClassLibrary.LoginRequest()
                     {
-                        case "Valid":
-                            isValid = true;
-                            userFault = false;
-                            passFault = false;
-                            generalFault = false;
-                            break;
-                        case "userFault":
-                            isValid = false;
-                            userFault = true;
-                            passFault = false;
-                            generalFault = false;
-                            break;
-                        case "passFault":
-                            isValid = false;
-                            userFault = false;
-                            passFault = true;
-                            generalFault = false;
-                            break;
-                        case "generalFault":
-                            isValid = false;
-                            userFault = false;
-                            passFault = false;
-                            generalFault = true;
-							break;
-                        default: // do nothing;
-                            break;
-                    }
+                        domain = domain,
+                        deviceName = device,
+                        username = userName,
+                        password = password
+                    };
 
-                    if (isValid)
-					{
-                        var logFileName = "Log_" + DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DeviceId + "_" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".txt";
-						DynaClassLibrary.DynaClasses.LoginContainer.User.LogFileName = logFileName;
+                    var requestJson = JsonConvert.SerializeObject(loginRequest);
 
-						var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                        var logDirectoryPath = Path.Combine(documents, "DynaLog");
-						var logFilePath = Path.Combine(logDirectoryPath, logFileName);
+                    var requestStringContent = new StringContent(requestJson, UnicodeEncoding.UTF8, "application/json");
 
-                        if (!Directory.Exists(logDirectoryPath))
+                    var response = DynaClientClass.DynaClient.PostAsync("Login", requestStringContent);
+
+                    if (response.Result.IsSuccessStatusCode)
+                    {
+                        var jsonUser = response.Result.Content.ReadAsStringAsync();
+
+                        JsonHandler.OriginalFormJsonString = jsonUser.Result;
+                        DynaClassLibrary.DynaClasses.LoginContainer.User = new DynaClassLibrary.DynaClasses.User();
+                        DynaClassLibrary.DynaClasses.LoginContainer.User = JsonConvert.DeserializeObject<DynaClassLibrary.DynaClasses.User>(jsonUser.Result);
+
+
+                        //               var dds = new DynaPadService.DynaPadService { Timeout = 20000 };
+                        //var jsonUser = dds.Login(NSUserDefaults.StandardUserDefaults.StringForKey("Domain_Name"), NSUserDefaults.StandardUserDefaults.StringForKey("Dyna_Device_Name"), userName, password);
+                        //JsonHandler.OriginalFormJsonString = jsonUser;
+                        //DynaClassLibrary.DynaClasses.LoginContainer.User = new DynaClassLibrary.DynaClasses.User();
+                        //DynaClassLibrary.DynaClasses.LoginContainer.User = JsonConvert.DeserializeObject<DynaClassLibrary.DynaClasses.User>(jsonUser);
+
+                        switch (DynaClassLibrary.DynaClasses.LoginContainer.User.LoginStatus)
                         {
-                            Directory.CreateDirectory(logDirectoryPath);
-						}
+                            case "Valid":
+                                isValid = true;
+                                userFault = false;
+                                passFault = false;
+                                generalFault = false;
+                                break;
+                            case "userFault":
+                                isValid = false;
+                                userFault = true;
+                                passFault = false;
+                                generalFault = false;
+                                break;
+                            case "passFault":
+                                isValid = false;
+                                userFault = false;
+                                passFault = true;
+                                generalFault = false;
+                                break;
+                            case "generalFault":
+                                isValid = false;
+                                userFault = false;
+                                passFault = false;
+                                generalFault = true;
+                                break;
+                            default: // do nothing;
+                                break;
+                        }
 
-						if (!File.Exists(logFilePath))
+                        if (isValid)
                         {
-                            using (File.Create(logFilePath)) ;
-						}
+                            var logFileName = "Log_" + DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DeviceId + "_" + DateTime.Now.ToString("yyyyMMddhhmmss") + ".txt";
+                            DynaClassLibrary.DynaClasses.LoginContainer.User.LogFileName = logFileName;
 
-						var dynaConfig = CommonFunctions.GetUserConfig();
+                            var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+                            var logDirectoryPath = Path.Combine(documents, "DynaLog");
+                            var logFilePath = Path.Combine(logDirectoryPath, logFileName);
 
-                        var drpp = string.IsNullOrEmpty(dynaConfig.DomainRootPathPhysical) ? "" : dynaConfig.DomainRootPathPhysical.Replace(@"\", "/");
-                        var dcpp = string.IsNullOrEmpty(dynaConfig.DomainClaimantsPathPhysical) ? "" : dynaConfig.DomainClaimantsPathPhysical.Replace(@"\", "/");
+                            if (!Directory.Exists(logDirectoryPath))
+                            {
+                                Directory.CreateDirectory(logDirectoryPath);
+                            }
 
-                        var eventItems_Login = new List<NSDictionary>                         {
-							getDictionary("Email Support", dynaConfig.EmailSupport),
-							getDictionary("Email Postmaster", dynaConfig.EmailPostmaster),
-							getDictionary("Email Roy", dynaConfig.EmailRoy),
-							getDictionary("Email SMTP", dynaConfig.EmailSmtp),
-							getDictionary("Email User", dynaConfig.EmailUser),
-							getDictionary("Email Password", "*"),
-							getDictionary("Email Port", dynaConfig.EmailPort.ToString()),
-							getDictionary("Connection String", "*"),
-							getDictionary("Connection Name", dynaConfig.ConnectionName),
-							getDictionary("Database Name", dynaConfig.DatabaseName),
+                            if (!File.Exists(logFilePath))
+                            {
+                                //File.Create(logFilePath);
+                                var fs = new FileStream(logFilePath, FileMode.Create);
+                                fs.Dispose();
+                                //string text = File.ReadAllText(myfile);
+                            }
+
+                            var dynaConfig = CommonFunctions.GetUserConfig();
+
+                            var eventItems_Login = new List<NSDictionary>                         {
+                            getDictionary("Email Support", dynaConfig.EmailSupport),
+                            getDictionary("Email Postmaster", dynaConfig.EmailPostmaster),
+                            getDictionary("Email Roy", dynaConfig.EmailRoy),
+                            getDictionary("Email SMTP", dynaConfig.EmailSmtp),
+                            getDictionary("Email User", dynaConfig.EmailUser),
+                            getDictionary("Email Password", "*"),
+                            getDictionary("Email Port", dynaConfig.EmailPort.ToString()),
+                            getDictionary("Connection String", "*"),
+                            getDictionary("Connection Name", dynaConfig.ConnectionName),
+                            getDictionary("Database Name", dynaConfig.DatabaseName),
                             getDictionary("Domain Host", dynaConfig.DomainHost),
-							getDictionary("Domain Root Path Virtual", dynaConfig.DomainRootPathVirtual),
-                            getDictionary("Domain Root Path Physical", drpp),
-							getDictionary("Domain Claimants Path Virtual", dynaConfig.DomainClaimantsPathVirtual),
-                            getDictionary("Domain Claimants Path Physical", dcpp),
-							getDictionary("Device ID", dynaConfig.DeviceId)
+                            getDictionary("Domain Root Path Virtual", dynaConfig.DomainRootPathVirtual),
+                            getDictionary("Domain Root Path Physical", dynaConfig.DomainRootPathPhysical),
+                            getDictionary("Domain Claimants Path Virtual", dynaConfig.DomainClaimantsPathVirtual),
+                            getDictionary("Domain Claimants Path Physical", dynaConfig.DomainClaimantsPathPhysical),
+                            getDictionary("Device ID", dynaConfig.DeviceId)
                         };
 
-						int dpc = 1;
-						foreach (var dp in dynaConfig.DomainPaths)
+                            int dpc = 1;
+                            foreach (var dp in dynaConfig.DomainPaths)
+                            {
+                                eventItems_Login.Add(getDictionary("Domain Path Name " + dpc, dp.DomainPathName));
+                                eventItems_Login.Add(getDictionary("Domain Path Physical " + dpc, dp.DomainPathPhysical));
+                                eventItems_Login.Add(getDictionary("Domain Path Virtual " + dpc, dp.DomainPathVirtual));
+
+                                dpc++;
+                            }
+
+                            CommonFunctions.AddLogEvent(DateTime.Now, "Login", false, eventItems_Login, "Dyna Config");
+
+                            // If login was successfully completed
+                            successCallback();
+                        }
+                        else
                         {
-                            var dpn = string.IsNullOrEmpty(dp.DomainPathName) ? "" : dp.DomainPathName.Replace(@"\", "/");
-                            var dpp = string.IsNullOrEmpty(dp.DomainPathPhysical) ? "" : dp.DomainPathPhysical.Replace(@"\", "/");
+                            generalFault |= (userFault == false && passFault == false);
+                            var loginDetails = new LoginScreenFaultDetails();
 
-							eventItems_Login.Add(getDictionary("Domain Path Name " + dpc, dpn));
-							eventItems_Login.Add(getDictionary("Domain Path Physical " + dpc, dpp));
-							eventItems_Login.Add(getDictionary("Domain Path Virtual " + dpc, dp.DomainPathVirtual));
+                            if (userFault)
+                            {
+                                loginDetails.UserNameErrorMessage = "User name does not exist";
+                            }
+                            else if (passFault)
+                            {
+                                loginDetails.PasswordErrorMessage = "Password does not match user name";
+                            }
+                            else if (generalFault)
+                            {
+                                loginDetails.CommonErrorMessage = "Login error";
+                            }
 
-							dpc++;
-						}
+                            // Otherwise
+                            failCallback(loginDetails);
 
-						CommonFunctions.AddLogEvent(DateTime.Now, "Login", false, eventItems_Login, "Dyna Config", true);
+                            //if (failCount > 3)
+                            //{
+                            //	var SetDomainPrompt = UIAlertController.Create("Set Domain Name", "Enter domain name: ", UIAlertControllerStyle.Alert);
+                            //	SetDomainPrompt.AddTextField((field) =>
+                            //	{
+                            //		field.Placeholder = "Domain Name";
+                            //	});
+                            //	//Add Actions
+                            //	SetDomainPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => SaveDomain(SetDomainPrompt.TextFields[0].Text)));
+                            //	SetDomainPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
+                            //	//Present Alert
+                            //	var MasterViewController = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
+                            //	var ;
+                            //	failCallback( new LoginScreenFaultDetails()
+                            //	 PresentViewController(SetDomainPrompt, true, null);
+                            //}
 
-                        // If login was successfully completed
-                        successCallback();
+                        }
                     }
                     else
                     {
-                        generalFault |= (userFault == false && passFault == false);
-                        var loginDetails = new LoginScreenFaultDetails();
-
-                        if (userFault)
-                        {
-                            loginDetails.UserNameErrorMessage = "User name does not exist";
-                        }
-                        else if (passFault)
-                        {
-                            loginDetails.PasswordErrorMessage = "Password does not match user name";
-                        }
-                        else if (generalFault)
-                        {
-                            loginDetails.CommonErrorMessage = "Login error";
-                        }
-
-                        // Otherwise
+                        var loginDetails = new LoginScreenFaultDetails { CommonErrorMessage = "Service failure" };
                         failCallback(loginDetails);
-
-                        //if (failCount > 3)
-                        //{
-                        //	var SetDomainPrompt = UIAlertController.Create("Set Domain Name", "Enter domain name: ", UIAlertControllerStyle.Alert);
-                        //	SetDomainPrompt.AddTextField((field) =>
-                        //	{
-                        //		field.Placeholder = "Domain Name";
-                        //	});
-                        //	//Add Actions
-                        //	SetDomainPrompt.AddAction(UIAlertAction.Create("OK", UIAlertActionStyle.Default, action => SaveDomain(SetDomainPrompt.TextFields[0].Text)));
-                        //	SetDomainPrompt.AddAction(UIAlertAction.Create("Cancel", UIAlertActionStyle.Cancel, null));
-                        //	//Present Alert
-                        //	var MasterViewController = (MasterViewController)((UINavigationController)SplitViewController.ViewControllers[0]).ViewControllers[0];
-                        //	var ;
-                        //	failCallback( new LoginScreenFaultDetails()
-                        //	 PresentViewController(SetDomainPrompt, true, null);
-                        //}
-
                     }
                 }
                 else

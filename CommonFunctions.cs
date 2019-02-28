@@ -13,8 +13,6 @@ using Foundation;
 using System.IO;
 using System.Linq;
 using System.Text;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace DynaPad
 {
@@ -24,12 +22,12 @@ namespace DynaPad
 		//{
 		//}
 
-		public static DynaPadService.ConfigurationObjects GetUserConfig()
+        public static DynaClassLibrary.DynaClasses.ConfigurationObjects GetUserConfig()
 		{
 			
 			try
 			{
-				var UserConfig = new DynaPadService.ConfigurationObjects
+                var UserConfig = new DynaClassLibrary.DynaClasses.ConfigurationObjects
 				{
 					EmailSupport = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailSupport,
 					EmailPostmaster = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.EmailPostmaster,
@@ -46,7 +44,7 @@ namespace DynaPad
 					DomainClaimantsPathVirtual = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainClaimantsPathVirtual,
 					DomainClaimantsPathPhysical = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainClaimantsPathPhysical,
                     DomainHost = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainHost,
-                    //DomainName = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainName,
+                    DomainName = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainName,
                     DeviceId = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DeviceId
 					//DomainPaths = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainPaths.Select(dPath => new DynaClassLibrary.DynaClasses.DomainPath[]
 					//{
@@ -56,10 +54,10 @@ namespace DynaPad
 					//}).ToArray()
 				};
 
-				var domList = new List<DynaPadService.DomainPath>();
+                var domList = new List<DynaClassLibrary.DynaClasses.DomainPath>();
                 foreach (var dPath in DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainPaths)
                 {
-                    var ServiceDomainPath = new DynaPadService.DomainPath
+                    var ServiceDomainPath = new DynaClassLibrary.DynaClasses.DomainPath
 					{
 						DomainPathName = dPath.DomainPathName,
 						DomainPathVirtual = dPath.DomainPathVirtual,
@@ -67,7 +65,7 @@ namespace DynaPad
 					};
 				domList.Add(ServiceDomainPath);
                 }
-                UserConfig.DomainPaths = domList.ToArray();
+                UserConfig.DomainPaths = domList;//.ToArray();
 				//foreach (var item in domList)
 				//{
 				//	UserConfig.DomainPaths.Add(item);
@@ -337,8 +335,9 @@ namespace DynaPad
             
 		}
 
-		public static void AddLogEvent(DateTime Timestamp, string EventName, bool IsError, List<NSDictionary> EventItems, string EventDescription, bool IsFirstLog = false)
+		public static void AddLogEvent(DateTime Timestamp, string EventName, bool IsError, List<NSDictionary> EventItems, string EventDescription)
 		{
+            //return;
             try
             {
                 var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
@@ -346,7 +345,7 @@ namespace DynaPad
                 var logFilePath = Path.Combine(logDirectoryPath, DynaClassLibrary.DynaClasses.LoginContainer.User.LogFileName);
 
                 var itemsJson = new StringBuilder();
-                if (EventItems != null && EventItems.Any())
+                if (EventItems != null)
                 {
                     foreach (var item in EventItems)
                     {
@@ -355,21 +354,15 @@ namespace DynaPad
                     itemsJson.Remove(itemsJson.Length - 1, 1);
                 }
 
-                var seperator = IsFirstLog ? "" : ",";
-
-                string json = seperator + "{" +
+                string json = "{" +
                     "'Event': [{" +
                     "'Timestamp': '" + Timestamp.ToString() + "'," +
                     "'Event Name': '" + EventName + "'," +
                     "'Is Error': '" + IsError + "'," +
                     "'Event Description': '" + EventDescription + "'," +
-                    "'Event Items': [{" + itemsJson.ToString() + "}]" +
+                    "'Event Items': [{" + itemsJson + "}]" +
                     "}]" +
                 "}";
-
-                json = json.Replace(@"\", "/");
-                
-                //json = JToken.Parse(json).ToString();
 
                 // The using statement automatically flushes AND CLOSES the stream and calls 
                 // IDisposable.Dispose on the stream object.
@@ -377,8 +370,6 @@ namespace DynaPad
                 {
                     file.WriteLine(json);
                 }
-
-                //var ass = File.ReadAllLines(logFilePath, UTF8Encoding);
             }
             catch (Exception ex)
             {

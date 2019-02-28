@@ -6,6 +6,9 @@ using CoreGraphics;
 using Foundation;
 using Plugin.Connectivity;
 using UIKit;
+using Newtonsoft.Json;
+using System.Net.Http;
+using System.Text;
 
 namespace DynaPad
 {
@@ -483,10 +486,53 @@ namespace DynaPad
                         var editArr = im.AsJPEG(0.5f).ToArray();
                         var saveType = MREditing ? "DynaPad Edit" : "DynaPad Note";
 
-                        var dps = new DynaPadService.DynaPadService();
+                        //var dps = new DynaPadService.DynaPadService();
                         //byte[] saveArr = MREditType == "jpg" ? editArr : dps.ConvertToType(CommonFunctions.GetUserConfig(), editArr, MREditType);
                         byte[] saveArr = editArr;
-                        var savefile = dps.SaveFile(CommonFunctions.GetUserConfig(), apptId, patientId, doctorId, locationId, filename, saveType, "DynaPad", "", "", saveArr, IsDoctorForm, false);
+                        //var savefile = dps.SaveFile(CommonFunctions.GetUserConfig(), apptId, patientId, doctorId, locationId, filename, saveType, "DynaPad", "", "", saveArr, IsDoctorForm, false);
+
+
+
+
+
+                                    var saveFileRequest = new DynaClassLibrary.SaveFileRequest()
+                        {
+                            configurationObjects = CommonFunctions.GetUserConfig(),
+                            locationId = locationId,
+                            apptId = apptId,
+                            patientId = patientId,
+                            doctorId = doctorId,
+                            fileName = filename,
+                            fileType = saveType,
+                            folderName = "DynaPad",
+                            filePathPhysical = "",
+                            filePathVirtual = "",
+                            arrFile = saveArr,
+                            isDoctorForm = IsDoctorForm,
+                            isSignature = false
+                        };
+
+                        var requestJson = JsonConvert.SerializeObject(saveFileRequest);
+
+                        var requestStringContent = new StringContent(requestJson, UnicodeEncoding.UTF8, "application/json");
+
+                        var response = DynaClientClass.DynaClient.PostAsync("SaveFile", requestStringContent);
+
+                        if (response.Result.IsSuccessStatusCode)
+                        {
+                            var requestResult = response.Result.Content.ReadAsStringAsync();
+
+                            var savefile = requestResult.Result;
+                        }
+                        else
+                        {
+                            PresentViewController(CommonFunctions.AlertPrompt("Error", "An error has occured, if problem persists contact support", true, null, false, null), true, null);
+                        }
+
+
+
+
+
                     };
 
                     // what to do when worker completes its task (notify the user)

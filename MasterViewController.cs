@@ -36,9 +36,16 @@ using Syncfusion.SfPdfViewer.iOS;
 using System.Resources;
 using System.Reflection;
 using PdfKit;
+using System.Text;
 
 namespace DynaPad
 {
+    public static class DynaClientClass 
+    {
+        public static HttpClient DynaClient { get; set; }
+    }
+
+
     public partial class MasterViewController : DynaDialogViewController
     {
         public DetailViewController DetailViewController { get; set; }
@@ -52,7 +59,6 @@ namespace DynaPad
         public string DynaDomain { get; set; }
         public string DynaDeviceUniqueName { get; set; }
         NSUserDefaults plist = NSUserDefaults.StandardUserDefaults;
-        HttpClient DynaClient;
 
 
         protected MasterViewController(IntPtr handle) : base(handle)
@@ -105,12 +111,16 @@ namespace DynaPad
             DetailViewController = (DetailViewController)((UINavigationController)SplitViewController.ViewControllers[1]).TopViewController;
             DetailViewController.Style = UITableViewStyle.Plain;
 
-            //var clientBaseUri = new Uri("http://{dynahost}/dynahub/foremost/services/dynapad/xamarinservices/");
+            //var clientInfo = CommonFunctions.GetUserConfig();
 
-            //DynaClient = new HttpClient();
-            //DynaClient.MaxResponseContentBufferSize = 256000;
-            //DynaClient.Timeout = new TimeSpan(0, 0, 20);
-            //DynaClient.BaseAddress = clientBaseUri;
+            var clientBaseUri = new Uri("https://" + plist.StringForKey("Domain_Name") + ".dynadox.pro/dynahub/" + plist.StringForKey("Domain_Name") + "/services/dynapad/xamarinservices/");
+
+            DynaClientClass.DynaClient = new HttpClient
+            {
+                //MaxResponseContentBufferSize = 256000,
+                Timeout = new TimeSpan(0, 0, 20),
+                BaseAddress = clientBaseUri
+            };
         }
 
 
@@ -1330,7 +1340,7 @@ namespace DynaPad
             {
                 CommonFunctions.AddLogEvent(DateTime.Now, "DoUploadLogFiles", false, null, "start");
 
-                var array = new List<DynaFile>();
+                var array = new List<DynaClassLibrary.DynaClasses.DynaFile>();
 
                 var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
                 var logDirectoryPath = Path.Combine(documents, "DynaLog");
@@ -1343,7 +1353,7 @@ namespace DynaPad
                 foreach (var file in files)
                 {
                     //var fi = new FileInfo(file);
-                    var upload = new DynaFile
+                    var upload = new DynaClassLibrary.DynaClasses.DynaFile
                     {
                         Json = "[" + File.ReadAllText(file.FullName) + "]",
                         DateCreated = file.CreationTime,
@@ -1359,16 +1369,43 @@ namespace DynaPad
 
                 CommonFunctions.AddLogEvent(DateTime.Now, "DoUploadLogFiles", false, null, "new DynaPadService.DynaPadService");
 
-                var dds = new DynaPadService.DynaPadService { Timeout = 30000 };
-                var result = dds.ProcessDynaFiles(CommonFunctions.GetUserConfig(), JsonConvert.SerializeObject(array));
+                //var dds = new DynaPadService.DynaPadService { Timeout = 30000 };
+                //var result = dds.ProcessDynaFiles(CommonFunctions.GetUserConfig(), JsonConvert.SerializeObject(array));
 
-                CommonFunctions.AddLogEvent(DateTime.Now, "DoUploadLogFiles", false, null, "after dds.ProcessDynaFiles");
 
-                var toast = new Toast("Logs were uploaded");
-                toast.SetDuration(5000);
-                toast.SetType(ToastType.Info);
-                toast.SetGravity(ToastGravity.Bottom);
-                toast.Show();
+
+                var processDynaFilesRequest = new DynaClassLibrary.ProcessDynaFilesRequest()
+                {
+                    configurationObjects = CommonFunctions.GetUserConfig(),
+                    stringDynaFiles = JsonConvert.SerializeObject(array)
+                };
+
+                var requestJson = JsonConvert.SerializeObject(processDynaFilesRequest);
+
+                var requestStringContent = new StringContent(requestJson, UnicodeEncoding.UTF8, "application/json");
+
+                var response = DynaClientClass.DynaClient.PostAsync("ProcessDynaFiles", requestStringContent);
+
+                if (response.Result.IsSuccessStatusCode)
+                {
+                    var requestResult = response.Result.Content.ReadAsStringAsync();
+
+                    var result = requestResult.Result;
+
+
+
+                    CommonFunctions.AddLogEvent(DateTime.Now, "DoUploadLogFiles", false, null, "after dds.ProcessDynaFiles");
+
+                    var toast = new Toast("Logs were uploaded");
+                    toast.SetDuration(5000);
+                    toast.SetType(ToastType.Info);
+                    toast.SetGravity(ToastGravity.Bottom);
+                    toast.Show();
+                }
+                else
+                {
+                    PresentViewController(CommonFunctions.AlertPrompt("Error", "An error has occured, if problem persists contact support", true, null, false, null), true, null);
+                }
             }
             catch (Exception ex)
             {
@@ -1620,7 +1657,7 @@ namespace DynaPad
 
                     CommonFunctions.AddLogEvent(DateTime.Now, "GetDynaStart", false, null, "before new DynaPadService.DynaPadService");
 
-                    var dds = new DynaPadService.DynaPadService { Timeout = 30000, AllowAutoRedirect = true };
+                    //var dds = new DynaPadService.DynaPadService { Timeout = 30000, AllowAutoRedirect = true };
                     var locid = string.IsNullOrEmpty(DynaClassLibrary.DynaClasses.LoginContainer.User.SelectedLocation.LocationId) ? null : DynaClassLibrary.DynaClasses.LoginContainer.User.SelectedLocation.LocationId;
 
                     if (string.IsNullOrEmpty(locid))
@@ -1631,85 +1668,117 @@ namespace DynaPad
                         return new DynaDialogViewController(new RootElement("No Location"), true);
                     }
 
-                    menujson = dds.BuildDynaMenu(CommonFunctions.GetUserConfig(), locid, DynaClassLibrary.DynaClasses.LoginContainer.User.SelectedLocation.LocationName);
+                    //menujson = dds.BuildDynaMenu(CommonFunctions.GetUserConfig(), locid, DynaClassLibrary.DynaClasses.LoginContainer.User.SelectedLocation.LocationName);
 
-                    var eventItems = new List<NSDictionary>
+
+
+
+
+                    var buildDynaMenuRequest = new DynaClassLibrary.BuildDynaMenuRequest()
                     {
-                        getDictionary("Location ID", locid),
-                        getDictionary("Location Name", DynaClassLibrary.DynaClasses.LoginContainer.User.SelectedLocation.LocationName)
-                    };
-                    CommonFunctions.AddLogEvent(DateTime.Now, "GetDynaStart", false, eventItems, "after dds.BuildDynaMenu");
-
-                    myDynaMenu = JsonConvert.DeserializeObject<Menu>(menujson);
-                    DetailViewController.DynaMenu = myDynaMenu;
-
-                    DetailViewController.Root.Clear();
-
-                    var rootMainMenu = new DynaFormRootElement(myDynaMenu.MenuCaption)
-                    {
-                        UnevenRows = true,
-                        Enabled = true
+                        configurationObjects = CommonFunctions.GetUserConfig(),
+                        locationId = locid,
+                        locationName = DynaClassLibrary.DynaClasses.LoginContainer.User.SelectedLocation.LocationName
                     };
 
-                    var sectionMainMenu = new Section { HeaderView = null, FooterView = null };
+                    var requestJson = JsonConvert.SerializeObject(buildDynaMenuRequest);
 
-                    var bmtimer = new Stopwatch();
-                    bmtimer.Start();
+                    var requestStringContent = new StringContent(requestJson, UnicodeEncoding.UTF8, "application/json");
 
-                    GridSourceToday = new List<MenuItem>();
-                    GridSourceToday = myDynaMenu.MenuItems.Find(x => x.MenuItemCaption == "Find By Patient").Menus[0].MenuItems.Find(y => y.MenuItemCaption == "Today").Menus[0].MenuItems;
-                    DetailViewController.todayMenu = myDynaMenu;
-                    IsGridSourceTodaySet = true;
-                    GridSourceWeek = new List<MenuItem>();
-                    IsGridSourceWeekSet = false;
-                    GridSourceMonth = new List<MenuItem>();
-                    IsGridSourceMonthSet = false;
-                    GridSourceYesterday = new List<MenuItem>();
-                    IsGridSourceYesterdaySet = false;
-                    GridSourceUpcoming = new List<MenuItem>();
-                    IsGridSourceUpcomingSet = false;
-                    GridSourceOlder = new List<MenuItem>();
-                    IsGridSourceOlderSet = false;
+                    var response = DynaClientClass.DynaClient.PostAsync("BuildDynaMenu", requestStringContent);
 
-                    BuildMenu(myDynaMenu, sectionMainMenu);
-
-                    CheckStopwatch(bmtimer, 0, "BuildMenu", "BuildMenu took " + bmtimer.Elapsed.Seconds + " seconds");
-
-                    sectionMainMenu.Add(new SectionStringElement("Download Medical Records", delegate
+                    if (response.Result.IsSuccessStatusCode)
                     {
-                        DetailViewController.SetDetailItem(new Section("Download Medical Records"), "MRDownload", locid, null, false);
-                    })
-                    { mrdownload = true });
+                        var requestResult = response.Result.Content.ReadAsStringAsync();
 
-                    sectionMainMenu.Add(new SectionStringElement("Upload Submitted Forms", delegate
-                    {
-                        DetailViewController.SetDetailItem(new Section("Upload Submitted Forms"), "UploadSubmittedForms", locid, null, false);
-                    })
-                    { fileupload = true });
+                        menujson = requestResult.Result;
 
-                    rootMainMenu.Add(sectionMainMenu);
 
-                    var formDVC = new DynaDialogViewController(rootMainMenu, true);
-                    formDVC.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, delegate
-                    {
-                        DetailViewController.QuestionsView = null; //.Clear();
+
+
+                        var eventItems = new List<NSDictionary>
+                        {
+                            getDictionary("Location ID", locid),
+                            getDictionary("Location Name", DynaClassLibrary.DynaClasses.LoginContainer.User.SelectedLocation.LocationName)
+                        };
+                        CommonFunctions.AddLogEvent(DateTime.Now, "GetDynaStart", false, eventItems, "after dds.BuildDynaMenu");
+
+                        myDynaMenu = JsonConvert.DeserializeObject<Menu>(menujson);
+                        DetailViewController.DynaMenu = myDynaMenu;
+
                         DetailViewController.Root.Clear();
-                        DetailViewController.Root.Caption = "";
 
-                        DetailViewController.NavigationItem.RightBarButtonItems = null;
+                        var rootMainMenu = new DynaFormRootElement(myDynaMenu.MenuCaption)
+                        {
+                            UnevenRows = true,
+                            Enabled = true
+                        };
 
-                        DetailViewController.ReloadData();
+                        var sectionMainMenu = new Section { HeaderView = null, FooterView = null };
 
-                        NavigationController.PopViewController(true);
-                    });
+                        var bmtimer = new Stopwatch();
+                        bmtimer.Start();
 
-                    DetailViewController.SetSearch();
+                        GridSourceToday = new List<MenuItem>();
+                        GridSourceToday = myDynaMenu.MenuItems.Find(x => x.MenuItemCaption == "Find By Patient").Menus[0].MenuItems.Find(y => y.MenuItemCaption == "Today").Menus[0].MenuItems;
+                        DetailViewController.todayMenu = myDynaMenu;
+                        IsGridSourceTodaySet = true;
+                        GridSourceWeek = new List<MenuItem>();
+                        IsGridSourceWeekSet = false;
+                        GridSourceMonth = new List<MenuItem>();
+                        IsGridSourceMonthSet = false;
+                        GridSourceYesterday = new List<MenuItem>();
+                        IsGridSourceYesterdaySet = false;
+                        GridSourceUpcoming = new List<MenuItem>();
+                        IsGridSourceUpcomingSet = false;
+                        GridSourceOlder = new List<MenuItem>();
+                        IsGridSourceOlderSet = false;
 
-                    DetailViewController.SetDetailItem(new Section("Appointments Grid"), "ApptGrid", "Today", null, false);
+                        BuildMenu(myDynaMenu, sectionMainMenu);
 
-                    CheckStopwatch(timer, 0, "GetDynaStart", "GetDynaStart took " + timer.Elapsed.Seconds + " seconds");
+                        CheckStopwatch(bmtimer, 0, "BuildMenu", "BuildMenu took " + bmtimer.Elapsed.Seconds + " seconds");
 
-                    return formDVC;
+                        sectionMainMenu.Add(new SectionStringElement("Download Medical Records", delegate
+                        {
+                            DetailViewController.SetDetailItem(new Section("Download Medical Records"), "MRDownload", locid, null, false);
+                        })
+                        { mrdownload = true });
+
+                        sectionMainMenu.Add(new SectionStringElement("Upload Submitted Forms", delegate
+                        {
+                            DetailViewController.SetDetailItem(new Section("Upload Submitted Forms"), "UploadSubmittedForms", locid, null, false);
+                        })
+                        { fileupload = true });
+
+                        rootMainMenu.Add(sectionMainMenu);
+
+                        var formDVC = new DynaDialogViewController(rootMainMenu, true);
+                        formDVC.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, delegate
+                        {
+                            DetailViewController.QuestionsView = null; //.Clear();
+                        DetailViewController.Root.Clear();
+                            DetailViewController.Root.Caption = "";
+
+                            DetailViewController.NavigationItem.RightBarButtonItems = null;
+
+                            DetailViewController.ReloadData();
+
+                            NavigationController.PopViewController(true);
+                        });
+
+                        DetailViewController.SetSearch();
+
+                        DetailViewController.SetDetailItem(new Section("Appointments Grid"), "ApptGrid", "Today", null, false);
+
+                        CheckStopwatch(timer, 0, "GetDynaStart", "GetDynaStart took " + timer.Elapsed.Seconds + " seconds");
+
+                        return formDVC;
+                    }
+                    else
+                    {
+                        PresentViewController(CommonFunctions.AlertPrompt("Error", "An error has occured, if problem persists contact support", true, null, false, null), true, null);
+                        return new DynaDialogViewController(new RootElement("Error"), true);
+                    }
                 }
 
                 CommonFunctions.AddLogEvent(DateTime.Now, "GetDynaStart", false, null, "end");
@@ -2026,74 +2095,100 @@ namespace DynaPad
 
                 CommonFunctions.AddLogEvent(DateTime.Now, "SaveAutoData", false, null, "new DynaPadService.DynaPadService");
 
-                var dds = new DynaPadService.DynaPadService { Timeout = 30000 };
+                //var dds = new DynaPadService.DynaPadService { Timeout = 30000 };
+                //var autofiles = dds.GetAllAutoBoxData(DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainRootPathPhysical, DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainRootPathVirtual);
 
-                var autofiles = dds.GetAllAutoBoxData(DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainRootPathPhysical, DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainRootPathVirtual);
 
-                var eventItems = new List<NSDictionary>
+                var getAllAutoBoxDataRequest = new DynaClassLibrary.GetAllAutoBoxDataRequest()
+                {
+                    configurationObjects = CommonFunctions.GetUserConfig(),
+                    rootPhysical = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainRootPathPhysical,
+                    rootVirtual = DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainRootPathVirtual
+                };
+
+                var requestJson = JsonConvert.SerializeObject(getAllAutoBoxDataRequest);
+
+                var requestStringContent = new StringContent(requestJson, UnicodeEncoding.UTF8, "application/json");
+
+                var response = DynaClientClass.DynaClient.PostAsync("GetAllAutoBoxData", requestStringContent);
+
+                if (response.Result.IsSuccessStatusCode)
+                {
+                    var requestResult = response.Result.Content.ReadAsStringAsync();
+
+                    var autofiles = requestResult.Result;
+
+
+
+                    var eventItems = new List<NSDictionary>
                 {
                     getDictionary("Root Physical", DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainRootPathPhysical),
                     getDictionary("Root Virtual", DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainRootPathVirtual)
                 };
-                CommonFunctions.AddLogEvent(DateTime.Now, "SaveAutoData", false, eventItems, "after dds.GetAllAutoBoxData");
+                    CommonFunctions.AddLogEvent(DateTime.Now, "SaveAutoData", false, eventItems, "after dds.GetAllAutoBoxData");
 
-                //var autofiles = new List<KeyValuePair<string, string>>();
-                //autofiles.Add(new KeyValuePair<string, string>("2893", DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainRootPathVirtual + "DynaForms/106/AutoBoxLists/2893.txt"));
-                //autofiles.Add(new KeyValuePair<string, string>("3208", DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainRootPathVirtual + "DynaForms/106/AutoBoxLists/3208.txt"));
-                //autofiles.Add(new KeyValuePair<string, string>("1043", DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainRootPathVirtual + "DynaForms/76/AutoBoxLists/1043.txt"));
+                    //var autofiles = new List<KeyValuePair<string, string>>();
+                    //autofiles.Add(new KeyValuePair<string, string>("2893", DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainRootPathVirtual + "DynaForms/106/AutoBoxLists/2893.txt"));
+                    //autofiles.Add(new KeyValuePair<string, string>("3208", DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainRootPathVirtual + "DynaForms/106/AutoBoxLists/3208.txt"));
+                    //autofiles.Add(new KeyValuePair<string, string>("1043", DynaClassLibrary.DynaClasses.LoginContainer.User.DynaConfig.DomainRootPathVirtual + "DynaForms/76/AutoBoxLists/1043.txt"));
 
-                var deserializedautofiles = JsonConvert.DeserializeObject<List<Tuple<string, string>>>(autofiles);
+                    var deserializedautofiles = JsonConvert.DeserializeObject<List<Tuple<string, string>>>(autofiles);
 
-                foreach (Tuple<string, string> autofile in deserializedautofiles)
-                {
-                    var url = new Uri(autofile.Item2);
-
-                    var webClient = new WebClient();
-
-                    webClient.DownloadStringCompleted += (s, e) =>
+                    foreach (Tuple<string, string> autofile in deserializedautofiles)
                     {
-                        var text = e.Result; // get the downloaded text
-                        //Console.WriteLine($"\nDownloaded: {e.Result}");
+                        var url = new Uri(autofile.Item2);
+
+                        var webClient = new WebClient();
+
+                        webClient.DownloadStringCompleted += (s, e) =>
+                        {
+                            var text = e.Result; // get the downloaded text
+                                                 //Console.WriteLine($"\nDownloaded: {e.Result}");
 
                         var fileidentity = autofile.Item1;
 
                         //var backups = new DirectoryInfo(directoryname).GetFiles("*" + fileidentity + "*", SearchOption.AllDirectories).OrderByDescending(x => x.LastWriteTime);
 
                         var documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaAutoBoxes");
-                        if (!Directory.Exists(documentsPath))
-                        {
-                            Directory.CreateDirectory(documentsPath);
-                        }
-                        string localFilename = autofile.Item1 + ".txt";
-                        var localPath = Path.Combine(documentsPath, localFilename);
-                        if (File.Exists(localPath))
-                        {
-                            var existingFileInfo = new FileInfo(localPath);
-                            if (existingFileInfo.Length != text.Length)
+                            if (!Directory.Exists(documentsPath))
                             {
-                                File.Delete(localPath);
-                                File.WriteAllText(localPath, text); // writes to local storage
+                                Directory.CreateDirectory(documentsPath);
+                            }
+                            string localFilename = autofile.Item1 + ".txt";
+                            var localPath = Path.Combine(documentsPath, localFilename);
+                            if (File.Exists(localPath))
+                            {
+                                var existingFileInfo = new FileInfo(localPath);
+                                if (existingFileInfo.Length != text.Length)
+                                {
+                                    File.Delete(localPath);
+                                    File.WriteAllText(localPath, text); // writes to local storage
                                 Console.WriteLine("New auto data file REPLACED to : {0}", localPath);
+                                }
+                                else
+                                {
+                                    Console.WriteLine("New auto data file matches old file, IGNORED : {0}", localPath);
+                                }
                             }
                             else
                             {
-                                Console.WriteLine("New auto data file matches old file, IGNORED : {0}", localPath);
-                            }
-                        }
-                        else
-                        {
-                            File.WriteAllText(localPath, text); // writes to local storage
+                                File.WriteAllText(localPath, text); // writes to local storage
                             Console.WriteLine("New auto data file SAVED to : {0}", localPath);
-                        }
-                    };
+                            }
+                        };
 
-                    webClient.Encoding = System.Text.Encoding.UTF8;
-                    webClient.DownloadStringAsync(url);
+                        webClient.Encoding = System.Text.Encoding.UTF8;
+                        webClient.DownloadStringAsync(url);
+                    }
+
+                    CommonFunctions.AddLogEvent(DateTime.Now, "SaveAutoData", false, null, "end");
+
+                    CheckStopwatch(timer, 0, "SaveAutoData", "SaveAutoData took " + timer.Elapsed.Seconds + " seconds");
                 }
-
-                CommonFunctions.AddLogEvent(DateTime.Now, "SaveAutoData", false, null, "end");
-
-                CheckStopwatch(timer, 0, "SaveAutoData", "SaveAutoData took " + timer.Elapsed.Seconds + " seconds");
+                else
+                {
+                    PresentViewController(CommonFunctions.AlertPrompt("Error", "An error has occured, if problem persists contact support", true, null, false, null), true, null);
+                } 
             }
             catch (Exception ex)
             {
@@ -2128,153 +2223,187 @@ namespace DynaPad
 
                 CommonFunctions.AddLogEvent(DateTime.Now, "SavePresetData", false, null, "new DynaPadService.DynaPadService");
 
-                var dds = new DynaPadService.DynaPadService { Timeout = 30000 };
-                var presetfiles = dds.GetAllAnswerPresets(CommonFunctions.GetUserConfig(), DynaClassLibrary.DynaClasses.LoginContainer.User.UserId, ForceUpdate);
+                //var dds = new DynaPadService.DynaPadService { Timeout = 30000 };
+                //var presetfiles = dds.GetAllAnswerPresets(CommonFunctions.GetUserConfig(), DynaClassLibrary.DynaClasses.LoginContainer.User.UserId, ForceUpdate);
 
-                var eventItems_GetAllAnswerPresets = new List<NSDictionary>
+
+                var getAllAnswerPresetsRequest = new DynaClassLibrary.GetAllAnswerPresetsRequest()
+                {
+                    configurationObjects = CommonFunctions.GetUserConfig(),
+                    userId = DynaClassLibrary.DynaClasses.LoginContainer.User.UserId,
+                    isForceUpdate = ForceUpdate
+                };
+
+                var requestJson = JsonConvert.SerializeObject(getAllAnswerPresetsRequest);
+
+                var requestStringContent = new StringContent(requestJson, UnicodeEncoding.UTF8, "application/json");
+
+                var response = DynaClientClass.DynaClient.PostAsync("GetAllAnswerPresets", requestStringContent);
+
+                if (response.Result.IsSuccessStatusCode)
+                {
+                    var requestResult = response.Result.Content.ReadAsStringAsync();
+
+                    var presetfiles = requestResult.Result;
+
+
+                    var eventItems_GetAllAnswerPresets = new List<NSDictionary>
                 {
                     getDictionary("User ID", DynaClassLibrary.DynaClasses.LoginContainer.User.UserId),
                     getDictionary("Is Force Update", ForceUpdate.ToString())
                 };
-                CommonFunctions.AddLogEvent(DateTime.Now, "SavePresetData", false, eventItems_GetAllAnswerPresets, "after dds.GetAllAnswerPresets");
+                    CommonFunctions.AddLogEvent(DateTime.Now, "SavePresetData", false, eventItems_GetAllAnswerPresets, "after dds.GetAllAnswerPresets");
 
-                var deserializedpresetfiles = JsonConvert.DeserializeObject<List<DynaPreset>>(presetfiles);
+                    var deserializedpresetfiles = JsonConvert.DeserializeObject<List<DynaPreset>>(presetfiles);
 
-                var dcount = deserializedpresetfiles.Count;
+                    var dcount = deserializedpresetfiles.Count;
 
-                //deserializedpresetfiles.Remove(deserializedpresetfiles.Find(y => y.PresetName == "dan"));
+                    //deserializedpresetfiles.Remove(deserializedpresetfiles.Find(y => y.PresetName == "dan"));
 
-                var localPresets = GetPresetData(null, null, true);
+                    var localPresets = GetPresetData(null, null, true);
 
-                if (ForceUpdate)
-                {
-                    foreach (DynaPreset lfile in localPresets)
+                    if (ForceUpdate)
                     {
-                        //if (!deserializedpresetfiles.Exists(x => x.PresetId == lfile.PresetId))
-                        //{
-                        var lfileidentity = lfile.PresetId;
-                        string llocalFilename = lfileidentity + ".txt";
-                        string llocalPath;
-
-                        var ldocumentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaPresets/" + lfile.FormId + "/" + lfile.DoctorId);
-                        if (!string.IsNullOrEmpty(lfile.SectionId))
+                        foreach (DynaPreset lfile in localPresets)
                         {
-                            var ldocumentsSectionPath = Path.Combine(ldocumentsPath, lfile.SectionId);
+                            //if (!deserializedpresetfiles.Exists(x => x.PresetId == lfile.PresetId))
+                            //{
+                            var lfileidentity = lfile.PresetId;
+                            string llocalFilename = lfileidentity + ".txt";
+                            string llocalPath;
 
-                            llocalPath = Path.Combine(ldocumentsSectionPath, llocalFilename);
-                        }
-                        else
-                        {
-                            llocalPath = Path.Combine(ldocumentsPath, llocalFilename);
-                        }
-
-                        if (File.Exists(llocalPath))
-                        {
-                            File.Delete(llocalPath);
-                            Console.WriteLine("Local preset file DELETED at : {0}", llocalPath);
-                        }
-                        //}
-                    }
-                }
-
-                Console.WriteLine("Starting download of : {0} preset files", dcount);
-
-                if (dcount > 0)
-                {
-                    var toast = new Toast("Starting download of " + dcount + " preset files");
-                    toast.SetDuration(5000);
-                    toast.SetType(ToastType.Info);
-                    toast.SetGravity(ToastGravity.Bottom);
-                    toast.Show();
-                }
-
-                foreach (DynaPreset presetfile in deserializedpresetfiles)
-                {
-                    var url = new Uri(presetfile.PresetFileUrl);
-
-                    var webClient = new WebClient();
-
-                    webClient.DownloadStringCompleted += (s, e) =>
-                    {
-                        var text = e.Result; // get the downloaded text
-                        //Console.WriteLine($"\nDownloaded: {e.Result}");
-
-                        presetfile.PresetJson = text;
-                        var newFileInfo = JsonConvert.SerializeObject(presetfile);
-
-                        var fileidentity = presetfile.PresetId;
-                        string localFilename = fileidentity + ".txt";
-                        string localPath;
-
-                        var documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaPresets/" + presetfile.FormId + "/" + presetfile.DoctorId);
-                        if (!Directory.Exists(documentsPath))
-                        {
-                            Directory.CreateDirectory(documentsPath);
-                        }
-                        if (!string.IsNullOrEmpty(presetfile.SectionId))
-                        {
-                            var documentsSectionPath = Path.Combine(documentsPath, presetfile.SectionId);
-                            if (!Directory.Exists(documentsSectionPath))
+                            var ldocumentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaPresets/" + lfile.FormId + "/" + lfile.DoctorId);
+                            if (!string.IsNullOrEmpty(lfile.SectionId))
                             {
-                                Directory.CreateDirectory(documentsSectionPath);
-                            }
+                                var ldocumentsSectionPath = Path.Combine(ldocumentsPath, lfile.SectionId);
 
-                            localPath = Path.Combine(documentsSectionPath, localFilename);
-                        }
-                        else
-                        {
-                            localPath = Path.Combine(documentsPath, localFilename);
-                        }
-
-                        if (File.Exists(localPath))
-                        {
-                            var existingFileInfo = new FileInfo(localPath);
-                            //if (existingFileInfo.Length != text.Length || ForceUpdate)
-                            if (existingFileInfo.Length != newFileInfo.Length || ForceUpdate)
-                            {
-                                File.Delete(localPath);
-                                File.WriteAllText(localPath, newFileInfo); // writes to local storage
-                                Console.WriteLine("New preset file REPLACED to : {0}", localPath);
+                                llocalPath = Path.Combine(ldocumentsSectionPath, llocalFilename);
                             }
                             else
                             {
-                                Console.WriteLine("New preset file matches old file, IGNORED : {0}", localPath);
+                                llocalPath = Path.Combine(ldocumentsPath, llocalFilename);
                             }
-                        }
-                        else
-                        {
-                            File.WriteAllText(localPath, newFileInfo); // writes to local storage
-                            Console.WriteLine("New preset file SAVED to : {0}", localPath);
-                        }
-                    };
 
-                    webClient.Encoding = System.Text.Encoding.UTF8;
-                    webClient.DownloadStringAsync(url);
+                            if (File.Exists(llocalPath))
+                            {
+                                File.Delete(llocalPath);
+                                Console.WriteLine("Local preset file DELETED at : {0}", llocalPath);
+                            }
+                            //}
+                        }
+                    }
+
+                    Console.WriteLine("Starting download of : {0} preset files", dcount);
 
                     if (dcount > 0)
                     {
-                        var ftoast = new Toast("Finished download of " + dcount + " preset files");
-                        ftoast.SetDuration(5000);
-                        ftoast.SetType(ToastType.Info);
-                        ftoast.SetGravity(ToastGravity.Bottom);
-                        ftoast.Show();
+                        var toast = new Toast("Starting download of " + dcount + " preset files");
+                        toast.SetDuration(5000);
+                        toast.SetType(ToastType.Info);
+                        toast.SetGravity(ToastGravity.Bottom);
+                        toast.Show();
                     }
-                }
 
-                var requestDateTimeUTC = DateTime.UtcNow.ToString();
-                dds.LogPresetRequest(CommonFunctions.GetUserConfig(), DynaDeviceUniqueName, requestDateTimeUTC, dcount);
+                    foreach (DynaPreset presetfile in deserializedpresetfiles)
+                    {
+                        var url = new Uri(presetfile.PresetFileUrl);
 
-                var eventItems_LogPresetRequest = new List<NSDictionary>
+                        var webClient = new WebClient();
+
+                        webClient.DownloadStringCompleted += (s, e) =>
+                        {
+                            var text = e.Result; // get the downloaded text
+                                                 //Console.WriteLine($"\nDownloaded: {e.Result}");
+
+                        presetfile.PresetJson = text;
+                            var newFileInfo = JsonConvert.SerializeObject(presetfile);
+
+                            var fileidentity = presetfile.PresetId;
+                            string localFilename = fileidentity + ".txt";
+                            string localPath;
+
+                            var documentsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaPresets/" + presetfile.FormId + "/" + presetfile.DoctorId);
+                            if (!Directory.Exists(documentsPath))
+                            {
+                                Directory.CreateDirectory(documentsPath);
+                            }
+                            if (!string.IsNullOrEmpty(presetfile.SectionId))
+                            {
+                                var documentsSectionPath = Path.Combine(documentsPath, presetfile.SectionId);
+                                if (!Directory.Exists(documentsSectionPath))
+                                {
+                                    Directory.CreateDirectory(documentsSectionPath);
+                                }
+
+                                localPath = Path.Combine(documentsSectionPath, localFilename);
+                            }
+                            else
+                            {
+                                localPath = Path.Combine(documentsPath, localFilename);
+                            }
+
+                            if (File.Exists(localPath))
+                            {
+                                var existingFileInfo = new FileInfo(localPath);
+                            //if (existingFileInfo.Length != text.Length || ForceUpdate)
+                            if (existingFileInfo.Length != newFileInfo.Length || ForceUpdate)
+                                {
+                                    File.Delete(localPath);
+                                    File.WriteAllText(localPath, newFileInfo); // writes to local storage
+                                Console.WriteLine("New preset file REPLACED to : {0}", localPath);
+                                }
+                                else
+                                {
+                                    Console.WriteLine("New preset file matches old file, IGNORED : {0}", localPath);
+                                }
+                            }
+                            else
+                            {
+                                File.WriteAllText(localPath, newFileInfo); // writes to local storage
+                            Console.WriteLine("New preset file SAVED to : {0}", localPath);
+                            }
+                        };
+
+                        webClient.Encoding = System.Text.Encoding.UTF8;
+                        webClient.DownloadStringAsync(url);
+
+                        if (dcount > 0)
+                        {
+                            var ftoast = new Toast("Finished download of " + dcount + " preset files");
+                            ftoast.SetDuration(5000);
+                            ftoast.SetType(ToastType.Info);
+                            ftoast.SetGravity(ToastGravity.Bottom);
+                            ftoast.Show();
+                        }
+                    }
+
+                    var requestDateTimeUTC = DateTime.UtcNow.ToString();
+                    //dds.LogPresetRequest(CommonFunctions.GetUserConfig(), DynaDeviceUniqueName, requestDateTimeUTC, dcount);
+
+
+
+                    var logPresetRequestRequest = new DynaClassLibrary.LogPresetRequest()                     {                         configurationObjects = CommonFunctions.GetUserConfig(),                         deviceName = DynaDeviceUniqueName,                         requestDateTimeUTC = requestDateTimeUTC,
+                        presetCount = dcount                     };                      var logRequestJson = JsonConvert.SerializeObject(logPresetRequestRequest);                      var logRequestStringContent = new StringContent(logRequestJson, UnicodeEncoding.UTF8, "application/json");                      var logResponse = DynaClientClass.DynaClient.PostAsync("LogPresetRequest", logRequestStringContent);                      if (logResponse.Result.IsSuccessStatusCode)                     {                         var logRequestResult = logResponse.Result.Content.ReadAsStringAsync();
+
+
+
+                        var eventItems_LogPresetRequest = new List<NSDictionary>
                 {
                     getDictionary("Device Name", DynaDeviceUniqueName),
                     getDictionary("Request DateTimeUTC", requestDateTimeUTC),
                     getDictionary("Preset Count", dcount.ToString())
                 };
-                CommonFunctions.AddLogEvent(DateTime.Now, "SavePresetData", false, eventItems_LogPresetRequest, "after dds.LogPresetRequest");
+                        CommonFunctions.AddLogEvent(DateTime.Now, "SavePresetData", false, eventItems_LogPresetRequest, "after dds.LogPresetRequest");
+                    }                     else                     {                         PresentViewController(CommonFunctions.AlertPrompt("Error", "An error has occured, if problem persists contact support", true, null, false, null), true, null);                     } 
 
-                CommonFunctions.AddLogEvent(DateTime.Now, "SavePresetData", false, null, "end");
+                    CommonFunctions.AddLogEvent(DateTime.Now, "SavePresetData", false, null, "end");
 
-                CheckStopwatch(timer, 0, "SavePresetData", "SavePresetData took " + timer.Elapsed.Seconds + " seconds");
+                    CheckStopwatch(timer, 0, "SavePresetData", "SavePresetData took " + timer.Elapsed.Seconds + " seconds");
+                }
+                else
+                {
+                    PresentViewController(CommonFunctions.AlertPrompt("Error", "An error has occured, if problem persists contact support", true, null, false, null), true, null);
+                }
             }
             catch (Exception ex)
             {
@@ -2480,17 +2609,47 @@ namespace DynaPad
 
                     if (dfap != null && dfap.Any())
                     {
-                        SelectedAppointment.SelectedQForm = JsonConvert.DeserializeObject<QForm>(JsonConvert.DeserializeObject<DynaFile>(File.ReadAllText(dfap.First().FullName)).Json);
+                        SelectedAppointment.SelectedQForm = JsonConvert.DeserializeObject<QForm>(JsonConvert.DeserializeObject<DynaClasses.DynaFile>(File.ReadAllText(dfap.First().FullName)).Json);
                         origJson = JsonConvert.SerializeObject(SelectedAppointment.SelectedQForm);
                     }
                     else
                     {
                         CommonFunctions.AddLogEvent(DateTime.Now, "GetFormService", false, null, "new DynaPadService.DynaPadService");
 
-                        var dds = new DynaPadService.DynaPadService { Timeout = 30000 };
-                        origJson = dds.GetFormQuestions(CommonFunctions.GetUserConfig(), dfElemet.FormID, dfElemet.DoctorID, dfElemet.LocationID, dfElemet.PatientID, dfElemet.PatientName, SelectedAppointment.CaseId, SelectedAppointment.ApptId, dfElemet.IsDoctorForm);
+                        //var dds = new DynaPadService.DynaPadService { Timeout = 30000 };
+                        //origJson = dds.GetFormQuestions(CommonFunctions.GetUserConfig(), dfElemet.FormID, dfElemet.DoctorID, dfElemet.LocationID, dfElemet.PatientID, dfElemet.PatientName, SelectedAppointment.CaseId, SelectedAppointment.ApptId, dfElemet.IsDoctorForm);
 
-                        var eventItems_GetFormQuestions = new List<NSDictionary>                         {
+
+                        var getFormQuestionsRequest = new DynaClassLibrary.GetFormQuestionsRequest()
+                        {
+                            configurationObjects = CommonFunctions.GetUserConfig(),
+                            formId = dfElemet.FormID,
+                            doctorId = dfElemet.DoctorID,
+                            locationId = dfElemet.LocationID,
+                            patientId = dfElemet.PatientID,
+                            patientName = dfElemet.PatientName,
+                            caseId = SelectedAppointment.CaseId,
+                            apptId = SelectedAppointment.ApptId,
+                            isDocInput = dfElemet.IsDoctorForm
+                        };
+
+                        var requestJson = JsonConvert.SerializeObject(getFormQuestionsRequest);
+
+                        var requestStringContent = new StringContent(requestJson, UnicodeEncoding.UTF8, "application/json");
+
+                        var response = DynaClientClass.DynaClient.PostAsync("GetFormQuestions", requestStringContent);
+
+                        if (response.Result.IsSuccessStatusCode)
+                        {
+                            var requestResult = response.Result.Content.ReadAsStringAsync();
+
+                            origJson = requestResult.Result;
+
+
+
+
+
+                            var eventItems_GetFormQuestions = new List<NSDictionary>                         {
                             getDictionary("Form ID", dfElemet.FormID),
                             getDictionary("Doctor ID", dfElemet.DoctorID),
                             getDictionary("Location ID", dfElemet.LocationID),
@@ -2500,10 +2659,16 @@ namespace DynaPad
                             getDictionary("Appointment ID", SelectedAppointment.ApptId),
                             getDictionary("Is Doctor Form", dfElemet.IsDoctorForm.ToString())
                         };
-                        CommonFunctions.AddLogEvent(DateTime.Now, "GetFormService", false, eventItems_GetFormQuestions, "after dds.GetFormQuestions");
+                            CommonFunctions.AddLogEvent(DateTime.Now, "GetFormService", false, eventItems_GetFormQuestions, "after dds.GetFormQuestions");
 
-                        JsonHandler.OriginalFormJsonString = origJson;
-                        SelectedAppointment.SelectedQForm = JsonConvert.DeserializeObject<QForm>(origJson);
+                            JsonHandler.OriginalFormJsonString = origJson;
+                            SelectedAppointment.SelectedQForm = JsonConvert.DeserializeObject<QForm>(origJson);
+                        }
+                        else
+                        {
+                            PresentViewController(CommonFunctions.AlertPrompt("Error", "An error has occured, if problem persists contact support", true, null, false, null), true, null);
+                            return new DynaDialogViewController(new RootElement("Error"), true);
+                        }
                     }
                 }
                 else
@@ -2996,10 +3161,20 @@ namespace DynaPad
 
                     CommonFunctions.AddLogEvent(DateTime.Now, "SaveFormPreset", false, null, "new DynaPadService.DynaPadService");
 
-                    var dds = new DynaPadService.DynaPadService { Timeout = 30000 };
-                    dds.SaveAnswerPreset(CommonFunctions.GetUserConfig(), SelectedAppointment.SelectedQForm.FormId, null, SelectedAppointment.ApptDoctorId, true, presetName, presetJson, SelectedAppointment.ApptLocationId, presetId);
+                    //var dds = new DynaPadService.DynaPadService { Timeout = 30000 };
+                    //dds.SaveAnswerPreset(CommonFunctions.GetUserConfig(), SelectedAppointment.SelectedQForm.FormId, null, SelectedAppointment.ApptDoctorId, true, presetName, presetJson, SelectedAppointment.ApptLocationId, presetId);
 
-                    var eventItems_SaveAnswerPreset = new List<NSDictionary>                     {
+
+                    var saveAnswerPresetRequest = new DynaClassLibrary.SaveAnswerPresetRequest()                     {                         configurationObjects = CommonFunctions.GetUserConfig(),                         formId = SelectedAppointment.SelectedQForm.FormId,
+                        sectionId = null,
+                        doctorId = SelectedAppointment.ApptDoctorId,
+                        isDocInput = true,
+                        presetName = presetName,
+                        presetJson = presetJson,
+                        locationId = SelectedAppointment.ApptLocationId,
+                        existingPresetId = presetId                     };                      var requestJson = JsonConvert.SerializeObject(saveAnswerPresetRequest);                      var requestStringContent = new StringContent(requestJson, UnicodeEncoding.UTF8, "application/json");                      var response = DynaClientClass.DynaClient.PostAsync("SaveAnswerPreset", requestStringContent);                      if (response.Result.IsSuccessStatusCode)                     {                         var requestResult = response.Result.Content.ReadAsStringAsync();  
+
+                        var eventItems_SaveAnswerPreset = new List<NSDictionary>                     {
                         getDictionary("Form ID", SelectedAppointment.SelectedQForm.FormId),
                         getDictionary("Section ID", "null"),
                         getDictionary("Doctor ID", SelectedAppointment.ApptDoctorId),
@@ -3009,48 +3184,49 @@ namespace DynaPad
                         getDictionary("Appointment Location ID", SelectedAppointment.ApptLocationId),
                         getDictionary("Preset ID", presetId)
                     };
-                    CommonFunctions.AddLogEvent(DateTime.Now, "SaveFormPreset", false, eventItems_SaveAnswerPreset, "after dds.SaveAnswerPreset");
+                        CommonFunctions.AddLogEvent(DateTime.Now, "SaveFormPreset", false, eventItems_SaveAnswerPreset, "after dds.SaveAnswerPreset");
 
-                    SavePresetData();
+                        SavePresetData();
 
-                    if (presetId == null)
-                    {
-                        var mre = GetPreset(presetId, presetName, presetJson, sectionId, presetGroup, presetSection, origS, sectionFormSections, IsDoctorForm);
-
-                        presetSection.Insert(presetSection.Count - 1, UITableViewRowAnimation.Fade, mre);
-                        presetSection.GetImmediateRootElement().RadioSelected = presetSection.Count - 2;
-
-                        presetSection.GetImmediateRootElement().Reload(presetSection, UITableViewRowAnimation.Fade);
-                    }
-                    else
-                    {
-                        presetSection.GetImmediateRootElement().RadioSelected = presetGroup.Selected;
-                        pre.PresetName = presetName;
-                        pre.Caption = presetName;
-                        presetSection.GetImmediateRootElement().Reload(pre, UITableViewRowAnimation.Fade);
-                    }
-
-                    foreach (Element d in sectionFormSections.Elements)
-                    {
-                        var t = d.GetType();
-                        if (t == typeof(SectionStringElement))
+                        if (presetId == null)
                         {
-                            var di = (SectionStringElement)d;
-                            if (di.selected == true)
+                            var mre = GetPreset(presetId, presetName, presetJson, sectionId, presetGroup, presetSection, origS, sectionFormSections, IsDoctorForm);
+
+                            presetSection.Insert(presetSection.Count - 1, UITableViewRowAnimation.Fade, mre);
+                            presetSection.GetImmediateRootElement().RadioSelected = presetSection.Count - 2;
+
+                            presetSection.GetImmediateRootElement().Reload(presetSection, UITableViewRowAnimation.Fade);
+                        }
+                        else
+                        {
+                            presetSection.GetImmediateRootElement().RadioSelected = presetGroup.Selected;
+                            pre.PresetName = presetName;
+                            pre.Caption = presetName;
+                            presetSection.GetImmediateRootElement().Reload(pre, UITableViewRowAnimation.Fade);
+                        }
+
+                        foreach (Element d in sectionFormSections.Elements)
+                        {
+                            var t = d.GetType();
+                            if (t == typeof(SectionStringElement))
                             {
-                                di.selected = false;
+                                var di = (SectionStringElement)d;
+                                if (di.selected == true)
+                                {
+                                    di.selected = false;
+                                }
                             }
                         }
-                    }
 
-                    var q = (SectionStringElement)sectionFormSections[1];
-                    q.selected = true;
+                        var q = (SectionStringElement)sectionFormSections[1];
+                        q.selected = true;
 
-                    CommonFunctions.AddLogEvent(DateTime.Now, "SaveFormPreset", false, null, "end");
+                        CommonFunctions.AddLogEvent(DateTime.Now, "SaveFormPreset", false, null, "end");
 
-                    LoadSectionView(SelectedAppointment.SelectedQForm.FormSections[0].SectionId, SelectedAppointment.SelectedQForm.FormSections[0].SectionName, SelectedAppointment.SelectedQForm.FormSections[0], IsDoctorForm, sectionFormSections);
+                        LoadSectionView(SelectedAppointment.SelectedQForm.FormSections[0].SectionId, SelectedAppointment.SelectedQForm.FormSections[0].SectionName, SelectedAppointment.SelectedQForm.FormSections[0], IsDoctorForm, sectionFormSections);
 
-                    NavigationController.PopViewController(true);
+                        NavigationController.PopViewController(true);
+                    }                     else                     {                         PresentViewController(CommonFunctions.AlertPrompt("Error", "An error has occured, if problem persists contact support", true, null, false, null), true, null);                     }
                 }
                 else
                 {
@@ -3495,41 +3671,49 @@ namespace DynaPad
 
                     CommonFunctions.AddLogEvent(DateTime.Now, "DeleteFormPreset", false, null, "new DynaPadService.DynaPadService");
 
-                    var dds = new DynaPadService.DynaPadService { Timeout = 30000 };
-                    dds.DeleteAnswerPreset(CommonFunctions.GetUserConfig(), SelectedAppointment.SelectedQForm.FormId, null, SelectedAppointment.ApptDoctorId, presetId);
+                    //var dds = new DynaPadService.DynaPadService { Timeout = 30000 };
+                    //dds.DeleteAnswerPreset(CommonFunctions.GetUserConfig(), SelectedAppointment.SelectedQForm.FormId, null, SelectedAppointment.ApptDoctorId, presetId);
 
-                    var eventItems_DeleteAnswerPreset = new List<NSDictionary>                     {
+
+
+                    var deleteAnswerPresetRequest = new DynaClassLibrary.DeleteAnswerPresetRequest()                     {                         configurationObjects = CommonFunctions.GetUserConfig(),                         formId = SelectedAppointment.SelectedQForm.FormId,                         sectionId = null,
+                        doctorId = SelectedAppointment.ApptDoctorId,
+                        existingPresetId = presetId                     };                      var requestJson = JsonConvert.SerializeObject(deleteAnswerPresetRequest);                      var requestStringContent = new StringContent(requestJson, UnicodeEncoding.UTF8, "application/json");                      var response = DynaClientClass.DynaClient.PostAsync("DeleteAnswerPreset", requestStringContent);                      if (response.Result.IsSuccessStatusCode)                     {                         var requestResult = response.Result.Content.ReadAsStringAsync();  
+
+
+                        var eventItems_DeleteAnswerPreset = new List<NSDictionary>                     {
                         getDictionary("Form ID", SelectedAppointment.SelectedQForm.FormId),
                         getDictionary("Section ID", "null"),
                         getDictionary("Doctor ID", SelectedAppointment.ApptDoctorId),
                         getDictionary("Preset ID", presetId)
                     };
-                    CommonFunctions.AddLogEvent(DateTime.Now, "DeleteFormPreset", false, eventItems_DeleteAnswerPreset, "after dds.DeleteAnswerPreset");
+                        CommonFunctions.AddLogEvent(DateTime.Now, "DeleteFormPreset", false, eventItems_DeleteAnswerPreset, "after dds.DeleteAnswerPreset");
 
-                    var presetPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaPresets/" + SelectedAppointment.SelectedQForm.FormId + "/" + SelectedAppointment.ApptDoctorId + "/" + presetId + ".txt");
-                    if (File.Exists(presetPath))
-                    {
-                        File.Delete(presetPath);
+                        var presetPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "DynaPresets/" + SelectedAppointment.SelectedQForm.FormId + "/" + SelectedAppointment.ApptDoctorId + "/" + presetId + ".txt");
+                        if (File.Exists(presetPath))
+                        {
+                            File.Delete(presetPath);
 
-                        var toast = new Toast("Preset file was deleted");
-                        toast.SetDuration(5000);
-                        toast.SetType(ToastType.Info);
-                        toast.SetGravity(ToastGravity.Bottom);
-                        toast.Show();
-                    }
+                            var toast = new Toast("Preset file was deleted");
+                            toast.SetDuration(5000);
+                            toast.SetType(ToastType.Info);
+                            toast.SetGravity(ToastGravity.Bottom);
+                            toast.Show();
+                        }
 
-                    SavePresetData();
+                        SavePresetData();
 
-                    if (presetSection.GetImmediateRootElement().RadioSelected == pre.Index)
-                    {
-                        presetSection.GetImmediateRootElement().RadioSelected = 0;
-                    }
-                    presetSection.Remove(pre);
-                    presetSection.GetImmediateRootElement().Reload(presetSection, UITableViewRowAnimation.Fade);
+                        if (presetSection.GetImmediateRootElement().RadioSelected == pre.Index)
+                        {
+                            presetSection.GetImmediateRootElement().RadioSelected = 0;
+                        }
+                        presetSection.Remove(pre);
+                        presetSection.GetImmediateRootElement().Reload(presetSection, UITableViewRowAnimation.Fade);
 
-                    CommonFunctions.AddLogEvent(DateTime.Now, "DeleteFormPreset", false, null, "end");
+                        CommonFunctions.AddLogEvent(DateTime.Now, "DeleteFormPreset", false, null, "end");
 
-                    NavigationController.PopViewController(true);
+                        NavigationController.PopViewController(true);
+                    }                     else                     {                         PresentViewController(CommonFunctions.AlertPrompt("Error", "An error has occured, if problem persists contact support", true, null, false, null), true, null);                     } 
                 }
                 else
                 {
@@ -3851,7 +4035,7 @@ namespace DynaPad
                     File.Delete(formFinalPath);
                 }
 
-                var formDynaUpload = new DynaFile
+                var formDynaUpload = new DynaClasses.DynaFile
                 {
                     FileName = formFileName,
                     UserId = DynaClassLibrary.DynaClasses.LoginContainer.User.UserId,
@@ -3912,101 +4096,131 @@ namespace DynaPad
 
                 CommonFunctions.AddLogEvent(DateTime.Now, "GetApptDatesService", false, null, "new DynaPadService.DynaPadService");
 
-                var dds = new DynaPadService.DynaPadService { Timeout = 30000, AllowAutoRedirect = true };
+                //var dds = new DynaPadService.DynaPadService { Timeout = 30000, AllowAutoRedirect = true };
                 var locid = string.IsNullOrEmpty(DynaClassLibrary.DynaClasses.LoginContainer.User.SelectedLocation.LocationId) ? null : DynaClassLibrary.DynaClasses.LoginContainer.User.SelectedLocation.LocationId;
 
-                var menujson = dds.GetAppointmentsByDateFrame(CommonFunctions.GetUserConfig(), locid, dfElemet.MenuAction);
+                //var menujson = dds.GetAppointmentsByDateFrame(CommonFunctions.GetUserConfig(), locid, dfElemet.MenuAction);
 
-                var eventItems_GetAppointmentsByDateFrame = new List<NSDictionary>                 {
+
+
+                var appointmentsByDateFrameRequest = new DynaClassLibrary.AppointmentsByDateFrameRequest()
+                {
+                    configurationObjects = CommonFunctions.GetUserConfig(),
+                    locationId = locid,
+                    dateFrame = dfElemet.MenuAction
+                };
+
+                var requestJson = JsonConvert.SerializeObject(appointmentsByDateFrameRequest);
+
+                var requestStringContent = new StringContent(requestJson, UnicodeEncoding.UTF8, "application/json");
+
+                var response = DynaClientClass.DynaClient.PostAsync("GetAppointmentsByDateFrame", requestStringContent);
+
+                if (response.Result.IsSuccessStatusCode)
+                {
+                    var requestResult = response.Result.Content.ReadAsStringAsync();
+
+                    var menujson = requestResult.Result;
+
+
+
+
+                    var eventItems_GetAppointmentsByDateFrame = new List<NSDictionary>                 {
                     getDictionary("Location ID", locid),
                     getDictionary("Menu Action (Date Frame)", dfElemet.MenuAction)
                 };
-                CommonFunctions.AddLogEvent(DateTime.Now, "GetApptDatesService", false, eventItems_GetAppointmentsByDateFrame, "after dds.GetAppointmentsByDateFrame");
+                    CommonFunctions.AddLogEvent(DateTime.Now, "GetApptDatesService", false, eventItems_GetAppointmentsByDateFrame, "after dds.GetAppointmentsByDateFrame");
 
-                myDynaMenu = JsonConvert.DeserializeObject<Menu>(menujson);
-                DetailViewController.DynaMenu = myDynaMenu;
+                    myDynaMenu = JsonConvert.DeserializeObject<Menu>(menujson);
+                    DetailViewController.DynaMenu = myDynaMenu;
 
-                switch (dfElemet.MenuAction)
-                {
-                    case "GetApptsWeek":
-                        CurrentApptGridType = "Week";
-                        GridSourceWeek = myDynaMenu.MenuItems.FindAll(x => x.GetType().ToString() == "MenuItem");
-                        IsGridSourceWeekSet = true;
-                        DetailViewController.weekMenu = myDynaMenu;
-                        break;
-                    case "GetApptsMonth":
-                        CurrentApptGridType = "Month";
-                        GridSourceMonth = myDynaMenu.MenuItems.FindAll(x => x.GetType().ToString() == "MenuItem");
-                        IsGridSourceMonthSet = true;
-                        DetailViewController.monthMenu = myDynaMenu;
-                        break;
-                    case "GetApptsUpcoming":
-                        CurrentApptGridType = "Upcoming";
-                        GridSourceUpcoming = myDynaMenu.MenuItems.FindAll(x => x.GetType().ToString() == "MenuItem");
-                        IsGridSourceUpcomingSet = true;
-                        DetailViewController.upcomingMenu = myDynaMenu;
-                        break;
-                    case "GetApptsYesterday":
-                        CurrentApptGridType = "Yesterday";
-                        GridSourceYesterday = myDynaMenu.MenuItems.FindAll(x => x.GetType().ToString() == "MenuItem");
-                        IsGridSourceYesterdaySet = true;
-                        DetailViewController.yesterdayMenu = myDynaMenu;
-                        break;
-                    case "GetApptsOlder":
-                        CurrentApptGridType = "Older";
-                        GridSourceOlder = myDynaMenu.MenuItems.FindAll(x => x.GetType().ToString() == "MenuItem");
-                        IsGridSourceOlderSet = true;
-                        DetailViewController.olderMenu = myDynaMenu;
-                        break;
-                    default: // do nothing;
-                        break;
-                }
+                    switch (dfElemet.MenuAction)
+                    {
+                        case "GetApptsWeek":
+                            CurrentApptGridType = "Week";
+                            GridSourceWeek = myDynaMenu.MenuItems.FindAll(x => x.GetType().ToString() == "MenuItem");
+                            IsGridSourceWeekSet = true;
+                            DetailViewController.weekMenu = myDynaMenu;
+                            break;
+                        case "GetApptsMonth":
+                            CurrentApptGridType = "Month";
+                            GridSourceMonth = myDynaMenu.MenuItems.FindAll(x => x.GetType().ToString() == "MenuItem");
+                            IsGridSourceMonthSet = true;
+                            DetailViewController.monthMenu = myDynaMenu;
+                            break;
+                        case "GetApptsUpcoming":
+                            CurrentApptGridType = "Upcoming";
+                            GridSourceUpcoming = myDynaMenu.MenuItems.FindAll(x => x.GetType().ToString() == "MenuItem");
+                            IsGridSourceUpcomingSet = true;
+                            DetailViewController.upcomingMenu = myDynaMenu;
+                            break;
+                        case "GetApptsYesterday":
+                            CurrentApptGridType = "Yesterday";
+                            GridSourceYesterday = myDynaMenu.MenuItems.FindAll(x => x.GetType().ToString() == "MenuItem");
+                            IsGridSourceYesterdaySet = true;
+                            DetailViewController.yesterdayMenu = myDynaMenu;
+                            break;
+                        case "GetApptsOlder":
+                            CurrentApptGridType = "Older";
+                            GridSourceOlder = myDynaMenu.MenuItems.FindAll(x => x.GetType().ToString() == "MenuItem");
+                            IsGridSourceOlderSet = true;
+                            DetailViewController.olderMenu = myDynaMenu;
+                            break;
+                        default: // do nothing;
+                            break;
+                    }
 
-                //if (dfElemet.MenuAction == "GetApptsWeek")
-                //{
-                //    CurrentApptGridType = "Week";
-                //    //GridSourceWeek = new List<MenuItem>();
-                //    GridSourceWeek = myDynaMenu.MenuItems.FindAll(x => x.GetType().ToString() == "MenuItem");
-                //}
-                //else if (dfElemet.MenuAction == "GetApptsMonth")
-                //{
-                //    CurrentApptGridType = "Month";
-                //    //GridSourceMonth = new List<MenuItem>();
-                //    GridSourceMonth = myDynaMenu.MenuItems.FindAll(x => x.GetType().ToString() == "MenuItem");
-                //}
+                    //if (dfElemet.MenuAction == "GetApptsWeek")
+                    //{
+                    //    CurrentApptGridType = "Week";
+                    //    //GridSourceWeek = new List<MenuItem>();
+                    //    GridSourceWeek = myDynaMenu.MenuItems.FindAll(x => x.GetType().ToString() == "MenuItem");
+                    //}
+                    //else if (dfElemet.MenuAction == "GetApptsMonth")
+                    //{
+                    //    CurrentApptGridType = "Month";
+                    //    //GridSourceMonth = new List<MenuItem>();
+                    //    GridSourceMonth = myDynaMenu.MenuItems.FindAll(x => x.GetType().ToString() == "MenuItem");
+                    //}
 
-                var rootMainMenu = new DynaFormRootElement(myDynaMenu.MenuCaption)
-                {
-                    UnevenRows = true,
-                    Enabled = true
-                };
+                    var rootMainMenu = new DynaFormRootElement(myDynaMenu.MenuCaption)
+                    {
+                        UnevenRows = true,
+                        Enabled = true
+                    };
 
-                var sectionMainMenu = new Section { HeaderView = null, FooterView = null };
+                    var sectionMainMenu = new Section { HeaderView = null, FooterView = null };
 
-                BuildMenu(myDynaMenu, sectionMainMenu);
+                    BuildMenu(myDynaMenu, sectionMainMenu);
 
-                rootMainMenu.Add(sectionMainMenu);
+                    rootMainMenu.Add(sectionMainMenu);
 
-                var formDVC = new DynaDialogViewController(rootMainMenu, true);
-                formDVC.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, delegate
-                {
-                    DetailViewController.QuestionsView = null; //.Clear();
+                    var formDVC = new DynaDialogViewController(rootMainMenu, true);
+                    formDVC.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, delegate
+                    {
+                        DetailViewController.QuestionsView = null; //.Clear();
                     DetailViewController.Root.Clear();
-                    DetailViewController.Root.Caption = "";
-                    DetailViewController.ReloadData();
+                        DetailViewController.Root.Caption = "";
+                        DetailViewController.ReloadData();
 
-                    DetailViewController.SetDetailItem(new Section("Appointments Grid"), "ApptGrid", "Today", null, false);
+                        DetailViewController.SetDetailItem(new Section("Appointments Grid"), "ApptGrid", "Today", null, false);
 
-                    NavigationController.PopViewController(true);
-                });
+                        NavigationController.PopViewController(true);
+                    });
 
-                //NavigationController.PushViewController(formDVC, true);
+                    //NavigationController.PushViewController(formDVC, true);
 
-                CommonFunctions.AddLogEvent(DateTime.Now, "GetApptDateService", false, null, "end");
+                    CommonFunctions.AddLogEvent(DateTime.Now, "GetApptDateService", false, null, "end");
 
-                DetailViewController.SetDetailItem(new Section("Appointments Grid"), "ApptGrid", dfElemet.MenuAction, null, false);
+                    DetailViewController.SetDetailItem(new Section("Appointments Grid"), "ApptGrid", dfElemet.MenuAction, null, false);
 
-                return formDVC;
+                    return formDVC;
+                }
+                else
+                {
+                    PresentViewController(CommonFunctions.AlertPrompt("Error", "An error has occured, if problem persists contact support", true, null, false, null), true, null);
+                    return new DynaDialogViewController(CommonFunctions.ErrorRootElement(), true);
+                } 
             }
             catch (Exception ex)
             {
@@ -4276,34 +4490,94 @@ namespace DynaPad
                 {
                     CommonFunctions.AddLogEvent(DateTime.Now, "GetMRFoldersService", false, null, "new DynaPadService.DynaPadService");
 
-                    var dds = new DynaPadService.DynaPadService { Timeout = 30000 };
+                    //var dds = new DynaPadService.DynaPadService { Timeout = 30000 };
                     var dfElemet = (DynaFormRootElement)rElement;
 
-                    var origJson = dds.GetFiles(CommonFunctions.GetUserConfig(), dfElemet.ApptID, dfElemet.PatientID, dfElemet.PatientName, dfElemet.DoctorID, dfElemet.LocationID);
+                    //var origJson = dds.GetFiles(CommonFunctions.GetUserConfig(), dfElemet.ApptID, dfElemet.PatientID, dfElemet.PatientName, dfElemet.DoctorID, dfElemet.LocationID);
 
-                    var eventItems_GetFiles = new List<NSDictionary>                     {
+
+
+                    var getFilesRequest = new DynaClassLibrary.GetFilesRequest()                     {                         configurationObjects = CommonFunctions.GetUserConfig(),                         locationId = dfElemet.LocationID,
+                        apptId = dfElemet.ApptID,
+                        patientId = dfElemet.PatientID,
+                        patientName = dfElemet.PatientName,
+                        doctorId = dfElemet.DoctorID                     };                      var requestJson = JsonConvert.SerializeObject(getFilesRequest);                      var requestStringContent = new StringContent(requestJson, UnicodeEncoding.UTF8, "application/json");                      var response = DynaClientClass.DynaClient.PostAsync("GetFiles", requestStringContent);                      if (response.Result.IsSuccessStatusCode)                     {                         var requestResult = response.Result.Content.ReadAsStringAsync();                          var origJson = requestResult.Result;
+
+
+
+
+                        var eventItems_GetFiles = new List<NSDictionary>                     {
                         getDictionary("Appointment ID", dfElemet.ApptID),
                         getDictionary("Patient ID", dfElemet.PatientID),
                         getDictionary("Patient Name", dfElemet.PatientName),
                         getDictionary("Doctor ID", dfElemet.DoctorID),
                         getDictionary("Location ID", dfElemet.LocationID)
                     };
-                    CommonFunctions.AddLogEvent(DateTime.Now, "GetMRFoldersService", false, eventItems_GetFiles, "after dds.GetFiles");
+                        CommonFunctions.AddLogEvent(DateTime.Now, "GetMRFoldersService", false, eventItems_GetFiles, "after dds.GetFiles");
 
-                    JsonHandler.OriginalFormJsonString = origJson;
-                    SelectedAppointment.ApptMRFolders = JsonConvert.DeserializeObject<List<MRFolder>>(origJson);
+                        JsonHandler.OriginalFormJsonString = origJson;
+                        SelectedAppointment.ApptMRFolders = JsonConvert.DeserializeObject<List<MRFolder>>(origJson);
 
-                    DetailViewController.Root.Clear();
-                    DetailViewController.Root.Caption = "Medical Records: " + SelectedAppointment.ApptPatientName;
-                    DetailViewController.ReloadData();
+                        DetailViewController.Root.Clear();
+                        DetailViewController.Root.Caption = "Medical Records: " + SelectedAppointment.ApptPatientName;
+                        DetailViewController.ReloadData();
 
-                    var mrFolderGroup = new RadioGroup("mrfolders", -1);
-                    var rootMRFolders = new RootElement("Medical Records", mrFolderGroup);
-                    var mrFolderSections = new Section();
+                        var mrFolderGroup = new RadioGroup("mrfolders", -1);
+                        var rootMRFolders = new RootElement("Medical Records", mrFolderGroup);
+                        var mrFolderSections = new Section();
 
-                    foreach (MRFolder mrf in SelectedAppointment.ApptMRFolders)
-                    {
-                        var mrfolder = new SectionStringElement(mrf.MRFolderName, delegate
+                        foreach (MRFolder mrf in SelectedAppointment.ApptMRFolders)
+                        {
+                            var mrfolder = new SectionStringElement(mrf.MRFolderName, delegate
+                            {
+                                try
+                                {
+                                    _lockObject = this;
+                                    lock (_lockObject)
+                                    {
+                                        if (isRunning)
+                                        {
+                                            return;
+                                        }
+                                        isRunning = true;
+                                    }
+
+                                    LoadMRView(mrf.MRFolderName, mrf.MRFolderId);
+
+                                    foreach (Element d in mrFolderSections.Elements)
+                                    {
+                                        var t = d.GetType();
+                                        if (t == typeof(SectionStringElement))
+                                        {
+                                            var di = (SectionStringElement)d;
+                                            di.selected = false;
+                                        }
+                                    }
+
+                                    mrFolderSections.GetContainerTableView().ReloadData();
+                                }
+                                catch (Exception ex)
+                                {
+                                    var eventItems = new List<NSDictionary>
+                                    {
+                                    getDictionary("Exception Message", ex.Message),
+                                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                                    };
+                                    CommonFunctions.AddLogEvent(DateTime.Now, "GetMRFoldersService", true, eventItems, "mrfolder delegate catch block");
+
+                                    CommonFunctions.sendErrorEmail(ex);
+                                    PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
+                                }
+                                finally
+                                {
+                                    isRunning = false;
+                                }
+                            });
+
+                            mrFolderSections.Add(mrfolder);
+                        }
+
+                        mrFolderSections.Add(new SectionStringElement("Download Medical Records", delegate
                         {
                             try
                             {
@@ -4317,7 +4591,7 @@ namespace DynaPad
                                     isRunning = true;
                                 }
 
-                                LoadMRView(mrf.MRFolderName, mrf.MRFolderId);
+                                DetailViewController.SetDetailItem(new Section("Download Medical Records"), "MRPatientDownload", null, null, false);
 
                                 foreach (Element d in mrFolderSections.Elements)
                                 {
@@ -4335,10 +4609,10 @@ namespace DynaPad
                             {
                                 var eventItems = new List<NSDictionary>
                                 {
-                                    getDictionary("Exception Message", ex.Message),
-                                    getDictionary("Exception Stacktrace", ex.StackTrace)
+                                getDictionary("Exception Message", ex.Message),
+                                getDictionary("Exception Stacktrace", ex.StackTrace)
                                 };
-                                CommonFunctions.AddLogEvent(DateTime.Now, "GetMRFoldersService", true, eventItems, "mrfolder delegate catch block");
+                                CommonFunctions.AddLogEvent(DateTime.Now, "GetMRFoldersService", true, eventItems, "mrFolderSections delegate catch block");
 
                                 CommonFunctions.sendErrorEmail(ex);
                                 PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
@@ -4347,81 +4621,34 @@ namespace DynaPad
                             {
                                 isRunning = false;
                             }
+                        })
+                        { mrdownload = true });
+
+                        rootMRFolders.Add(mrFolderSections);
+
+                        var formDVC = new DynaDialogViewController(rootMRFolders, true);
+                        formDVC.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, delegate
+                        {
+                            DetailViewController.QuestionsView = null; //.Clear();
+                        DetailViewController.NavigationItem.RightBarButtonItem = null;
+                            DetailViewController.Root.Clear();
+                            DetailViewController.Root.Caption = "";
+                            DetailViewController.ReloadData();
+
+                            NavigationController.PopViewController(true);
+
+                            DetailViewController.SetSearch();
+
+                            DetailViewController.SetDetailItem(new Section("Appointment Info"), "ApptInfo", null, null, false);
                         });
 
-                        mrFolderSections.Add(mrfolder);
-                    }
+                        //LoadMRView(SelectedAppointment.ApptMRFolders[0].MRFolderName, SelectedAppointment.ApptMRFolders[0].MRFolderId);
 
-                    mrFolderSections.Add(new SectionStringElement("Download Medical Records", delegate
-                    {
-                        try
-                        {
-                            _lockObject = this;
-                            lock (_lockObject)
-                            {
-                                if (isRunning)
-                                {
-                                    return;
-                                }
-                                isRunning = true;
-                            }
+                        CommonFunctions.AddLogEvent(DateTime.Now, "GetMRFoldersService", false, null, "end");
 
-                            DetailViewController.SetDetailItem(new Section("Download Medical Records"), "MRPatientDownload", null, null, false);
-
-                            foreach (Element d in mrFolderSections.Elements)
-                            {
-                                var t = d.GetType();
-                                if (t == typeof(SectionStringElement))
-                                {
-                                    var di = (SectionStringElement)d;
-                                    di.selected = false;
-                                }
-                            }
-
-                            mrFolderSections.GetContainerTableView().ReloadData();
-                        }
-                        catch (Exception ex)
-                        {
-                            var eventItems = new List<NSDictionary>
-                            {
-                                getDictionary("Exception Message", ex.Message),
-                                getDictionary("Exception Stacktrace", ex.StackTrace)
-                            };
-                            CommonFunctions.AddLogEvent(DateTime.Now, "GetMRFoldersService", true, eventItems, "mrFolderSections delegate catch block");
-
-                            CommonFunctions.sendErrorEmail(ex);
-                            PresentViewController(CommonFunctions.ExceptionAlertPrompt(ex), true, null);
-                        }
-                        finally
-                        {
-                            isRunning = false;
-                        }
-                    })
-                    { mrdownload = true });
-
-                    rootMRFolders.Add(mrFolderSections);
-
-                    var formDVC = new DynaDialogViewController(rootMRFolders, true);
-                    formDVC.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(UIImage.FromBundle("Back"), UIBarButtonItemStyle.Plain, delegate
-                    {
-                        DetailViewController.QuestionsView = null; //.Clear();
-                        DetailViewController.NavigationItem.RightBarButtonItem = null;
-                        DetailViewController.Root.Clear();
-                        DetailViewController.Root.Caption = "";
-                        DetailViewController.ReloadData();
-
-                        NavigationController.PopViewController(true);
-
-                        DetailViewController.SetSearch();
-
-                        DetailViewController.SetDetailItem(new Section("Appointment Info"), "ApptInfo", null, null, false);
-                    });
-
-                    //LoadMRView(SelectedAppointment.ApptMRFolders[0].MRFolderName, SelectedAppointment.ApptMRFolders[0].MRFolderId);
-
-                    CommonFunctions.AddLogEvent(DateTime.Now, "GetMRFoldersService", false, null, "end");
-
-                    return formDVC;
+                        return formDVC;
+                    }                     else                     {                         PresentViewController(CommonFunctions.AlertPrompt("Error", "An error has occured, if problem persists contact support", true, null, false, null), true, null);
+                        return new DynaDialogViewController(CommonFunctions.ErrorRootElement(), true);                     }
                 }
 
                 PresentViewController(CommonFunctions.InternetAlertPrompt(), true, null);
@@ -5103,7 +5330,7 @@ namespace DynaPad
         public override void DidReceiveMemoryWarning()
         {
             base.DidReceiveMemoryWarning();
-            // Release any cached data, Resources, etc that aren't in use.
+            // Release any cached data, Resources, etc that aren't in use.                                                                
         }
 
 

@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UIKit;
 using System.Threading.Tasks;
-using DynaPad.DynaPadService;
+//using DynaPad.DynaPadService;
+using DynaClassLibrary;
 
 namespace DynaPad
 {
@@ -44,7 +45,15 @@ namespace DynaPad
 namespace DynaClassLibrary
 {
 	public static class DynaClasses
-	{
+    {
+        public class LoginListRequest
+        {
+            public string domain { get; set; }
+            public string deviceName { get; set; }
+            public string username { get; set; }
+            public string password { get; set; }
+        }
+
 		public static class LoginContainer
 		{
 			public static User User { get; set; }
@@ -61,7 +70,7 @@ namespace DynaClassLibrary
 			public Location SelectedLocation { get; set; }
 			public string LoginStatus { get; set; }
 			public string DynaPassword { get; set; }
-			public ConfigurationObjects DynaConfig { get; set; }
+			public DynaClasses.ConfigurationObjects DynaConfig { get; set; }
             public string LogFileName { get; set; }
 		}
 
@@ -83,9 +92,9 @@ namespace DynaClassLibrary
             public int EmailPort { get; set; } = 2525;
 			public string ConnectionString { get; set; }
 			public string ConnectionName { get; set; }
-			public string DatabaseName { get; set; }
-            public string DomainHost { get; set; }
+            public string DatabaseName { get; set; }
             public string DomainName { get; set; }
+			public string DomainHost { get; set; }
 			public string DomainRootPathVirtual { get; set; }
 			public string DomainRootPathPhysical { get; set; }
 			public string DomainClaimantsPathVirtual { get; set; }
@@ -108,8 +117,276 @@ namespace DynaClassLibrary
 			public string DomainPathName { get; set; }
 			public string DomainPathPhysical { get; set; }
 			public string DomainPathVirtual { get; set; }
-		}
+        }
+
+        public class DynaFile
+        {
+            public string FileName { get; set; }
+            public string UserId { get; set; }
+            public DynaClasses.ConfigurationObjects UserConfig { get; set; }
+            public string ApptId { get; set; }
+            public DateTime ApptDate { get; set; }
+            public string FormId { get; set; }
+            public bool IsDoctorForm { get; set; }
+            public string DoctorId { get; set; }
+            public string LocationId { get; set; }
+            public string PatientId { get; set; }
+            public string PatientName { get; set; }
+            public string Type { get; set; }
+            public string Json { get; set; }
+            public string Html { get; set; }
+            public byte[] Bytes { get; set; }
+            public string FileUrl { get; set; }
+            public string Status { get; set; }
+            public DateTime DateCreated { get; set; }
+            public DateTime DateUploaded { get; set; }
+        }
 	}
+
+        public class AppointmentsByDateFrameRequest
+    {
+        public DynaClasses.ConfigurationObjects configurationObjects { get; set; }
+        public string locationId { get; set; }
+        public string dateFrame { get; set; }
+    }
+
+    public class BuildDynaMenuRequest
+    {
+        public DynaClasses.ConfigurationObjects configurationObjects { get; set; }
+        public string locationId { get; set; }
+        public string locationName { get; set; }
+    }
+
+    public class ProcessDynaFilesRequest
+    {
+        public DynaClasses.ConfigurationObjects configurationObjects { get; set; }
+        public string stringDynaFiles { get; set; }
+    }
+
+    public class GetFilesByDateRequest
+    {
+        public DynaClasses.ConfigurationObjects configurationObjects { get; set; }
+        public string locationId { get; set; }
+        public string dateToDownload { get; set; }
+    }
+
+    public class GetFilesRequest
+    {
+        public DynaClasses.ConfigurationObjects configurationObjects { get; set; }
+        public string locationId { get; set; }
+        public string apptId { get; set; }
+        public string patientId { get; set; }
+        public string patientName { get; set; }
+        public string doctorId { get; set; }
+    }
+
+    public class SaveFileRequest
+    {
+        public DynaClasses.ConfigurationObjects configurationObjects { get; set; }
+        public string locationId { get; set; }
+        public string apptId { get; set; }
+        public string patientId { get; set; }
+        public string doctorId { get; set; }
+        public string fileName { get; set; }
+        public string fileType { get; set; }
+        public string folderName { get; set; }
+        public string filePathPhysical { get; set; } // need '= ""'??
+        public string filePathVirtual { get; set; } // need '= ""'??
+        public byte[] arrFile { get; set; } // need '= null'??
+        public bool isDoctorForm { get; set; } // need '= false'??
+        public bool isSignature { get; set; } // need '= false'??
+    }
+
+    public class SaveLogRequest
+    {
+        public DynaClasses.ConfigurationObjects configurationObjects { get; set; }
+        public DynaClasses.DynaFile dynaLogFile { get; set; }
+    }
+
+    public class GetAnswerPresetsRequest
+    {
+        public DynaClasses.ConfigurationObjects configurationObjects { get; set; }
+        public string formId { get; set; }
+        public string sectionId { get; set; }
+        public string doctorId { get; set; }
+        public string locationId { get; set; }
+    }
+
+    public class GetAllAnswerPresetsRequest
+    {
+        public DynaClasses.ConfigurationObjects configurationObjects { get; set; }
+        public string userId { get; set; }
+        public bool isForceUpdate { get; set; }
+    }
+
+    public class GetFormPresetsRequest
+    {
+        public DynaClasses.ConfigurationObjects configurationObjects { get; set; }
+        public string formId { get; set; }
+        public bool isDocInput { get; set; }
+    }
+
+    public class LogPresetRequest
+    {
+        public DynaClasses.ConfigurationObjects configurationObjects { get; set; }
+        public string deviceName { get; set; }
+        public string requestDateTimeUTC { get; set; }
+        public int presetCount { get; set; }
+    }
+
+    public class SaveAnswerPresetRequest
+    {
+        public DynaClasses.ConfigurationObjects configurationObjects { get; set; }
+        public string formId { get; set; }
+        public string sectionId { get; set; }
+        public string doctorId { get; set; }
+        public bool isDocInput { get; set; }
+        public string presetName { get; set; }
+        public string presetJson { get; set; }
+        public string locationId { get; set; }
+        public string existingPresetId { get; set; } // need '= ""'??
+    }
+
+    public class UpdateAnswerPresetJsonRequest
+    {
+        public DynaClasses.ConfigurationObjects configurationObjects { get; set; }
+        public string formId { get; set; }
+        public string sectionId { get; set; }
+        public string doctorId { get; set; }
+        public string presetJson { get; set; }
+        public string existingPresetId { get; set; }
+    }
+
+    public class DeleteAnswerPresetRequest
+    {
+        public DynaClasses.ConfigurationObjects configurationObjects { get; set; }
+        public string formId { get; set; }
+        public string sectionId { get; set; }
+        public string doctorId { get; set; }
+        public string existingPresetId { get; set; }
+    }
+
+    public class SaveDictationRequest
+    {
+        public DynaClasses.ConfigurationObjects configurationObjects { get; set; }
+        public string formId { get; set; }
+        public string sectionId { get; set; }
+        public string doctorId { get; set; }
+        public bool isDocInput { get; set; }
+        public string locationId { get; set; }
+        public string dictationTitle { get; set; }
+        public byte[] arrDictation { get; set; }
+    }
+
+    public class DeleteDicatationRequest
+    {
+        public DynaClasses.ConfigurationObjects configurationObjects { get; set; }
+        public string dictationId { get; set; }
+        public string formId { get; set; }
+        public string sectionId { get; set; }
+        public string doctorId { get; set; }
+    }
+
+    public class GetFormDictationsRequest
+    {
+        public DynaClasses.ConfigurationObjects configurationObjects { get; set; }
+        public string formId { get; set; }
+        public string sectionId { get; set; }
+        public string doctorId { get; set; }
+        public bool isDocInput { get; set; }
+        public string locationId { get; set; }
+    }
+
+    public class GetAllAutoBoxDataRequest
+    {
+        public DynaClasses.ConfigurationObjects configurationObjects { get; set; }
+        public string rootPhysical { get; set; }
+        public string rootVirtual { get; set; }
+    }
+
+    public class GenerateIME4Request
+    {
+        public DynaClasses.ConfigurationObjects configurationObjects { get; set; }
+        public string apptId { get; set; }
+    }
+
+    public class GenerateSummaryFromHtmlRequest
+    {
+        public DynaClasses.ConfigurationObjects configurationObjects { get; set; }
+        public string summaryHtml { get; set; }
+        public string patientId { get; set; }
+        public string patientName { get; set; }
+        public string apptId { get; set; }
+        public string locationId { get; set; }
+        public string doctorId { get; set; }
+        public bool isDoctorForm { get; set; }
+    }
+
+    public class GenerateSummaryRequest
+    {
+        public DynaClasses.ConfigurationObjects configurationObjects { get; set; }
+        public string answers { get; set; }
+    }
+
+    public class SubmitFormAnswersRequest
+    {
+        public DynaClasses.ConfigurationObjects configurationObjects { get; set; }
+        public string answers { get; set; }
+        public bool update { get; set; }
+        public bool isDoctorInput { get; set; }
+        public bool doGenerateReport { get; set; } // need '= false'??
+    }
+
+    public class GetFormQuestionsRequest
+    {
+        public DynaClasses.ConfigurationObjects configurationObjects { get; set; }
+        public string formId { get; set; }
+        public string doctorId { get; set; }
+        public string locationId { get; set; }
+        public string patientId { get; set; }
+        public string patientName { get; set; }
+        public string caseId { get; set; }
+        public string apptId { get; set; }
+        public bool isDocInput { get; set; }
+    }
+
+    public class GetDoctorInputRequest
+    {
+        public DynaClasses.ConfigurationObjects configurationObjects { get; set; }
+        public string formId { get; set; }
+    }
+
+    public class GetDynaReportsRequest
+    {
+        public DynaClasses.ConfigurationObjects configurationObjects { get; set; }
+        public string qFormID { get; set; }
+        public string docId { get; set; }
+        public bool showcase { get; set; }
+    }
+
+    public class CreateDynaReportRequest
+    {
+        public DynaClasses.ConfigurationObjects configurationObjects { get; set; }
+        public string formId { get; set; }
+    }
+
+    public class GenerateReportRequest
+    {
+        public DynaClasses.ConfigurationObjects configurationObjects { get; set; }
+        public string apptId { get; set; }
+        public string qFormId { get; set; }
+        public string dateCompleted { get; set; }
+        public string fileName { get; set; }
+        public string reportId { get; set; }
+    }
+
+    public class LoginRequest
+    {
+        public string domain { get; set; }
+        public string deviceName { get; set; }
+        public string username { get; set; }
+        public string password { get; set; }
+    }
 }
 
 
@@ -351,7 +628,7 @@ public class QForm
 public class DynaPreset
 {
     public string UserId { get; set; }
-    public ConfigurationObjects UserConfig { get; set; }
+    public DynaClasses.ConfigurationObjects UserConfig { get; set; }
     public string FormId { get; set; }
     public string DoctorId { get; set; }
     public string LocationId { get; set; }
@@ -364,25 +641,25 @@ public class DynaPreset
     public string DateUpdated { get; set; }
 }
 
-public class DynaFile
-{
-    public string FileName { get; set; }
-    public string UserId { get; set; }
-    public ConfigurationObjects UserConfig { get; set; }
-    public string ApptId { get; set; }
-    public DateTime ApptDate { get; set; }
-    public string FormId { get; set; }
-    public bool IsDoctorForm { get; set; }
-    public string DoctorId { get; set; }
-    public string LocationId { get; set; }
-    public string PatientId { get; set; }
-    public string PatientName { get; set; }
-    public string Type { get; set; }
-    public string Json { get; set; }
-    public string Html { get; set; }
-    public byte[] Bytes { get; set; }
-    public string FileUrl { get; set; }
-    public string Status { get; set; }
-    public DateTime DateCreated { get; set; }
-    public DateTime DateUploaded { get; set; }
-}
+//public class DynaFile
+//{
+//    public string FileName { get; set; }
+//    public string UserId { get; set; }
+//    public DynaClasses.ConfigurationObjects UserConfig { get; set; }
+//    public string ApptId { get; set; }
+//    public DateTime ApptDate { get; set; }
+//    public string FormId { get; set; }
+//    public bool IsDoctorForm { get; set; }
+//    public string DoctorId { get; set; }
+//    public string LocationId { get; set; }
+//    public string PatientId { get; set; }
+//    public string PatientName { get; set; }
+//    public string Type { get; set; }
+//    public string Json { get; set; }
+//    public string Html { get; set; }
+//    public byte[] Bytes { get; set; }
+//    public string FileUrl { get; set; }
+//    public string Status { get; set; }
+//    public DateTime DateCreated { get; set; }
+//    public DateTime DateUploaded { get; set; }
+//}

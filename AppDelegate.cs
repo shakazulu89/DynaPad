@@ -43,6 +43,11 @@ namespace DynaPad
 
 		    manager.MetricsManager.TrackEvent("GetDynaStart");
 
+
+            //Register Syncfusion license
+            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("MjQ4NTlAMzEzNjJlMzIyZTMwZXhmNVBOOExJdXF6SHVtdFFsYWphdVpsR0VHdzRmK2Y2bk5xVlFYWlR0VT0=");
+
+
             // Request notification permissions from the user
             UNUserNotificationCenter.Current.RequestAuthorization(UNAuthorizationOptions.Alert, (approved, err) => {
                 // Handle approval
